@@ -32,6 +32,9 @@ public class WarehouseAgent extends Agent {
 	/* Agent initialization */
 	protected void setup() {
 		System.out.println("Agent " + getLocalName() + " started.");
+		System.out.println(getAID());
+		System.out.println(getAID().getName());
+		System.out.println(getAID().getLocalName());
 		orderListStatus = new Hashtable<Integer, String>();
 
 		// Get the list of orders as a start-up argument
@@ -40,7 +43,7 @@ public class WarehouseAgent extends Agent {
 		// String partList = (String) args[1];
 
 		// Add behaviours
-		// addBehaviour(new IncomingOrder());
+		 addBehaviour(new IncomingOrder());
 	}
 
 	// Put agent clean-up operations here
@@ -66,10 +69,12 @@ public class WarehouseAgent extends Agent {
 
 	private class IncomingOrder extends CyclicBehaviour {
 		public void action() {
-			//MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);// Call for proposals?
-			//ACLMessage msg = myAgent.receive(mt);
-			ACLMessage msg = myAgent.receive();
-			ACLMessage reply = msg.createReply();
+			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+			
+			ACLMessage msg = myAgent.receive(mt);
+			//ACLMessage msg = myAgent.receive();
+			
+			//ACLMessage reply = msg.createReply();
 
 			if (msg != null) { // Message received. Process it String order =
 				msg.getContent();
