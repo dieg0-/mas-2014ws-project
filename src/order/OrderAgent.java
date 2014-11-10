@@ -17,7 +17,7 @@ import jade.core.behaviours.CyclicBehaviour;
 
 public class OrderAgent extends Agent {
 	protected void setup(){
-		System.out.println("Hello, I am "+getLocalName());
+		System.out.println("Agent " + getLocalName() + " started.");
 		addBehaviour(new CompletedOrder());
 		
 	}

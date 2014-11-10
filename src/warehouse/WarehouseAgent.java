@@ -6,11 +6,13 @@ Project: KivaSolutions
 @since 09.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
-**/
+ **/
 
 package warehouse;
 
 import jade.core.Agent;
+import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -24,55 +26,63 @@ import java.util.*;
 public class WarehouseAgent extends Agent {
 	// The order list maps the available lists to it's status (pending or
 	// finished)
-	private Hashtable orderlist;
+	private Hashtable<Integer, String> orderListStatus;
+	AgentContainer c = getContainerController();
 
 	/* Agent initialization */
 	protected void setup() {
-		System.out.println("Hello, I am " + getLocalName());
-		orderlist = new Hashtable();
+		System.out.println("Agent " + getLocalName() + " started.");
+		orderListStatus = new Hashtable<Integer, String>();
+
 		// Get the list of orders as a start-up argument
 		Object[] args = getArguments();
+		// int orderNum = Integer.parseInt((String)args[0]);
+		// String partList = (String) args[1];
 
-		addBehaviour(new IncomingOrder());
-		
+		// Add behaviours
+		// addBehaviour(new IncomingOrder());
 	}
 
 	// Put agent clean-up operations here
 	protected void takeDown() {
 		// Printout a dismissal message
-		System.out.println("Warehouse " + getAID().getName()
-				+ " terminating.");
+		System.out.println("Agent " + getAID().getName() + " terminating.");
 	}
 
-	public void updateCatalogue(final int orderNum, final boolean status) {
+	public void updateOrderList(final int orderNum, final String parts) {
 		addBehaviour(new OneShotBehaviour() {
 			public void action() {
-				orderlist.put(orderNum, new Boolean(status));
+				orderListStatus.put(orderNum, new String(parts));
+				try {
+					AgentController a = c.createNewAgent(
+							Integer.toString(orderNum), "OrderAgent", null);
+					a.start();
+				} catch (Exception e) {
+				}
 			}
 		});
+
 	}
 
 	private class IncomingOrder extends CyclicBehaviour {
 		public void action() {
-			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);//Call for proposals?
-			ACLMessage msg = myAgent.receive(mt);
+			//MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);// Call for proposals?
+			//ACLMessage msg = myAgent.receive(mt);
+			ACLMessage msg = myAgent.receive();
 			ACLMessage reply = msg.createReply();
 
-			if (msg != null) {
-			      // Message received. Process it
-				String order = msg.getContent();
-				
-				String parts = (String) orderlist.get(order);	
-				
-				reply.setPerformative(ACLMessage.INFORM);
-				reply.setContent("Order received. Begin processing");
-			}else{
+			if (msg != null) { // Message received. Process it String order =
+				msg.getContent();
+				System.out.println("Received message");
+				// String parts = (Boolean) orderlist.get(order);
+
+				// reply.setPerformative(ACLMessage.INFORM);
+				// reply.setContent("Order received. Begin processing");
+			} else {
 				block();
-			}	
-			myAgent.send(reply);
+			}
+			// myAgent.send(reply);
 		}
 	}
-	
-	
 
 }
