@@ -10,6 +10,8 @@ All Rights Reserved.
 
 package warehouse;
 
+import order.OrderAgent;
+
 import jade.core.Agent;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
@@ -32,15 +34,11 @@ public class WarehouseAgent extends Agent {
 	/* Agent initialization */
 	protected void setup() {
 		System.out.println("Agent " + getLocalName() + " started.");
-		System.out.println(getAID());
-		System.out.println(getAID().getName());
-		System.out.println(getAID().getLocalName());
 		orderListStatus = new Hashtable<Integer, String>();
 
 		// Get the list of orders as a start-up argument
 		Object[] args = getArguments();
-		// int orderNum = Integer.parseInt((String)args[0]);
-		// String partList = (String) args[1];
+		
 
 		// Add behaviours
 		 addBehaviour(new IncomingOrder());
@@ -58,8 +56,10 @@ public class WarehouseAgent extends Agent {
 				orderListStatus.put(orderNum, new String(parts));
 				try {
 					AgentController a = c.createNewAgent(
-							Integer.toString(orderNum), "OrderAgent", null);
+							Integer.toString(orderNum), "order.OrderAgent", null);
 					a.start();
+					
+					System.out.println("Created OrderAgent Succesfully");
 				} catch (Exception e) {
 				}
 			}
@@ -72,21 +72,27 @@ public class WarehouseAgent extends Agent {
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 			
 			ACLMessage msg = myAgent.receive(mt);
-			//ACLMessage msg = myAgent.receive();
 			
-			//ACLMessage reply = msg.createReply();
 
 			if (msg != null) { // Message received. Process it String order =
-				msg.getContent();
+				int orderNum = Integer.parseInt(msg.getContent());
 				System.out.println("Received message");
-				// String parts = (Boolean) orderlist.get(order);
-
-				// reply.setPerformative(ACLMessage.INFORM);
-				// reply.setContent("Order received. Begin processing");
+				
+				
+				try {
+					AgentController a = c.createNewAgent(
+							Integer.toString(orderNum), "OrderAgent", null);
+					a.start();
+					
+					System.out.println("Created OrderAgent Succesfully");
+				} catch (Exception e) {
+					e.printStackTrace();
+		 		}
+				
 			} else {
 				block();
 			}
-			// myAgent.send(reply);
+			
 		}
 	}
 
