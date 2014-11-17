@@ -17,7 +17,7 @@ import jade.core.behaviours.CyclicBehaviour;
 
 public class OrderAgent extends Agent {
 	protected void setup(){
-		System.out.println("Agent " + getLocalName() + " started.");
+		System.out.println("Order "+getLocalName() + ": Started.");
 		//addBehaviour(new CompletedOrder());
 		
 	}
@@ -25,14 +25,20 @@ public class OrderAgent extends Agent {
 	// Put agent clean-up operations here
 	protected void takeDown() {
 		// Printout a dismissal message
-		System.out.println("Order " + getAID().getName()+ " finished.");
+		System.out.println("Order "+getAID().getLocalName()+ ": Order finished.");
 		doDelete();
 	}
-/**
+
 	private class CompletedOrder extends CyclicBehaviour{
 		public void action(){
 			
 		}
 	}
-	**/
+	
+	private class MissingPieces extends CyclicBehaviour{
+		public void action(){
+			
+		}
+	}
+	
 }
