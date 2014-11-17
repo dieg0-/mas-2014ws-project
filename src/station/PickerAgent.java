@@ -12,12 +12,14 @@ package station;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
 public class PickerAgent extends Agent {
@@ -80,5 +82,22 @@ public class PickerAgent extends Agent {
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
+	
+	/**
+	 * Reservado para Argen
+	 * 
+	 * 
+	 private class freePicker extends CyclicBehaviour {
+		public void action() {			
+			ACLMessage freed = new ACLMessage(ACLMessage.CONFIRM);
+			finish.setOntology("Free Picker");
+			  finish.setContent("Yes");
+			  finish.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
+			  send(finish);
+			  doDelete();
+			
+		}
+	}
+	 */
 
 }

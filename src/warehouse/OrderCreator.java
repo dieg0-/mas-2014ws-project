@@ -40,6 +40,7 @@ public class OrderCreator extends Agent {
 		  public void action() {
 			  System.out.println(myAgent.getLocalName()+": Sending order...");
 			  ACLMessage order = new ACLMessage(ACLMessage.INFORM);
+			  order.setOntology("newOrder");
 			  order.setContent(Integer.toString(randomOrder));
 			  order.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(order);

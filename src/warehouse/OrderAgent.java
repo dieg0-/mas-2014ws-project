@@ -12,13 +12,15 @@ All Rights Reserved.
 
 package warehouse;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
 
 public class OrderAgent extends Agent {
 	protected void setup(){
 		System.out.println("Order "+getLocalName() + ": Started.");
-		//addBehaviour(new CompletedOrder());
+		addBehaviour(new CompletedOrder());
 		
 	}
 	
@@ -31,7 +33,13 @@ public class OrderAgent extends Agent {
 
 	private class CompletedOrder extends CyclicBehaviour{
 		public void action(){
-			
+			System.out.println(myAgent.getLocalName()+": Order completed...");
+			  ACLMessage finish = new ACLMessage(ACLMessage.CONFIRM);
+			  finish.setOntology("Complete Order");
+			  finish.setContent("Completed");
+			  finish.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
+			  send(finish);
+			  doDelete();
 		}
 	}
 	

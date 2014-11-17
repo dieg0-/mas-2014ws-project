@@ -68,8 +68,8 @@ public class WarehouseAgent extends Agent {
 			args[0] = "3";
 			args[1] = "Allo there";
 
-			MessageTemplate mt = MessageTemplate
-					.MatchPerformative(ACLMessage.INFORM);
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate
+					.MatchPerformative(ACLMessage.INFORM),MessageTemplate.MatchOntology("newOrder"));
 
 			ACLMessage msg = myAgent.receive(mt);
 
@@ -78,7 +78,7 @@ public class WarehouseAgent extends Agent {
 				System.out.println(myAgent.getLocalName()+": Received order...");
 
 				try {
-					System.out.println(myAgent.getLocalName()+":Attepting to create OrderAgent");
+					System.out.println(myAgent.getLocalName()+": Creating OrderAgent");
 					AgentController a = c.createNewAgent(
 							Integer.toString(orderNum), "warehouse.OrderAgent",
 							args);
@@ -98,50 +98,15 @@ public class WarehouseAgent extends Agent {
 	}
 	
 	private class availablePicker extends CyclicBehaviour {
-		public void action() {
-			
-			
-			DFAgentDescription template = new DFAgentDescription();
-			ServiceDescription sd = new ServiceDescription();
-			
-			// Search for pickers who are free.
-			sd.setType("freePicker");
-			template.addServices(sd);
-			try {
-				// Searching process.
-				DFAgentDescription[] result = DFService.search(myAgent, template); 
-				
-				pickers = new AID[result.length];
-				System.out.println(myAgent.getLocalName()+": Found the following pickers");
-				System.out.println("------------------------------------\n");
-				
-				// Found Agents.
-				for (int i = 0; i < result.length; ++i) {
-					// Listing the agents ID's found.
-					pickers[i] = result[i].getName();
-					System.out.println(pickers[i].getName());
-				}
-				System.out.println("------------------------------------\n");
-				
-				/* Sending Messages to the found agents. */
-				ACLMessage query = new ACLMessage(ACLMessage.QUERY_IF);
-				for (int i = 0; i < result.length; ++i) {
-					query.addReceiver(result[i].getName());
-				}
-				query.setContent("Are you free?");
-				myAgent.send(query);				
-			}
-			catch (FIPAException fe) {
-				fe.printStackTrace();
-			}
-
-			MessageTemplate mt = MessageTemplate
-					.MatchPerformative(ACLMessage.CONFIRM);
-			
+		public void action() {			
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate
+					.MatchPerformative(ACLMessage.CONFIRM), MessageTemplate.MatchOntology("Free Picker"));
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
-				System.out.println(myAgent.getLocalName()+": Picker "+msg.getSender()+" is available.");
+				System.out.println(myAgent.getLocalName()+": Picker "+msg.getSender().getLocalName()+" is available.");
 			
+				
+				//TODO: Send OrderAgent to free PickerAgent
 			}else {
 				block();
 			}
