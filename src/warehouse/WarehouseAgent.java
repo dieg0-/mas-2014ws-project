@@ -10,7 +10,7 @@ All Rights Reserved.
 
 package warehouse;
 
-import order.OrderAgent;
+//import order.OrderAgent;
 
 import jade.core.Agent;
 import jade.wrapper.AgentContainer;
@@ -29,15 +29,28 @@ public class WarehouseAgent extends Agent {
 	// The order list maps the available lists to it's status (pending or
 	// finished)
 	private Hashtable<Integer, String> orderListStatus;
-	AgentContainer c = getContainerController();
+	
 
 	/* Agent initialization */
 	protected void setup() {
+		AgentContainer c = getContainerController();
 		System.out.println("Agent " + getLocalName() + " started.");
 		orderListStatus = new Hashtable<Integer, String>();
 
 		// Get the list of orders as a start-up argument
 		Object[] args = getArguments();
+	/**	
+		try {
+			System.out.println("Attepting to create OrderAgent");
+			AgentController a = c.createNewAgent(
+					"12345", "warehouse.OrderAgent", args);
+			System.out.println("Attempting to start OrderAgent");
+			a.start();
+			System.out.println("Created OrderAgent Succesfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+ 		}**/
+		
 		
 
 		// Add behaviours
@@ -55,9 +68,8 @@ public class WarehouseAgent extends Agent {
 			public void action() {
 				orderListStatus.put(orderNum, new String(parts));
 				try {
-					AgentController a = c.createNewAgent(
-							Integer.toString(orderNum), "order.OrderAgent", null);
-					a.start();
+					//AgentController a = c.createNewAgent(Integer.toString(orderNum), "order.OrderAgent", null);
+					//a.start();
 					
 					System.out.println("Created OrderAgent Succesfully");
 				} catch (Exception e) {
@@ -69,6 +81,11 @@ public class WarehouseAgent extends Agent {
 
 	private class IncomingOrder extends CyclicBehaviour {
 		public void action() {
+			AgentContainer c = getContainerController();
+			Object [] args = new Object[2];
+	        args[0] = "3";
+	        args[1] = "Allo there";
+	        
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 			
 			ACLMessage msg = myAgent.receive(mt);
@@ -76,14 +93,14 @@ public class WarehouseAgent extends Agent {
 
 			if (msg != null) { // Message received. Process it String order =
 				int orderNum = Integer.parseInt(msg.getContent());
-				System.out.println("Received message");
+				System.out.println("Warehouse Manager received order...");
 				
 				
 				try {
-					AgentController a = c.createNewAgent(
-							Integer.toString(orderNum), "OrderAgent", null);
+					System.out.println("Attepting to create OrderAgent");
+					AgentController a = c.createNewAgent(Integer.toString(orderNum), "warehouse.OrderAgent", args);
+					System.out.println("Attempting to start OrderAgent");
 					a.start();
-					
 					System.out.println("Created OrderAgent Succesfully");
 				} catch (Exception e) {
 					e.printStackTrace();
