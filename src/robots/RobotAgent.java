@@ -2,7 +2,7 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 2.0.n.
+@version: 2.1.n.
 @since 09.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
@@ -23,8 +23,9 @@ import jade.lang.acl.ACLMessage;
 @SuppressWarnings("serial")
 public class RobotAgent extends Agent {
 	// Attributes.
-	private String area;
+	private String id;
 	private double[] position;
+	private boolean busy;
 	
 	protected void setup() {
 		System.out.println("Robot Agent: " + getLocalName());
@@ -32,6 +33,8 @@ public class RobotAgent extends Agent {
 		this.position = new double[2];
 		this.position[0] = (new Random()).nextDouble();
 		this.position[1] = (new Random()).nextDouble();
+		
+		this.busy = false;
 		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
@@ -42,9 +45,9 @@ public class RobotAgent extends Agent {
 		
 		Object[] args = this.getArguments();
 		if (args != null && args.length > 0) {
-			this.area = (String) args[0];
-			System.out.println("Area " + this.area + " will be covered.");
-			System.out.println("Waiting for commands...");
+			this.id = (String) args[0];
+			System.out.println("ID: " + this.id);
+			System.out.println("Waiting...");
 			this.addBehaviour(new OfferRequestsServer());
 			try {
 				DFService.register(this, dfd);
@@ -54,12 +57,12 @@ public class RobotAgent extends Agent {
 			}
 		}
 		else {
-			System.out.println("No arguments are given. Agent didn't spawn");
+			System.out.println("No ID given. Agent won't be register.");
 			doDelete();
 		}
 	}
 	
-	public class LocalizationBehaviour extends OneShotBehaviour {
+	private class LocalizationBehaviour extends OneShotBehaviour {
 		public void action() {
 			System.out.println("Location: (" + position[0] + "," + position[1] + ").\n");			
 		}
@@ -70,11 +73,17 @@ public class RobotAgent extends Agent {
 		public void action() {
 			ACLMessage msg = myAgent.receive();
 				if (msg != null) {
-					String mensaje = msg.getContent();
-					System.out.println(myAgent.getLocalName() + " here.");
-					System.out.println("Message: " + mensaje);
-					myAgent.addBehaviour(new LocalizationBehaviour());
-					System.out.println(myAgent.getLocalName() + " out.");
+					System.out.println("Agent " + myAgent.getLocalName());
+					String msg_content = msg.getContent();
+					if (msg_content.matches("Status")) {
+						System.out.println("Busy: " + busy);
+					}
+					else {
+						System.out.println(myAgent.getLocalName() + " here.");
+						System.out.println("Message: " + msg_content);
+						myAgent.addBehaviour(new LocalizationBehaviour());
+						System.out.println(myAgent.getLocalName() + " out.");
+					}
 				}
 				else {
 					block();

@@ -59,7 +59,7 @@ public class PickStationAgent extends Agent {
 					for (int i = 0; i < result.length; ++i) {
 						cfp.addReceiver(result[i].getName());
 					}
-					cfp.setContent("Where are thou?");
+					cfp.setContent("Status");
 					myAgent.send(cfp);
 				}
 				catch (FIPAException fe) {
