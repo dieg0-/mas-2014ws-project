@@ -25,19 +25,20 @@ public class OrderCreator extends Agent {
 	
 	protected void setup() {
 		randomOrder = randomGenerator.nextInt(1000);
-		System.out.println("Created random order. Agent " + getLocalName() + " started.");
+		System.out.println(getLocalName()+":  Started.");
+		System.out.println(getLocalName() + ": Created random order.");
 		
 		addBehaviour(new sendOrder());
 	}
 
 	protected void takeDown() {
 		// Printout a dismissal message
-		System.out.println("Agent " + getAID().getName() + " terminating.");
+		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
 	
 	private class sendOrder extends OneShotBehaviour {
 		  public void action() {
-			  System.out.println("Sending order...");
+			  System.out.println(myAgent.getLocalName()+": Sending order...");
 			  ACLMessage order = new ACLMessage(ACLMessage.INFORM);
 			  order.setContent(Integer.toString(randomOrder));
 			  order.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
