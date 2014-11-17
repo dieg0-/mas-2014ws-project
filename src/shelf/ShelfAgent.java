@@ -72,6 +72,8 @@ public class ShelfAgent extends Agent {
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
 				String[] parsedMessage = message.getContent().split(",");
+				// The first part of the content contains the piece requested, and the second
+				//  the amount needed.
 				String piece = parsedMessage[0];
 				int amount = Integer.parseInt(parsedMessage[1]);
 				
