@@ -30,12 +30,16 @@ public class WarehouseAgent extends Agent {
 	// The order list maps the available lists to it's status (pending or
 	// finished)
 	private Hashtable<Integer, String> orderListStatus;
+	private Hashtable<Integer, String> pendingOrders;
+	private Hashtable<Integer, String> completedOrders;
+	private Hashtable<Integer, String> processingOrders;
+
 	private AID[] pickers;
-	
+
 	/* Agent initialization */
 	protected void setup() {
 		AgentContainer c = getContainerController();
-		System.out.println(getLocalName()+": Started.");
+		System.out.println(getLocalName() + ": Started.");
 		orderListStatus = new Hashtable<Integer, String>();
 
 		// Get the list of orders as a start-up argument
@@ -48,17 +52,25 @@ public class WarehouseAgent extends Agent {
 	// Put agent clean-up operations here
 	protected void takeDown() {
 		// Printout a dismissal message
-		System.out.println(getAID().getLocalName()+": Terminating.");
+		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
 
-	public void updateOrderList(final int orderNum, final String parts) {
-		addBehaviour(new OneShotBehaviour() {
-			public void action() {
-				orderListStatus.put(orderNum, new String(parts));
+	public class updateOrderLists extends CyclicBehaviour {
 
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+					MessageTemplate.MatchOntology("Completed Order"));
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				System.out.println(myAgent.getLocalName() + ": "
+						+ msg.getSender().getLocalName() + " is completed.");
+				// TODO Update hash-tables for each list type
+				// TODO Add templates for each type of update
+			} else {
+				block();
 			}
-		});
-
+		}
 	}
 
 	private class CreateOrder extends CyclicBehaviour {
@@ -68,24 +80,28 @@ public class WarehouseAgent extends Agent {
 			args[0] = "3";
 			args[1] = "Allo there";
 
-			MessageTemplate mt = MessageTemplate.and(MessageTemplate
-					.MatchPerformative(ACLMessage.INFORM),MessageTemplate.MatchOntology("newOrder"));
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+					MessageTemplate.MatchOntology("newOrder"));
 
 			ACLMessage msg = myAgent.receive(mt);
 
 			if (msg != null) { // Message received. Process it String order =
 				int orderNum = Integer.parseInt(msg.getContent());
-				System.out.println(myAgent.getLocalName()+": Received order...");
+				System.out.println(myAgent.getLocalName()
+						+ ": Received order...");
 
 				try {
-					System.out.println(myAgent.getLocalName()+": Creating OrderAgent");
+					System.out.println(myAgent.getLocalName()
+							+ ": Creating OrderAgent");
 					AgentController a = c.createNewAgent(
 							Integer.toString(orderNum), "warehouse.OrderAgent",
 							args);
-					//System.out.println("Attempting to start OrderAgent");
+					// System.out.println("Attempting to start OrderAgent");
 					a.start();
-					System.out.println(myAgent.getLocalName()+": Created new order succesfully");
-					
+					System.out.println(myAgent.getLocalName()
+							+ ": Created new order succesfully");
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -96,21 +112,22 @@ public class WarehouseAgent extends Agent {
 
 		}
 	}
-	
+
 	private class availablePicker extends CyclicBehaviour {
-		public void action() {			
-			MessageTemplate mt = MessageTemplate.and(MessageTemplate
-					.MatchPerformative(ACLMessage.CONFIRM), MessageTemplate.MatchOntology("Free Picker"));
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+					MessageTemplate.MatchOntology("Free Picker"));
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
-				System.out.println(myAgent.getLocalName()+": Picker "+msg.getSender().getLocalName()+" is available.");
-			
-				
-				//TODO: Send OrderAgent to free PickerAgent
-			}else {
+				System.out.println(myAgent.getLocalName() + ": Picker "
+						+ msg.getSender().getLocalName() + " is available.");
+
+				// TODO Send OrderAgent to free PickerAgent
+			} else {
 				block();
 			}
-			
+
 		}
 	}
 
