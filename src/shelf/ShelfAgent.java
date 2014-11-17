@@ -15,6 +15,10 @@ import java.util.HashMap;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -26,9 +30,26 @@ public class ShelfAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, Integer> inventory;
 	
+	protected DFAgentDescription dfd;
+	
 	protected void setup(){
 		System.out.println("Hello, I am "+getLocalName());
 		inventory = new HashMap<String, Integer>();
+		inventory.put("screw_driver", 45);
+		
+		this.dfd = new DFAgentDescription();
+		this.dfd.setName(getAID());
+		
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("offer-pieces");
+		sd.setName("JADE-shelf-agents");
+		this.dfd.addServices(sd);
+		try {
+			DFService.register(this, dfd);
+		}
+		catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
 		
 		addBehaviour(new OrderRequestServer());
 	}
@@ -39,7 +60,7 @@ public class ShelfAgent extends Agent {
 	
 	/**
 	 * @description The inventory should be updated each time the order picker takes pieces
-	 *              from the shelf, and each time the shelf is refilled.
+	 *              from the shelf.
 	 * @param piece
 	 * @param amount
 	 */
@@ -51,7 +72,9 @@ public class ShelfAgent extends Agent {
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
-				inventory.put(piece, new Integer(amount));
+				inventory.put(piece, inventory.get(piece) - amount);
+				System.out.println(myAgent.getName() + ": Only " + inventory.get(piece) + " " + piece + "s left.");
+
 			}
 		} );
 	}
@@ -71,6 +94,8 @@ public class ShelfAgent extends Agent {
 			MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
+				System.out.print(myAgent.getLocalName() + ": ");
+				System.out.println("message-> " + message.getContent());
 				String[] parsedMessage = message.getContent().split(",");
 				// The first part of the content contains the piece requested, and the second
 				//  the amount needed.
@@ -86,6 +111,9 @@ public class ShelfAgent extends Agent {
 					if(availablePieces >= amount){
 						reply.setPerformative(ACLMessage.PROPOSE);
 						reply.setContent("Enough pieces available");
+						// This shouldn't happen yet, the picker should select a shelf...
+						// just for testing purposes:
+						updateInventory(piece, amount);
 					}else{
 						reply.setPerformative(ACLMessage.PROPOSE);
 						reply.setContent("Only " + availablePieces + " are available.");
