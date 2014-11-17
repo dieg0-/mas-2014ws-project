@@ -12,6 +12,7 @@ package warehouse;
 
 //import order.OrderAgent;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
@@ -29,7 +30,8 @@ public class WarehouseAgent extends Agent {
 	// The order list maps the available lists to it's status (pending or
 	// finished)
 	private Hashtable<Integer, String> orderListStatus;
-
+	private AID[] pickers;
+	
 	/* Agent initialization */
 	protected void setup() {
 		AgentContainer c = getContainerController();
@@ -40,7 +42,7 @@ public class WarehouseAgent extends Agent {
 		Object[] args = getArguments();
 
 		// Add behaviours
-		addBehaviour(new IncomingOrder());
+		addBehaviour(new CreateOrder());
 	}
 
 	// Put agent clean-up operations here
@@ -59,7 +61,7 @@ public class WarehouseAgent extends Agent {
 
 	}
 
-	private class IncomingOrder extends CyclicBehaviour {
+	private class CreateOrder extends CyclicBehaviour {
 		public void action() {
 			AgentContainer c = getContainerController();
 			Object[] args = new Object[2];
@@ -83,6 +85,7 @@ public class WarehouseAgent extends Agent {
 					//System.out.println("Attempting to start OrderAgent");
 					a.start();
 					System.out.println(myAgent.getLocalName()+": Created new order succesfully");
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -96,12 +99,49 @@ public class WarehouseAgent extends Agent {
 	
 	private class availablePicker extends CyclicBehaviour {
 		public void action() {
-			MessageTemplate mt = MessageTemplate
-					.MatchPerformative(ACLMessage.INFORM);
+			
+			
+			DFAgentDescription template = new DFAgentDescription();
+			ServiceDescription sd = new ServiceDescription();
+			
+			// Search for pickers who are free.
+			sd.setType("freePicker");
+			template.addServices(sd);
+			try {
+				// Searching process.
+				DFAgentDescription[] result = DFService.search(myAgent, template); 
+				
+				pickers = new AID[result.length];
+				System.out.println(myAgent.getLocalName()+": Found the following pickers");
+				System.out.println("------------------------------------\n");
+				
+				// Found Agents.
+				for (int i = 0; i < result.length; ++i) {
+					// Listing the agents ID's found.
+					pickers[i] = result[i].getName();
+					System.out.println(pickers[i].getName());
+				}
+				System.out.println("------------------------------------\n");
+				
+				/* Sending Messages to the found agents. */
+				ACLMessage query = new ACLMessage(ACLMessage.QUERY_IF);
+				for (int i = 0; i < result.length; ++i) {
+					query.addReceiver(result[i].getName());
+				}
+				query.setContent("Are you free?");
+				myAgent.send(query);				
+			}
+			catch (FIPAException fe) {
+				fe.printStackTrace();
+			}
 
+			MessageTemplate mt = MessageTemplate
+					.MatchPerformative(ACLMessage.CONFIRM);
+			
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
-				System.out.println(myAgent.getLocalName()+": Picker "+msg.getSender()+" has become available.");
+				System.out.println(myAgent.getLocalName()+": Picker "+msg.getSender()+" is available.");
+			
 			}else {
 				block();
 			}
