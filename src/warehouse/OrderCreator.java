@@ -10,7 +10,7 @@ All Rights Reserved.
 
 
 
-package order;
+package warehouse;
 
 import jade.core.AID;
 import jade.core.Agent;

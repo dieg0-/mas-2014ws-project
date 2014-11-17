@@ -10,7 +10,7 @@ All Rights Reserved.
 
 
 
-package order;
+package warehouse;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -23,12 +23,11 @@ public class OrderAgent extends Agent {
 	}
 	
 	// Put agent clean-up operations here
-		protected void takeDown() {
-			// Printout a dismissal message
-			System.out.println("Order " + getAID().getName()
-					+ " finished.");
-			doDelete();
-		}
+	protected void takeDown() {
+		// Printout a dismissal message
+		System.out.println("Order " + getAID().getName()+ " finished.");
+		doDelete();
+	}
 /**
 	private class CompletedOrder extends CyclicBehaviour{
 		public void action(){
