@@ -33,9 +33,11 @@ public class ShelfAgent extends Agent {
 	protected DFAgentDescription dfd;
 	
 	protected void setup(){
-		System.out.println("Hello, I am "+getLocalName());
 		inventory = new HashMap<String, Integer>();
-		inventory.put("screw_driver", 45);
+		// Testing purposes.. This shouldn't be predefined for all agents.
+		inventory.put("screw_driver", 16);
+		inventory.put("screw_x", 12);
+		inventory.put("mesh_h", 18);
 		
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
@@ -94,8 +96,8 @@ public class ShelfAgent extends Agent {
 			MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
-				System.out.print(myAgent.getLocalName() + ": ");
-				System.out.println("message-> " + message.getContent());
+				//System.out.print(myAgent.getLocalName() + ": ");
+				//System.out.println("message-> " + message.getContent());
 				String[] parsedMessage = message.getContent().split(",");
 				// The first part of the content contains the piece requested, and the second
 				//  the amount needed.
@@ -111,16 +113,19 @@ public class ShelfAgent extends Agent {
 					if(availablePieces >= amount){
 						reply.setPerformative(ACLMessage.PROPOSE);
 						reply.setContent("Enough pieces available");
+						System.out.println(myAgent.getLocalName() + ": Enough " + piece + "s available.");
 						// This shouldn't happen yet, the picker should select a shelf...
 						// just for testing purposes:
 						updateInventory(piece, amount);
 					}else{
 						reply.setPerformative(ACLMessage.PROPOSE);
+						System.out.println(myAgent.getLocalName() + ": Only " + availablePieces + " " + piece + "s available.");
 						reply.setContent("Only " + availablePieces + " are available.");
 					}
 				// Ideally, a shelf shouldn't respond if it doesn't have the available piece.
 				}else{
 					reply.setPerformative(ACLMessage.REFUSE);
+					System.out.println(myAgent.getLocalName() + ": Sorry, " + piece + "s are not available.");
 					reply.setContent("The piece is unfortunately not available");
 				}
 				myAgent.send(reply);

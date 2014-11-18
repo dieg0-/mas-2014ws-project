@@ -64,7 +64,11 @@ public class SimPickerAgent extends Agent {
 				for (int i = 0; i < result.length; ++i) {
 					cfp.addReceiver(result[i].getName());
 				}
-				cfp.setContent("screw_driver,3");
+				//cfp.setContent("screw_driver,3");
+				String message = "screw_driver,3";
+				String[] aMessage = message.split(",");
+				System.out.println(myAgent.getLocalName() + ": Requesting " + aMessage[1] + " " + aMessage[0] + "s.");
+				cfp.setContent(message);
 				myAgent.send(cfp);
 			}
 			catch (FIPAException fe) {
@@ -77,23 +81,6 @@ public class SimPickerAgent extends Agent {
 	// Killing the agent.
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
-	}
-	
-	/**
-	 * Reservado para Argen
-	 * 
-	 * 
-	 private class freePicker extends CyclicBehaviour {
-		public void action() {			
-			ACLMessage freed = new ACLMessage(ACLMessage.CONFIRM);
-			finish.setOntology("Free Picker");
-			  finish.setContent("Yes");
-			  finish.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
-			  send(finish);
-			  doDelete();
-			
-		}
-	}
-	 */
+	}	
 
 }
