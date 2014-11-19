@@ -30,7 +30,8 @@ public class RobotAgent extends Agent {
 	protected DFAgentDescription dfd;
 	
 	protected void setup() {
-		System.out.println("Robot Agent: " + getLocalName());
+		System.out.println("--ROBOT-------------");
+		System.out.println("Agent: " + getLocalName());
 		
 		this.position = new double[2];
 		this.position[0] = (new Random()).nextDouble();
@@ -49,7 +50,8 @@ public class RobotAgent extends Agent {
 		if (args != null && args.length > 0) {
 			this.id = (String) args[0];
 			System.out.println("ID: " + this.id);
-			System.out.println("Waiting...\n\n");
+			System.out.println("Waiting...");
+			System.out.println("--------------------------\n\n");
 			this.addBehaviour(new OfferRequestsServer());
 			try {
 				DFService.register(this, dfd);
@@ -59,7 +61,7 @@ public class RobotAgent extends Agent {
 			}
 		}
 		else {
-			System.out.println("No ID given. Agent won't be register.");
+			System.err.println("No ID given. Agent won't be register.");
 			doDelete();
 		}
 	}
@@ -97,15 +99,16 @@ public class RobotAgent extends Agent {
 				Thread.sleep(this.timeout*1000);
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				System.err.println(myAgent.getLocalName() + ": couldn't unregister.");
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				System.err.println(myAgent.getLocalName() + ": terminated abruptly.");
 			}
 			//System.out.println(myAgent.getState());	
 		}
 		
 		public boolean done() {
+			System.out.println(myAgent.getLocalName() + ": task accomplish.");
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType("fetch");
 			sd.setName("JADE-robot-agents");

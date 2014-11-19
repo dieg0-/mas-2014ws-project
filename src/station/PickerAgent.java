@@ -12,22 +12,24 @@ package station;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
+import utilities.PrinterUtil;
 
 @SuppressWarnings("serial")
 public class PickerAgent extends Agent {
 	
 	// Private String name;
 	private AID[] activeAgent;
+	@SuppressWarnings("unused")
+	private PrinterUtil printer;
 	// Setup for the PickStation Agent.
 	protected void setup() {
+		this.printer = new PrinterUtil(5);
 		// Initialization Messages
 		System.out.println("--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
@@ -53,7 +55,7 @@ public class PickerAgent extends Agent {
 			try {
 				// Searching process.
 				DFAgentDescription[] result = DFService.search(myAgent, template); 
-				System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
+				System.out.println(myAgent.getLocalName() + ": searching agents.");
 				System.out.println("Found the following active agents:");
 				activeAgent = new AID[result.length];
 				// Found Agents.
@@ -72,7 +74,7 @@ public class PickerAgent extends Agent {
 				myAgent.send(query);
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				System.err.println(myAgent.getLocalName() + ": Error sending the message.");
 			}
 		}
 		
