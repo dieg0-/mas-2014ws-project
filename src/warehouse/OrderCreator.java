@@ -8,8 +8,6 @@ HBRS - Multiagent Systems
 All Rights Reserved.  
 **/
 
-
-
 package warehouse;
 
 import jade.core.AID;
@@ -17,11 +15,14 @@ import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Random;
 
 public class OrderCreator extends Agent {
 	Random randomGenerator = new Random();
 	int randomOrder;
+	
 	
 	protected void setup() {
 		randomOrder = randomGenerator.nextInt(1000);
@@ -36,16 +37,22 @@ public class OrderCreator extends Agent {
 		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
 	
+	
+	
+	
+	
 	private class sendOrder extends OneShotBehaviour {
 		  public void action() {
 			  System.out.println(myAgent.getLocalName()+": Sending order...");
 			  ACLMessage order = new ACLMessage(ACLMessage.INFORM);
 			  order.setOntology("newOrder");
-			  order.setContent(Integer.toString(randomOrder));
+			  order.setContent(Integer.toString(randomOrder));			  
 			  order.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(order);
-			  doDelete();
+			  //doDelete();
 			} 
 		  }
+	
+	
 	
 }

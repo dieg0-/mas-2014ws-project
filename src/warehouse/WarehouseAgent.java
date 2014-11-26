@@ -73,19 +73,19 @@ public class WarehouseAgent extends Agent {
 		}
 	}
 
+	
+	
 	private class CreateOrder extends CyclicBehaviour {
 		public void action() {
 			AgentContainer c = getContainerController();
-			Object[] args = new Object[2];
-			args[0] = "3";
-			args[1] = "Allo there";
+			Object[] args = new Object[1];
+			args[0] = readOrder();
 
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
 					MessageTemplate.MatchOntology("newOrder"));
 
 			ACLMessage msg = myAgent.receive(mt);
-
 			if (msg != null) { // Message received. Process it String order =
 				int orderNum = Integer.parseInt(msg.getContent());
 				System.out.println(myAgent.getLocalName()
@@ -111,13 +111,37 @@ public class WarehouseAgent extends Agent {
 			}
 
 		}
+		
+		HashMap<String,Integer> readOrder(){
+			Random rnd = new Random();
+			HashMap<String,Integer> partList = new HashMap <String,Integer>();
+			partList.put("motor", rnd.nextInt(10));
+			partList.put("base", 1);
+			partList.put("arms", rnd.nextInt(5));
+			partList.put("wires", rnd.nextInt(20));
+			partList.put("esc", rnd.nextInt(10));
+			partList.put("nazam", 1);
+			partList.put("rx", 1);
+			partList.put("gcu", 1);
+			partList.put("pmu", 1);
+			partList.put("iosd", 1);
+			partList.put("cables", rnd.nextInt(20));
+			partList.put("landinggear", 1);
+			partList.put("imu", 1);
+			partList.put("globalmount", 1);
+			partList.put("vtx", 1);
+			partList.put("gimbal", 1);
+			partList.put("cover", 1);
+			partList.put("blade", rnd.nextInt(6));		
+			return partList;
+		}
 	}
 
 	private class availablePicker extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
-					MessageTemplate.MatchOntology("Free Picker"));
+					MessageTemplate.MatchOntology("freepicker"));
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
 				System.out.println(myAgent.getLocalName() + ": Picker "

@@ -12,23 +12,49 @@ All Rights Reserved.
 
 package warehouse;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class OrderAgent extends Agent {
 	
-	Hashtable <String,Integer> partList;
+	HashMap <String,Integer> partList;
 	
 	protected void setup(){
+		Object [] args = getArguments();
+		partList = (HashMap<String,Integer>)args[0];
+		
+		
 		System.out.println("Order "+getLocalName() + ": Started.");
-		partList = new Hashtable<String, Integer>();
+		//partList = new Hashtable<String, Integer>();
+		System.out.println("Order "+getLocalName() + ": Requesting the following parts:");
+		printPartList(partList);
 		
 		//Behaviours
-		addBehaviour(new CompletedOrder());
+			addBehaviour(new requestParts());
+			addBehaviour(new CompletedOrder());
+			
+	}
+	
+	void printPartList(HashMap<String,Integer> mp){
+		Set set = mp.entrySet();
+		Iterator i = set.iterator();
+		System.out.println("___________________");
+		while(i.hasNext()) {
+	         Map.Entry me = (Map.Entry)i.next();
+	         System.out.print(me.getKey() + ": ");
+	         System.out.println(me.getValue());
+	      }
+		System.out.println("___________________");		
 	}
 	
 	// Put agent clean-up operations here
@@ -55,5 +81,21 @@ public class OrderAgent extends Agent {
 			//TODO Check hashtable qty vs parts
 		}
 	}
+	
+	private class requestParts extends OneShotBehaviour {
+		  public void action() {
+			  System.out.println("Order "+getAID().getLocalName()+ ": Requesting parts...");
+			  ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
+			  order.setOntology("requestParts");
+			  //order.setContent(Integer.toString(randomOrder));
+			  try{
+			  order.setContentObject(partList);
+			  }catch(IOException e){}
+			  
+			  order.addReceiver(new AID("Picky",AID.ISLOCALNAME));
+			  send(order);
+			  //doDelete();
+			} 
+		  }
 	
 }
