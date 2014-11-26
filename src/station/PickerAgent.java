@@ -101,7 +101,7 @@ public class PickerAgent extends Agent {
 			  freep.setContent("Yes");
 			  freep.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(freep);
-			  
+			  doDelete();
 			}else{
 				block();
 			}
