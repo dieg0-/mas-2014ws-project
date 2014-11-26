@@ -98,20 +98,19 @@ public class PickerAgent extends Agent {
 	}
 	
  
-	 private class freePicker extends CyclicBehaviour {
+	private class freePicker extends CyclicBehaviour {
 		public void action() {
 			if (!busy){
 				System.out.println(myAgent.getLocalName()+": I'm available.");
-			ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
-			freep.setOntology("freepicker");
-			  freep.setContent("Yes");
-			  freep.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
-			  send(freep);
-			  doDelete();
-			}else{
+				ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
+				freep.setOntology("freepicker");
+				freep.setContent("Yes");
+				freep.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
+				send(freep);
+				doDelete();
+			} else {
 				block();
 			}
-			
 		}
 	}
 	 

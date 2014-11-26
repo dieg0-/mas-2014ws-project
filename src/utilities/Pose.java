@@ -45,7 +45,7 @@ public class Pose {
 		double randomY = scaledY; // + minimum (0)
 		setY(randomY);
 		
-		System.out.println("Shelf created at: (" + this.x + ", " + this.y + ").");
+		System.out.println("Agent created at: (" + this.x + ", " + this.y + ").");
 	}
 	
 	public double distance(Pose other){

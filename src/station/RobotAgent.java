@@ -10,8 +10,6 @@ All Rights Reserved.
 
 package station;
 
-import java.util.Random;
-
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
@@ -20,12 +18,13 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import utilities.Pose;
 
 @SuppressWarnings("serial")
 public class RobotAgent extends Agent {
 	// Attributes.
 	private String id;
-	private double[] position;
+	private Pose position;
 	private boolean busy;
 	protected DFAgentDescription dfd;
 	
@@ -33,9 +32,7 @@ public class RobotAgent extends Agent {
 		System.out.println("\n--ROBOT-------------");
 		System.out.println("Agent: " + getLocalName());
 		
-		this.position = new double[2];
-		this.position[0] = (new Random()).nextDouble();
-		this.position[1] = (new Random()).nextDouble();
+		this.position.randomInit();
 		this.busy = false;
 		
 		this.dfd = new DFAgentDescription();
@@ -74,7 +71,7 @@ public class RobotAgent extends Agent {
 		}
 		
 		public void action() {
-			String current_pos = String.format("(%.2d, %.2d)", position[0], position[1]);
+			String current_pos = String.format("(%.2d, %.2d)", position.getX(), position.getY());
 			System.out.println("  > Location: " + current_pos + ").\n");
 			block(250);
 		}
