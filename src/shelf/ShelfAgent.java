@@ -12,6 +12,8 @@ package shelf;
 
 import java.util.HashMap;
 
+import utilities.Pose;
+
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -29,11 +31,16 @@ public class ShelfAgent extends Agent {
 	 */
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, Integer> inventory;
+	//private boolean busy;
+	private Pose position;
 	
 	protected DFAgentDescription dfd;
 	
 	protected void setup(){
+		position = new Pose();
+		position.randomInit();
 		inventory = new HashMap<String, Integer>();
+		//this.busy = false;
 		// Testing purposes.. This shouldn't be predefined for all agents.
 		inventory.put("screw_driver", 16);
 		inventory.put("screw_x", 12);
@@ -42,10 +49,16 @@ public class ShelfAgent extends Agent {
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
 		
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType("offer-pieces");
-		sd.setName("JADE-shelf-agents");
-		this.dfd.addServices(sd);
+		ServiceDescription sdOffer = new ServiceDescription();
+		sdOffer.setType("offer-pieces");
+		sdOffer.setName("Offer-Service");
+		this.dfd.addServices(sdOffer);
+		
+		ServiceDescription sdLocate = new ServiceDescription();
+		sdLocate.setType("send-location");
+		sdLocate.setName("Locate-Service");
+		this.dfd.addServices(sdLocate);
+		
 		try {
 			DFService.register(this, dfd);
 		}
