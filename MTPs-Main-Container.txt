@@ -1,1 +1,1 @@
-http://172.29.14.77:7778/acc
+http://surfer-172-29-14-77-hotspot.internet-for-guests.com:7778/acc

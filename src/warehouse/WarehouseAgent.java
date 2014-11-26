@@ -141,7 +141,7 @@ public class WarehouseAgent extends Agent {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
-					MessageTemplate.MatchOntology("Free Picker"));
+					MessageTemplate.MatchOntology("freepicker"));
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
 				System.out.println(myAgent.getLocalName() + ": Picker "
