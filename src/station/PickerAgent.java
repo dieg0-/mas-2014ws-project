@@ -6,7 +6,7 @@ Project: KivaSolutions
 @since 26.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
-**/
+ **/
 
 package station;
 
@@ -19,38 +19,40 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import utilities.PrinterUtil;
 
 @SuppressWarnings("serial")
 public class PickerAgent extends Agent {
-	
+
 	// Private String name;
 	private AID[] activeAgent;
 	@SuppressWarnings("unused")
 	private PrinterUtil printer;
-	
+
 	boolean busy;
+
 	// Setup for the PickStation Agent.
 	protected void setup() {
 		this.printer = new PrinterUtil(5);
-		busy=false;
+		busy = false;
 		// Initialization Messages
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
 		System.out.println("--------------------------\n");
 		// Behavior for searching robots subscribed to the yellow pages.
-		this.addBehaviour(new getRobotAgents(this, 15000) );
+		this.addBehaviour(new getRobotAgents(this, 15000));
 		this.addBehaviour(new freePicker());
-		
+
 	}
-	
+
 	private class getRobotAgents extends TickerBehaviour {
 
 		public getRobotAgents(Agent a, long period) {
 			super(a, period);
 		}
-		
+
 		protected void onTick() {
 			// Update the list of robot agents.
 			DFAgentDescription template = new DFAgentDescription();
@@ -84,18 +86,19 @@ public class PickerAgent extends Agent {
 				}
 				query.setContent("fetch");
 				myAgent.send(query);
-			}
-			catch (FIPAException fe) {
-				System.err.println(myAgent.getLocalName() + ": Error sending the message.");
+			} catch (FIPAException fe) {
+				System.err.println(myAgent.getLocalName()
+						+ ": Error sending the message.");
 			}
 		}
-		
+
 	}
-	
+
 	// Killing the agent.
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
+<<<<<<< HEAD
 	
  
 	private class freePicker extends CyclicBehaviour {
@@ -111,8 +114,34 @@ public class PickerAgent extends Agent {
 			} else {
 				block();
 			}
+=======
+
+	private class freePicker extends CyclicBehaviour {
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+					MessageTemplate.MatchOntology("requestParts"));
+			ACLMessage msg = myAgent.receive(mt);
+
+			if (!busy) {
+				// System.out.println(myAgent.getLocalName()+": I'm available.");
+				ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
+				freep.setOntology("freepicker");
+				freep.setContent("Yes");
+				freep.addReceiver(new AID("WarehouseManager", AID.ISLOCALNAME));
+				send(freep);
+				busy = true;
+				// doDelete();
+			} else if (msg != null) {
+				System.out.println(myAgent.getLocalName()
+						+ ": Received order. Status: busy.");
+				busy = true;
+			} else {
+				block();
+			}
+
+>>>>>>> 45fcce09a50f581d6d4a4302a0eb1aeeababe553
 		}
 	}
-	 
 
 }

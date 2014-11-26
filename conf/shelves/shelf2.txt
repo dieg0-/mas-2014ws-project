@@ -1,0 +1,3 @@
+arms,100
+base,100
+landinggear,100

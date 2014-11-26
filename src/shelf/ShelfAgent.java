@@ -10,6 +10,10 @@ All Rights Reserved.
 
 package shelf;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 
 import utilities.Pose;
@@ -40,12 +44,14 @@ public class ShelfAgent extends Agent {
 		position = new Pose();
 		position.randomInit();
 		inventory = new HashMap<String, Integer>();
+		initInventory();
 		//this.busy = false;
 		// Testing purposes.. This shouldn't be predefined for all agents.
-		inventory.put("screw_driver", 16);
-		inventory.put("screw_x", 12);
-		inventory.put("mesh_h", 18);
-		
+		/**
+		inventory.put("vtx", 16);
+		inventory.put("wires", 12);
+		inventory.put("motor", 18);
+		**/
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
 		
@@ -92,6 +98,31 @@ public class ShelfAgent extends Agent {
 
 			}
 		} );
+	}
+	
+	public void initInventory(){
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new FileReader("conf/shelves/shelf1.txt"));
+			String line = "";
+
+			while ((line = in.readLine()) != null) {
+			    String parts[] = line.split(",");
+			    inventory.put(parts[0], Integer.parseInt(parts[1]));
+			}
+	        in.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(inventory.toString());
+        
 	}
 	
 	/**
