@@ -28,11 +28,11 @@ import jade.lang.acl.ACLMessage;
 public class OrderAgent extends Agent {
 	
 	HashMap <String,Integer> partList;
-	
+	boolean completed;
 	protected void setup(){
 		Object [] args = getArguments();
 		partList = (HashMap<String,Integer>)args[0];
-		
+		completed = false;
 		
 		System.out.println("Order "+getLocalName() + ": Started.");
 		//partList = new Hashtable<String, Integer>();
@@ -66,6 +66,7 @@ public class OrderAgent extends Agent {
 
 	private class CompletedOrder extends CyclicBehaviour{
 		public void action(){
+			if (completed == true){
 			System.out.println("Order "+myAgent.getLocalName()+": Order completed...");
 			  ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 			  compMsg.setOntology("Completed Order");
@@ -73,6 +74,10 @@ public class OrderAgent extends Agent {
 			  compMsg.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(compMsg);
 			  doDelete();
+			}else{
+				block();
+			}
+			
 		}
 	}
 	
