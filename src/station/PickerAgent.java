@@ -2,8 +2,8 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicol�s Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 2.1.n.
-@since 17.11.2014 
+@version: 3.0.n.
+@since 26.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
 **/
@@ -31,10 +31,10 @@ public class PickerAgent extends Agent {
 	protected void setup() {
 		this.printer = new PrinterUtil(5);
 		// Initialization Messages
-		System.out.println("--PICKER-------------");
+		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
-		System.out.println("--------------------------\n\n");
+		System.out.println("--------------------------\n");
 		// Behavior for searching robots subscribed to the yellow pages.
 		this.addBehaviour(new getRobotAgents(this, 15000) );
 	}
@@ -52,17 +52,23 @@ public class PickerAgent extends Agent {
 			// Search for agents who offer a fetch service.
 			sd.setType("fetch");
 			template.addServices(sd);
+			System.out.println("------------------------------------");
 			try {
 				// Searching process.
 				DFAgentDescription[] result = DFService.search(myAgent, template); 
-				System.out.println(myAgent.getLocalName() + ": searching agents.");
+				System.out.println(myAgent.getLocalName() + " [searching agents].");
 				System.out.println("Found the following active agents:");
 				activeAgent = new AID[result.length];
 				// Found Agents.
-				for (int i = 0; i < result.length; ++i) {
-					// Listing the agents ID's found.
-					activeAgent[i] = result[i].getName();
-					System.out.println(activeAgent[i].getName());
+				if (result.length == 0) {
+					System.out.println("  > No free agents.");
+				}
+				else {
+					for (int i = 0; i < result.length; ++i) {
+						// Listing the agents ID's found.
+						activeAgent[i] = result[i].getName();
+						System.out.println("  > " + activeAgent[i].getName());
+					}
 				}
 				System.out.println("------------------------------------\n");
 				/* Sending Messages to the found agents. */

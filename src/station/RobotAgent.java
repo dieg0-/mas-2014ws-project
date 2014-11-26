@@ -2,8 +2,8 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 2.1.n.
-@since 17.11.2014 
+@version: 3.0.n.
+@since 26.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
 **/
@@ -30,7 +30,7 @@ public class RobotAgent extends Agent {
 	protected DFAgentDescription dfd;
 	
 	protected void setup() {
-		System.out.println("--ROBOT-------------");
+		System.out.println("\n--ROBOT-------------");
 		System.out.println("Agent: " + getLocalName());
 		
 		this.position = new double[2];
@@ -50,8 +50,7 @@ public class RobotAgent extends Agent {
 		if (args != null && args.length > 0) {
 			this.id = (String) args[0];
 			System.out.println("ID: " + this.id);
-			System.out.println("Waiting...");
-			System.out.println("--------------------------\n\n");
+			System.out.println("  > Waiting.");
 			this.addBehaviour(new OfferRequestsServer());
 			try {
 				DFService.register(this, dfd);
@@ -61,9 +60,10 @@ public class RobotAgent extends Agent {
 			}
 		}
 		else {
-			System.err.println("No ID given. Agent won't be register.");
+			System.err.println("  > No ID given. Agent won't be register.");
 			doDelete();
 		}
+		System.out.println("--------------------\n");
 	}
 	
 	
@@ -74,7 +74,8 @@ public class RobotAgent extends Agent {
 		}
 		
 		public void action() {
-			System.out.println("Location: (" + position[0] + "," + position[1] + ").\n");
+			String current_pos = String.format("(%.2d, %.2d)", position[0], position[1]);
+			System.out.println("  > Location: " + current_pos + ").\n");
 			block(250);
 		}
 		
@@ -128,11 +129,14 @@ public class RobotAgent extends Agent {
 		public void action() {
 			ACLMessage msg = myAgent.receive();
 			if (msg != null) {
+				System.out.println("--------------------\n");
 				String msg_content = msg.getContent();
 				System.out.print(myAgent.getLocalName() + ": ");
-				System.out.println("message-> " + msg_content);
+				System.out.println("[message recieved].");
+				System.out.println("  > Message: " + msg_content);
+				
 				if (msg_content.matches("status")) {
-					System.out.println("Busy: " + busy);
+					System.out.println("  > Busy: " + busy);
 				}
 				else if (msg_content.matches("localization")) {
 					myAgent.addBehaviour(new LocalizationBehaviour(myAgent));
@@ -141,7 +145,8 @@ public class RobotAgent extends Agent {
 					myAgent.addBehaviour(new FetchBehaviour(myAgent, 20));
 				}
 				else {
-					System.out.println(myAgent.getLocalName() + " out.");
+					System.out.println("  > No message recognized.");
+					System.out.println("--------------------\n");
 				}
 			}
 			block();
@@ -150,7 +155,7 @@ public class RobotAgent extends Agent {
 	// End of inner class OfferRequests Server
 	
 	protected void takeDown() {
-		System.out.println("Agent out of service.");
+		System.out.println(this.getLocalName() + " out of service.");
 		try {
 			DFService.deregister(this);
 		}
