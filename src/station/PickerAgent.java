@@ -12,6 +12,7 @@ package station;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -27,9 +28,12 @@ public class PickerAgent extends Agent {
 	private AID[] activeAgent;
 	@SuppressWarnings("unused")
 	private PrinterUtil printer;
+	
+	boolean busy;
 	// Setup for the PickStation Agent.
 	protected void setup() {
 		this.printer = new PrinterUtil(5);
+		busy=false;
 		// Initialization Messages
 		System.out.println("--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
@@ -37,6 +41,8 @@ public class PickerAgent extends Agent {
 		System.out.println("--------------------------\n\n");
 		// Behavior for searching robots subscribed to the yellow pages.
 		this.addBehaviour(new getRobotAgents(this, 15000) );
+		this.addBehaviour(new freePicker());
+		
 	}
 	
 	private class getRobotAgents extends TickerBehaviour {
@@ -85,21 +91,23 @@ public class PickerAgent extends Agent {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
 	
-	/**
-	 * Reservado para Argen
-	 * 
-	 * 
+ 
 	 private class freePicker extends CyclicBehaviour {
-		public void action() {			
-			ACLMessage freed = new ACLMessage(ACLMessage.CONFIRM);
-			finish.setOntology("Free Picker");
-			  finish.setContent("Yes");
-			  finish.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
-			  send(finish);
-			  doDelete();
+		public void action() {
+			if (!busy){
+				System.out.println(myAgent.getLocalName()+": I'm available.");
+			ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
+			freep.setOntology("freepicker");
+			  freep.setContent("Yes");
+			  freep.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
+			  send(freep);
+			  
+			}else{
+				block();
+			}
 			
 		}
 	}
-	 */
+	 
 
 }
