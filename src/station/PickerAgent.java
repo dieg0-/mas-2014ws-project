@@ -6,7 +6,7 @@ Project: KivaSolutions
 @since 17.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
-**/
+ **/
 
 package station;
 
@@ -19,38 +19,40 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import utilities.PrinterUtil;
 
 @SuppressWarnings("serial")
 public class PickerAgent extends Agent {
-	
+
 	// Private String name;
 	private AID[] activeAgent;
 	@SuppressWarnings("unused")
 	private PrinterUtil printer;
-	
+
 	boolean busy;
+
 	// Setup for the PickStation Agent.
 	protected void setup() {
 		this.printer = new PrinterUtil(5);
-		busy=false;
+		busy = false;
 		// Initialization Messages
 		System.out.println("--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
 		System.out.println("--------------------------\n\n");
 		// Behavior for searching robots subscribed to the yellow pages.
-		this.addBehaviour(new getRobotAgents(this, 15000) );
+		this.addBehaviour(new getRobotAgents(this, 15000));
 		this.addBehaviour(new freePicker());
-		
+
 	}
-	
+
 	private class getRobotAgents extends TickerBehaviour {
 
 		public getRobotAgents(Agent a, long period) {
 			super(a, period);
 		}
-		
+
 		protected void onTick() {
 			// Update the list of robot agents.
 			DFAgentDescription template = new DFAgentDescription();
@@ -60,8 +62,10 @@ public class PickerAgent extends Agent {
 			template.addServices(sd);
 			try {
 				// Searching process.
-				DFAgentDescription[] result = DFService.search(myAgent, template); 
-				System.out.println(myAgent.getLocalName() + ": searching agents.");
+				DFAgentDescription[] result = DFService.search(myAgent,
+						template);
+				System.out.println(myAgent.getLocalName()
+						+ ": searching agents.");
 				System.out.println("Found the following active agents:");
 				activeAgent = new AID[result.length];
 				// Found Agents.
@@ -78,36 +82,44 @@ public class PickerAgent extends Agent {
 				}
 				query.setContent("fetch");
 				myAgent.send(query);
-			}
-			catch (FIPAException fe) {
-				System.err.println(myAgent.getLocalName() + ": Error sending the message.");
+			} catch (FIPAException fe) {
+				System.err.println(myAgent.getLocalName()
+						+ ": Error sending the message.");
 			}
 		}
-		
+
 	}
-	
+
 	// Killing the agent.
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
-	
- 
-	 private class freePicker extends CyclicBehaviour {
+
+	private class freePicker extends CyclicBehaviour {
 		public void action() {
-			if (!busy){
-				System.out.println(myAgent.getLocalName()+": I'm available.");
-			ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
-			freep.setOntology("freepicker");
-			  freep.setContent("Yes");
-			  freep.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
-			  send(freep);
-			  doDelete();
-			}else{
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+					MessageTemplate.MatchOntology("requestParts"));
+			ACLMessage msg = myAgent.receive(mt);
+
+			if (!busy) {
+				// System.out.println(myAgent.getLocalName()+": I'm available.");
+				ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
+				freep.setOntology("freepicker");
+				freep.setContent("Yes");
+				freep.addReceiver(new AID("WarehouseManager", AID.ISLOCALNAME));
+				send(freep);
+				busy = true;
+				// doDelete();
+			} else if (msg != null) {
+				System.out.println(myAgent.getLocalName()
+						+ ": Received order. Status: busy.");
+				busy = true;
+			} else {
 				block();
 			}
-			
+
 		}
 	}
-	 
 
 }
