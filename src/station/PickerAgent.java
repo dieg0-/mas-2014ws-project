@@ -15,6 +15,7 @@ import java.util.Iterator;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -47,7 +48,8 @@ public class PickerAgent extends Agent {
 		System.out.println("---------------------\n");
 		// Behavior for searching robots subscribed to the yellow pages.
 		this.addBehaviour(new getRobotAgents(this, 15000));
-		this.addBehaviour(new freePicker());
+		this.addBehaviour(new UpdatePickerStatus());
+		this.addBehaviour(new GetNewOrder());
 
 	}
 
@@ -123,31 +125,71 @@ public class PickerAgent extends Agent {
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
-	
-	private class freePicker extends CyclicBehaviour {
+
+	private class UpdatePickerStatus extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchOntology("requestParts"));
 			ACLMessage msg = myAgent.receive(mt);
-
-			if (!busy) {
-				// System.out.println(myAgent.getLocalName()+": I'm available.");
-				ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
-				freep.setOntology("freepicker");
-				freep.setContent("Yes");
-				freep.addReceiver(new AID("WarehouseManager", AID.ISLOCALNAME));
-				send(freep);
-				busy = true;
-				// doDelete();
-			} else if (msg != null) {
+			if(msg != null){
 				System.out.println(myAgent.getLocalName()
 						+ ": Received order. Status: busy.");
 				busy = true;
-			} else {
-				block();
+				try {
+				Thread.sleep(10000);
+				}catch(Exception e){
+					
+				}
+			}else{
+			block();
 			}
 		}
+
+	}
+
+	private class GetNewOrder extends OneShotBehaviour {
+
+		public void action() {
+			// Update the list of robot agents.
+			DFAgentDescription template = new DFAgentDescription();
+			ServiceDescription sd = new ServiceDescription();
+			// Search for agents who offer a fetch service.
+			sd.setType("order");
+			template.addServices(sd);
+			System.out.println("------------------------------------");
+			try {
+				// Searching process.
+				DFAgentDescription[] orders = DFService.search(myAgent,
+						template);
+				System.out.println(myAgent.getLocalName()
+						+ " [searching orders].");
+				System.out.println("Found the following orders:");
+				activeAgent = new AID[orders.length];
+				// Found Agents.
+				if (orders.length == 0) {
+					System.out.println("  > No available orders.");
+				} else {
+					for (int i = 0; i < orders.length; ++i) {
+						// Listing the agents ID's found.
+						activeAgent[i] = orders[i].getName();
+						System.out.println("  > " + activeAgent[i].getName());
+					}
+				}
+				System.out.println("------------------------------------\n");
+				//Requesting order assignment
+				ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
+				assign.addReceiver(orders[0].getName());
+				assign.setOntology("assignment");
+				myAgent.send(assign);
+				System.out.println(getLocalName()+": Requested "+orders[0].getName().getLocalName()+".");
+				
+			} catch (FIPAException fe) {
+				System.err.println(myAgent.getLocalName()
+						+ ": Error sending the message.");
+			}
+		}
+
 	}
 
 }

@@ -49,7 +49,7 @@ public class OrderCreator extends Agent {
 			  order.setContent(Integer.toString(randomOrder));			  
 			  order.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(order);
-			  //doDelete();
+			  doDelete();
 			} 
 		  }
 	
