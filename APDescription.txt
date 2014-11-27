@@ -1,1 +1,1 @@
-( ap-description  :name "10.20.120.175:1099/JADE" :ap-services (set ( ap-service  :name fipa.mts.mtp.http.std :type fipa.mts.mtp.http.std :addresses (sequence http://diego-3570R-370R-470R-450R-510R:7778/acc))))
+( ap-description  :name "172.29.14.77:1099/JADE" :ap-services (set ( ap-service  :name fipa.mts.mtp.http.std :type fipa.mts.mtp.http.std :addresses (sequence http://surfer-172-29-14-77-hotspot.internet-for-guests.com:7778/acc))))
