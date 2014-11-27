@@ -43,6 +43,10 @@ public class RobotAgent extends Agent {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("fetch");
 		sd.setName("Fetch-Service");
+		Property p = new Property();
+		p.setName("position");
+		p.setValue(position.parsePose());
+		sd.addProperties(p);
 		this.dfd.addServices(sd);
 		
 		Object[] args = this.getArguments();
@@ -101,6 +105,7 @@ public class RobotAgent extends Agent {
 			System.out.println("  > Target at: " + this.target);
 			System.out.println("--------------------------\n");
 			try {
+				
 				DFService.deregister(myAgent);
 				Thread.sleep(this.timeout*1000);
 			}
@@ -118,6 +123,7 @@ public class RobotAgent extends Agent {
 			System.out.println(myAgent.getLocalName() + ": [report].");
 			System.out.println("  > Task accomplished.");
 			System.out.println("------------------------------------\n");
+			/*
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType("fetch");
 			sd.setName("Fetch-Service");
@@ -126,6 +132,7 @@ public class RobotAgent extends Agent {
 			p.setValue(position.parsePose());
 			sd.addProperties(p);
 			dfd.addServices(sd);
+			*/
 			try {
 				DFService.register(myAgent, dfd);
 			}
