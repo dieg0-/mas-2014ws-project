@@ -34,19 +34,18 @@ public class WarehouseAgent extends Agent {
 	private Hashtable<Integer, String> completedOrders;
 	private Hashtable<Integer, String> processingOrders;
 
-	private AID[] pickers;
-
 	/* Agent initialization */
 	protected void setup() {
-		AgentContainer c = getContainerController();
 		System.out.println(getLocalName() + ": Started.");
 		orderListStatus = new Hashtable<Integer, String>();
 
 		// Get the list of orders as a start-up argument
+		@SuppressWarnings("unused")
 		Object[] args = getArguments();
 
 		// Add behaviours
 		addBehaviour(new CreateOrder());
+		addBehaviour(new availablePicker());
 	}
 
 	// Put agent clean-up operations here
@@ -55,6 +54,7 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
 
+	@SuppressWarnings("serial")
 	public class updateOrderLists extends CyclicBehaviour {
 
 		public void action() {
@@ -75,10 +75,11 @@ public class WarehouseAgent extends Agent {
 
 	
 	
+	@SuppressWarnings("serial")
 	private class CreateOrder extends CyclicBehaviour {
 		public void action() {
 			AgentContainer c = getContainerController();
-			Object[] args = new Object[1];
+			Object[] args = new Object[2];
 			args[0] = readOrder();
 
 			MessageTemplate mt = MessageTemplate.and(
@@ -88,6 +89,7 @@ public class WarehouseAgent extends Agent {
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) { // Message received. Process it String order =
 				int orderNum = Integer.parseInt(msg.getContent());
+				args[1]=orderNum;
 				System.out.println(myAgent.getLocalName()
 						+ ": Received order...");
 
@@ -137,6 +139,7 @@ public class WarehouseAgent extends Agent {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private class availablePicker extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(

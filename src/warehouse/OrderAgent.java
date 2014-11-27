@@ -14,43 +14,68 @@ package warehouse;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
+@SuppressWarnings("serial")
 public class OrderAgent extends Agent {
 	
 	HashMap <String,Integer> partList;
 	boolean completed;
+	int orderNum;
+	protected DFAgentDescription dfd;
+	
+	@SuppressWarnings("unchecked")
 	protected void setup(){
 		Object [] args = getArguments();
 		partList = (HashMap<String,Integer>)args[0];
+		orderNum = (Integer) args[1];
 		completed = false;
+		
+		this.dfd = new DFAgentDescription();
+        this.dfd.setName(getAID()); 
+        
+        ServiceDescription sd = new ServiceDescription();
+		sd.setType("order");
+		sd.setName("order-agents");
+		this.dfd.addServices(sd);
+		
+		try {  
+            DFService.register(this,dfd); 
+            System.out.println("Subscribed");
+        }catch (FIPAException fe) { 
+        	fe.printStackTrace(); 
+        }
 		
 		System.out.println("Order "+getLocalName() + ": Started.");
 		//partList = new Hashtable<String, Integer>();
-		System.out.println("Order "+getLocalName() + ": Requesting the following parts:");
-		printPartList(partList);
+		//System.out.println("Order "+getLocalName() + ": Requesting the following parts:");
+		//printPartList(partList);
 		
 		//Behaviours
 			addBehaviour(new requestParts());
 			addBehaviour(new CompletedOrder());
+			addBehaviour(new MissingPieces());
 			
 	}
 	
 	void printPartList(HashMap<String,Integer> mp){
-		Set set = mp.entrySet();
-		Iterator i = set.iterator();
+		Set<Entry<String, Integer>> set = mp.entrySet();
+		Iterator<Entry<String, Integer>> i = set.iterator();
 		System.out.println("___________________");
 		while(i.hasNext()) {
-	         Map.Entry me = (Map.Entry)i.next();
+	         Entry<String, Integer> me = i.next();
 	         System.out.print(me.getKey() + ": ");
 	         System.out.println(me.getValue());
 	      }
@@ -59,7 +84,10 @@ public class OrderAgent extends Agent {
 	
 	// Put agent clean-up operations here
 	protected void takeDown() {
-		// Printout a dismissal message
+		// Printout a dismissal message		
+		try { 
+			DFService.deregister(this); 
+			}catch (Exception e) {}
 		System.out.println("Order "+getAID().getLocalName()+ ": Order finished.");
 		doDelete();
 	}
@@ -84,6 +112,7 @@ public class OrderAgent extends Agent {
 	private class MissingPieces extends CyclicBehaviour{
 		public void action(){
 			//TODO Check hashtable qty vs parts
+			block();
 		}
 	}
 	
