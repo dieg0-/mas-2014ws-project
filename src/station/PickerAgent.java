@@ -10,6 +10,8 @@ All Rights Reserved.
 
 package station;
 
+import java.util.Iterator;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -19,9 +21,11 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAAgentManagement.Property;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import utilities.PrinterUtil;
+import utilities.Pose;
 
 @SuppressWarnings("serial")
 public class PickerAgent extends Agent {
@@ -41,7 +45,7 @@ public class PickerAgent extends Agent {
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
-		System.out.println("--------------------------\n");
+		System.out.println("---------------------\n");
 		// Behavior for searching robots subscribed to the yellow pages.
 		this.addBehaviour(new getRobotAgents(this, 15000));
 		this.addBehaviour(new UpdatePickerStatus());
@@ -65,30 +69,50 @@ public class PickerAgent extends Agent {
 			System.out.println("------------------------------------");
 			try {
 				// Searching process.
-				DFAgentDescription[] result = DFService.search(myAgent,
-						template);
-				System.out.println(myAgent.getLocalName()
-						+ " [searching agents].");
+				DFAgentDescription[] result = DFService.search(myAgent, template); 
+				System.out.println(myAgent.getLocalName() + ": [searching agents].");
 				System.out.println("Found the following active agents:");
 				activeAgent = new AID[result.length];
 				// Found Agents.
 				if (result.length == 0) {
 					System.out.println("  > No free agents.");
-				} else {
+					System.out.println("------------------------------------\n");
+				}
+				else {
 					for (int i = 0; i < result.length; ++i) {
 						// Listing the agents ID's found.
 						activeAgent[i] = result[i].getName();
 						System.out.println("  > " + activeAgent[i].getName());
 					}
+					System.out.println("------------------------------------\n");
+					/* Sending Messages to the found agents. */
+					ACLMessage query = new ACLMessage(ACLMessage.INFORM);
+					for (int i = 0; i < result.length; ++i) {
+						query.addReceiver(result[i].getName());
+						ServiceDescription temp_serv;
+						@SuppressWarnings("rawtypes")
+						Iterator s = result[i].getAllServices();
+						while(s.hasNext()) {
+							temp_serv = (ServiceDescription)s.next();
+							System.out.println(temp_serv.getName());
+							@SuppressWarnings("rawtypes")
+							Iterator p = temp_serv.getAllProperties();
+							while (p.hasNext()) {
+								Property temp_p = (Property)p.next();
+								System.out.println(temp_p.getValue());
+								System.out.println(temp_p.getName());
+							}
+							
+							
+						}
+					}
+					Pose virtualShelf = new Pose();
+					virtualShelf.randomInit(false);
+					query.setOntology("fetch");
+					query.setContent(virtualShelf.parsePose());
+					myAgent.send(query);
 				}
-				System.out.println("------------------------------------\n");
-				/* Sending Messages to the found agents. */
-				ACLMessage query = new ACLMessage(ACLMessage.QUERY_IF);
-				for (int i = 0; i < result.length; ++i) {
-					query.addReceiver(result[i].getName());
-				}
-				query.setContent("fetch");
-				myAgent.send(query);
+				
 			} catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName()
 						+ ": Error sending the message.");
@@ -136,29 +160,29 @@ public class PickerAgent extends Agent {
 			System.out.println("------------------------------------");
 			try {
 				// Searching process.
-				DFAgentDescription[] result = DFService.search(myAgent,
+				DFAgentDescription[] orders = DFService.search(myAgent,
 						template);
 				System.out.println(myAgent.getLocalName()
 						+ " [searching orders].");
 				System.out.println("Found the following orders:");
-				activeAgent = new AID[result.length];
+				activeAgent = new AID[orders.length];
 				// Found Agents.
-				if (result.length == 0) {
+				if (orders.length == 0) {
 					System.out.println("  > No available orders.");
 				} else {
-					for (int i = 0; i < result.length; ++i) {
+					for (int i = 0; i < orders.length; ++i) {
 						// Listing the agents ID's found.
-						activeAgent[i] = result[i].getName();
+						activeAgent[i] = orders[i].getName();
 						System.out.println("  > " + activeAgent[i].getName());
 					}
 				}
 				System.out.println("------------------------------------\n");
 				//Requesting order assignment
 				ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
-				assign.addReceiver(result[0].getName());
+				assign.addReceiver(orders[0].getName());
 				assign.setOntology("assignment");
 				myAgent.send(assign);
-				System.out.println(getLocalName()+": Requested "+result[0].getName().getLocalName()+".");
+				System.out.println(getLocalName()+": Requested "+orders[0].getName().getLocalName()+".");
 				
 			} catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName()

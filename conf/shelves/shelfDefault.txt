@@ -1,0 +1,10 @@
+esc,100
+nazam,100
+rx,100
+gcu,100
+pmu,100
+iosd,100
+cables,100
+landinggear,100
+imu,100
+globalmount,100
