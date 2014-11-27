@@ -10,6 +10,8 @@ All Rights Reserved.
 
 package station;
 
+import java.util.Iterator;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -18,9 +20,11 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAAgentManagement.Property;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import utilities.PrinterUtil;
+import utilities.Pose;
 
 @SuppressWarnings("serial")
 public class PickerAgent extends Agent {
@@ -40,7 +44,7 @@ public class PickerAgent extends Agent {
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
-		System.out.println("--------------------------\n");
+		System.out.println("---------------------\n");
 		// Behavior for searching robots subscribed to the yellow pages.
 		this.addBehaviour(new getRobotAgents(this, 15000));
 		this.addBehaviour(new freePicker());
@@ -64,12 +68,13 @@ public class PickerAgent extends Agent {
 			try {
 				// Searching process.
 				DFAgentDescription[] result = DFService.search(myAgent, template); 
-				System.out.println(myAgent.getLocalName() + " [searching agents].");
+				System.out.println(myAgent.getLocalName() + ": [searching agents].");
 				System.out.println("Found the following active agents:");
 				activeAgent = new AID[result.length];
 				// Found Agents.
 				if (result.length == 0) {
 					System.out.println("  > No free agents.");
+					System.out.println("------------------------------------\n");
 				}
 				else {
 					for (int i = 0; i < result.length; ++i) {
@@ -77,15 +82,35 @@ public class PickerAgent extends Agent {
 						activeAgent[i] = result[i].getName();
 						System.out.println("  > " + activeAgent[i].getName());
 					}
+					System.out.println("------------------------------------\n");
+					/* Sending Messages to the found agents. */
+					ACLMessage query = new ACLMessage(ACLMessage.INFORM);
+					for (int i = 0; i < result.length; ++i) {
+						query.addReceiver(result[i].getName());
+						ServiceDescription temp_serv;
+						@SuppressWarnings("rawtypes")
+						Iterator s = result[i].getAllServices();
+						while(s.hasNext()) {
+							temp_serv = (ServiceDescription)s.next();
+							System.out.println(temp_serv.getName());
+							@SuppressWarnings("rawtypes")
+							Iterator p = temp_serv.getAllProperties();
+							while (p.hasNext()) {
+								Property temp_p = (Property)p.next();
+								System.out.println(temp_p.getValue());
+								System.out.println(temp_p.getName());
+							}
+							
+							
+						}
+					}
+					Pose virtualShelf = new Pose();
+					virtualShelf.randomInit(false);
+					query.setOntology("fetch");
+					query.setContent(virtualShelf.parsePose());
+					myAgent.send(query);
 				}
-				System.out.println("------------------------------------\n");
-				/* Sending Messages to the found agents. */
-				ACLMessage query = new ACLMessage(ACLMessage.QUERY_IF);
-				for (int i = 0; i < result.length; ++i) {
-					query.addReceiver(result[i].getName());
-				}
-				query.setContent("fetch");
-				myAgent.send(query);
+				
 			} catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName()
 						+ ": Error sending the message.");
@@ -98,24 +123,7 @@ public class PickerAgent extends Agent {
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
-<<<<<<< HEAD
 	
- 
-	private class freePicker extends CyclicBehaviour {
-		public void action() {
-			if (!busy){
-				System.out.println(myAgent.getLocalName()+": I'm available.");
-				ACLMessage freep = new ACLMessage(ACLMessage.CONFIRM);
-				freep.setOntology("freepicker");
-				freep.setContent("Yes");
-				freep.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
-				send(freep);
-				doDelete();
-			} else {
-				block();
-			}
-=======
-
 	private class freePicker extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
@@ -139,8 +147,6 @@ public class PickerAgent extends Agent {
 			} else {
 				block();
 			}
-
->>>>>>> 45fcce09a50f581d6d4a4302a0eb1aeeababe553
 		}
 	}
 
