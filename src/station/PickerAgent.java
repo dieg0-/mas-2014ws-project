@@ -44,7 +44,7 @@ public class PickerAgent extends Agent {
 		System.out.println("--------------------------\n");
 		// Behavior for searching robots subscribed to the yellow pages.
 		this.addBehaviour(new getRobotAgents(this, 15000));
-		this.addBehaviour(new PickerStatus());
+		this.addBehaviour(new UpdatePickerStatus());
 		this.addBehaviour(new GetNewOrder());
 
 	}
@@ -102,9 +102,24 @@ public class PickerAgent extends Agent {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
 
-	private class PickerStatus extends CyclicBehaviour {
+	private class UpdatePickerStatus extends CyclicBehaviour {
 		public void action() {
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+					MessageTemplate.MatchOntology("requestParts"));
+			ACLMessage msg = myAgent.receive(mt);
+			if(msg != null){
+				System.out.println(myAgent.getLocalName()
+						+ ": Received order. Status: busy.");
+				busy = true;
+				try {
+				Thread.sleep(10000);
+				}catch(Exception e){
+					
+				}
+			}else{
 			block();
+			}
 		}
 
 	}
@@ -138,6 +153,13 @@ public class PickerAgent extends Agent {
 					}
 				}
 				System.out.println("------------------------------------\n");
+				//Requesting order assignment
+				ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
+				assign.addReceiver(result[0].getName());
+				assign.setOntology("assignment");
+				myAgent.send(assign);
+				System.out.println(getLocalName()+": Requested "+result[0].getName().getLocalName()+".");
+				
 			} catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName()
 						+ ": Error sending the message.");

@@ -27,12 +27,14 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
 public class OrderAgent extends Agent {
 	
 	HashMap <String,Integer> partList;
 	boolean completed;
+	boolean assigned;
 	int orderNum;
 	protected DFAgentDescription dfd;
 	
@@ -42,6 +44,7 @@ public class OrderAgent extends Agent {
 		partList = (HashMap<String,Integer>)args[0];
 		orderNum = (Integer) args[1];
 		completed = false;
+		assigned = false;
 		
 		this.dfd = new DFAgentDescription();
         this.dfd.setName(getAID()); 
@@ -58,15 +61,16 @@ public class OrderAgent extends Agent {
         	fe.printStackTrace(); 
         }
 		
-		System.out.println("Order "+getLocalName() + ": Started.");
+		System.out.println(getLocalName() + ": Started.");
 		//partList = new Hashtable<String, Integer>();
 		//System.out.println("Order "+getLocalName() + ": Requesting the following parts:");
 		//printPartList(partList);
 		
 		//Behaviours
-			addBehaviour(new requestParts());
+			//addBehaviour(new requestParts());
 			addBehaviour(new CompletedOrder());
 			addBehaviour(new MissingPieces());
+			addBehaviour(new orderStatus());
 			
 	}
 	
@@ -85,17 +89,14 @@ public class OrderAgent extends Agent {
 	// Put agent clean-up operations here
 	protected void takeDown() {
 		// Printout a dismissal message		
-		try { 
-			DFService.deregister(this); 
-			}catch (Exception e) {}
-		System.out.println("Order "+getAID().getLocalName()+ ": Order finished.");
+		System.out.println(getAID().getLocalName()+ ": Order finished.");
 		doDelete();
 	}
 
 	private class CompletedOrder extends CyclicBehaviour{
 		public void action(){
 			if (completed == true){
-			System.out.println("Order "+myAgent.getLocalName()+": Order completed...");
+			System.out.println(myAgent.getLocalName()+": Order completed...");
 			  ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 			  compMsg.setOntology("Completed Order");
 			  compMsg.setContent("Completed");
@@ -117,8 +118,12 @@ public class OrderAgent extends Agent {
 	}
 	
 	private class requestParts extends OneShotBehaviour {
+		AID picker;
+		public requestParts(AID a){
+			picker = a;
+		}
 		  public void action() {
-			  System.out.println("Order "+getAID().getLocalName()+ ": Requesting parts...");
+			  System.out.println(getAID().getLocalName()+ ": Requesting parts...");
 			  ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 			  order.setOntology("requestParts");
 			  //order.setContent(Integer.toString(randomOrder));
@@ -126,10 +131,33 @@ public class OrderAgent extends Agent {
 			  order.setContentObject(partList);
 			  }catch(IOException e){}
 			  
-			  order.addReceiver(new AID("Picky",AID.ISLOCALNAME));
+			  order.addReceiver(picker);
 			  send(order);
 			  //doDelete();
 			} 
 		  }
 	
+	private class orderStatus extends CyclicBehaviour{
+		public void action(){
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+					MessageTemplate.MatchOntology("assignment"));
+
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null){
+				ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
+				reply.setOntology("assignment");
+				
+				System.out.println(getLocalName()+" assigned to "+msg.getSender().getLocalName()+".");
+				assigned=true;
+				addBehaviour(new requestParts(msg.getSender()));
+				try { 
+					DFService.deregister(myAgent); 
+					}catch (Exception e) {}
+			}else{
+				block();
+			}
+			
+		}
+	}
 }

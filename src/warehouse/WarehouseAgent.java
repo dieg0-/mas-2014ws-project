@@ -96,7 +96,7 @@ public class WarehouseAgent extends Agent {
 				try {
 					System.out.println(myAgent.getLocalName()
 							+ ": Creating OrderAgent");
-					AgentController a = c.createNewAgent(
+					AgentController a = c.createNewAgent("Order"+
 							Integer.toString(orderNum), "warehouse.OrderAgent",
 							args);
 					// System.out.println("Attempting to start OrderAgent");
