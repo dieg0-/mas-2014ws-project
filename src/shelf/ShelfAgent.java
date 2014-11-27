@@ -42,7 +42,7 @@ public class ShelfAgent extends Agent {
 	
 	protected void setup(){
 		position = new Pose();
-		position.randomInit();
+		position.randomInit(true);
 		inventory = new HashMap<String, Integer>();
 		initInventory();
 		//this.busy = false;

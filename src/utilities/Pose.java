@@ -1,8 +1,10 @@
 package utilities;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Pose {
+@SuppressWarnings("serial")
+public class Pose implements Serializable {
 	
 	private double x;
 	private double y;
@@ -34,7 +36,7 @@ public class Pose {
 	}
 	
 	
-	public void randomInit(){
+	public void randomInit(boolean verbose){
 		Random random = new Random();
 		double rangeX = mapSize[0]; // - minimum (0)
 		double scaledX = random.nextDouble() * rangeX;
@@ -44,8 +46,10 @@ public class Pose {
 		double scaledY = random.nextDouble() * rangeY;
 		double randomY = scaledY; // + minimum (0)
 		setY(randomY);
-		
-		System.out.println("Shelf created at: (" + this.x + ", " + this.y + ").");
+		String pos = String.format("(%.2f, %.2f).", this.x, this.y);
+		if (verbose) {
+			System.out.println("Agent at: " + pos);
+		}
 	}
 	
 	public double distance(Pose other){
@@ -53,6 +57,10 @@ public class Pose {
 				Math.pow((this. y - other.getY()), 2));
 	}
 	
+	public String parsePose() {
+		String pose = String.format("%.2f,%.2f", this.x, this.y);
+		return pose;
+	}
 	
 
 }

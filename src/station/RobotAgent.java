@@ -10,8 +10,6 @@ All Rights Reserved.
 
 package station;
 
-import java.util.Random;
-
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
@@ -19,23 +17,24 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAAgentManagement.Property;
 import jade.lang.acl.ACLMessage;
+import utilities.Pose;
 
 @SuppressWarnings("serial")
 public class RobotAgent extends Agent {
 	// Attributes.
 	private String id;
-	private double[] position;
+	protected Pose position;
 	private boolean busy;
 	protected DFAgentDescription dfd;
 	
 	protected void setup() {
-		System.out.println("\n--ROBOT-------------");
+		System.out.println("\n--ROBOT------------------");
 		System.out.println("Agent: " + getLocalName());
 		
-		this.position = new double[2];
-		this.position[0] = (new Random()).nextDouble();
-		this.position[1] = (new Random()).nextDouble();
+		this.position = new Pose();
+		this.position.randomInit(true);
 		this.busy = false;
 		
 		this.dfd = new DFAgentDescription();
@@ -43,7 +42,7 @@ public class RobotAgent extends Agent {
 		
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("fetch");
-		sd.setName("JADE-robot-agents");
+		sd.setName("Fetch-Service");
 		this.dfd.addServices(sd);
 		
 		Object[] args = this.getArguments();
@@ -56,14 +55,14 @@ public class RobotAgent extends Agent {
 				DFService.register(this, dfd);
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				System.err.println("\n[ERR] Agent could not be registered.");
 			}
 		}
 		else {
-			System.err.println("  > No ID given. Agent won't be register.");
+			System.err.println("\n[ERR] No ID given. Agent won't be register.");
 			doDelete();
 		}
-		System.out.println("--------------------\n");
+		System.out.println("-------------------------\n");
 	}
 	
 	
@@ -74,8 +73,9 @@ public class RobotAgent extends Agent {
 		}
 		
 		public void action() {
-			String current_pos = String.format("(%.2d, %.2d)", position[0], position[1]);
-			System.out.println("  > Location: " + current_pos + ").\n");
+			String current_pos = String.format("(%.2f, %.2f)", position.getX(), position.getY());
+			System.out.println("  > Location: " + current_pos + ").");
+			System.out.println("--------------------\n");
 			block(250);
 		}
 		
@@ -88,13 +88,18 @@ public class RobotAgent extends Agent {
 	private class FetchBehaviour extends SimpleBehaviour {
 		//Simulated the fetching time, in seconds.
 		private long timeout;
+		private String target;
 		
-		public FetchBehaviour(Agent a, long time_sleep) {
+		public FetchBehaviour(Agent a, long time_sleep, String shelf_position) {
 			super(a);
 			this.timeout = time_sleep;
+			this.target = shelf_position;
 		}
 		
 		public void action() {
+			System.out.println(myAgent.getLocalName() + ": [fetching].");
+			System.out.println("  > Target at: " + this.target);
+			System.out.println("--------------------------\n");
 			try {
 				DFService.deregister(myAgent);
 				Thread.sleep(this.timeout*1000);
@@ -109,10 +114,17 @@ public class RobotAgent extends Agent {
 		}
 		
 		public boolean done() {
-			System.out.println(myAgent.getLocalName() + ": task accomplish.");
+			System.out.println("\n------------------------------------");
+			System.out.println(myAgent.getLocalName() + ": [report].");
+			System.out.println("  > Task accomplished.");
+			System.out.println("------------------------------------\n");
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType("fetch");
-			sd.setName("JADE-robot-agents");
+			sd.setName("Fetch-Service");
+			Property p = new Property();
+			p.setName("position");
+			p.setValue(position.parsePose());
+			sd.addProperties(p);
 			dfd.addServices(sd);
 			try {
 				DFService.register(myAgent, dfd);
@@ -129,24 +141,24 @@ public class RobotAgent extends Agent {
 		public void action() {
 			ACLMessage msg = myAgent.receive();
 			if (msg != null) {
-				System.out.println("--------------------\n");
+				System.out.println("--------------------------");
 				String msg_content = msg.getContent();
+				String msg_command = msg.getOntology();
 				System.out.print(myAgent.getLocalName() + ": ");
-				System.out.println("[message recieved].");
-				System.out.println("  > Message: " + msg_content);
-				
-				if (msg_content.matches("status")) {
+				System.out.println("[message received].");
+				System.out.println("  > Command: " + msg_command);
+				if (msg_command.matches("status")) {
 					System.out.println("  > Busy: " + busy);
 				}
-				else if (msg_content.matches("localization")) {
+				else if (msg_command.matches("localization")) {
 					myAgent.addBehaviour(new LocalizationBehaviour(myAgent));
 				}
-				else if (msg_content.matches("fetch")) {
-					myAgent.addBehaviour(new FetchBehaviour(myAgent, 20));
+				else if (msg_command.matches("fetch")) {
+					myAgent.addBehaviour(new FetchBehaviour(myAgent, 20, msg_content));
 				}
 				else {
-					System.out.println("  > No message recognized.");
-					System.out.println("--------------------\n");
+					System.out.println("  > No valid command.");
+					System.out.println("--------------------------\n");
 				}
 			}
 			block();
@@ -154,13 +166,17 @@ public class RobotAgent extends Agent {
 	}
 	// End of inner class OfferRequests Server
 	
+	public Pose getPose() {
+		return this.position;
+	}
+	
 	protected void takeDown() {
 		System.out.println(this.getLocalName() + " out of service.");
 		try {
 			DFService.deregister(this);
 		}
 		catch (FIPAException fe) {
-			fe.printStackTrace();
+			
 		}
 	}
 
