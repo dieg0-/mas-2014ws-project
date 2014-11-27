@@ -1,0 +1,36 @@
+<warehouse>
+	<orders>
+    	<order>
+    		<uid>0001</uid>
+        	<date></date>
+    		<products>
+	        	<product>
+            		<name>Motor</name>
+            		<upc></upc>
+            		<quantity>3</quantity>
+        	    </product>
+        		<product>
+            		<name>Arm</name>
+            		<upc></upc>
+        	    	<quantity>4</quantity>        	    	
+        	    </product>
+    	    </products>
+	    </order>
+	    <order>
+    		<uid>0002</uid>
+        	<date></date>
+    		<products>
+	        	<product>
+            		<name>Motor</name>
+            		<upc></upc>
+            		<quantity>2</quantity>
+        	    </product>
+        		<product>
+            		<name>Arm</name>
+            		<upc></upc>
+        	    	<quantity>1</quantity>        	    	
+        	    </product>
+    	    </products>
+	    </order>
+	</orders>
+</warehouse>

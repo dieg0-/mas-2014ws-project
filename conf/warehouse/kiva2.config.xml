@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<warehouse xmlns:ns2="warehouse.dummies.Order" xmlns:ns3="warehouse.dummies.Warehouse">
+    <orders>
+        <order>
+            <products>
+                <product>
+                    <name>Motor</name>
+                    <quantity>5</quantity>
+                </product>
+                <product>
+                    <name>Band</name>
+                    <quantity>3</quantity>
+                </product>
+            </products>
+            <uid>0001</uid>
+        </order>
+        <order>
+            <products>
+                <product>
+                    <name>Motor</name>
+                    <quantity>5</quantity>
+                </product>
+                <product>
+                    <name>Band</name>
+                    <quantity>3</quantity>
+                </product>
+            </products>
+            <uid>0002</uid>
+        </order>
+    </orders>
+</warehouse>

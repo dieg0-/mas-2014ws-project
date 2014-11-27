@@ -12,31 +12,37 @@ package warehouse;
 
 //import order.OrderAgent;
 
-import jade.core.AID;
 import jade.core.Agent;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 import java.util.*;
 
+
 public class WarehouseAgent extends Agent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// The order list maps the available lists to it's status (pending or
 	// finished)
 	private Hashtable<Integer, String> orderListStatus;
 	private Hashtable<Integer, String> pendingOrders;
 	private Hashtable<Integer, String> completedOrders;
 	private Hashtable<Integer, String> processingOrders;
+	
 
 	/* Agent initialization */
 	protected void setup() {
 		System.out.println(getLocalName() + ": Started.");
+		//Load config file
+		InitConfig config = new InitConfig();
+		config.createXML();
+		config.readXML();
+				
 		orderListStatus = new Hashtable<Integer, String>();
 
 		// Get the list of orders as a start-up argument
@@ -46,6 +52,8 @@ public class WarehouseAgent extends Agent {
 		// Add behaviours
 		addBehaviour(new CreateOrder());
 		addBehaviour(new availablePicker());
+		
+		
 	}
 
 	// Put agent clean-up operations here
@@ -157,5 +165,5 @@ public class WarehouseAgent extends Agent {
 
 		}
 	}
-
+	
 }
