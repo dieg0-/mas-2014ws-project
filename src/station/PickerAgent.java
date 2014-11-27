@@ -175,14 +175,15 @@ public class PickerAgent extends Agent {
 						activeAgent[i] = orders[i].getName();
 						System.out.println("  > " + activeAgent[i].getName());
 					}
+					System.out.println("------------------------------------\n");
+					//Requesting order assignment
+					ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
+					assign.addReceiver(orders[orders.length -1].getName());
+					assign.setOntology("assignment");
+					myAgent.send(assign);
+					System.out.println(getLocalName()+": Requested "+orders[orders.length-1].getName().getLocalName()+".");
 				}
-				System.out.println("------------------------------------\n");
-				//Requesting order assignment
-				ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
-				assign.addReceiver(orders[0].getName());
-				assign.setOntology("assignment");
-				myAgent.send(assign);
-				System.out.println(getLocalName()+": Requested "+orders[0].getName().getLocalName()+".");
+				
 				
 			} catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName()
