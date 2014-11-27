@@ -2,8 +2,8 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 3.0.n.
-@since 26.11.2014 
+@version: 3.3.n.
+@since 27.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
 **/
@@ -173,9 +173,6 @@ public class RobotAgent extends Agent {
 	}
 	// End of inner class OfferRequests Server
 	
-	public Pose getPose() {
-		return this.position;
-	}
 	
 	protected void takeDown() {
 		System.out.println(this.getLocalName() + " out of service.");

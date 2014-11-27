@@ -2,8 +2,8 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicol�s Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 3.0.n.
-@since 26.11.2014 
+@version: 3.3.n.
+@since 27.11.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
  **/
@@ -99,8 +99,11 @@ public class PickerAgent extends Agent {
 							Iterator p = temp_serv.getAllProperties();
 							while (p.hasNext()) {
 								Property temp_p = (Property)p.next();
-								System.out.println(temp_p.getValue());
-								System.out.println(temp_p.getName());
+								String[] agent_pos = ((String)temp_p.getValue()).split(",");
+								String x = agent_pos[0];
+								String y = agent_pos[1];
+								System.out.print(temp_p.getValue() +": ");
+								System.out.println(x + ", " + y);
 							}
 							
 							
@@ -125,7 +128,8 @@ public class PickerAgent extends Agent {
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
-
+	
+	
 	private class UpdatePickerStatus extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
