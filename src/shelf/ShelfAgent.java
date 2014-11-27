@@ -103,7 +103,7 @@ public class ShelfAgent extends Agent {
 	public void initInventory(){
 		BufferedReader in;
 		try {
-			in = new BufferedReader(new FileReader("conf/shelves/shelf1.txt"));
+			in = new BufferedReader(new FileReader("conf/shelves/shelfDefault.txt"));
 			String line = "";
 
 			while ((line = in.readLine()) != null) {
