@@ -6,6 +6,7 @@ import java.util.HashMap;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -37,18 +38,19 @@ public class SimPickerAgent extends Agent {
 		
 		// Behavior for searching robots subscribed to the yellow pages.
 		// this.addBehaviour(new getRobotAgents(this, 15000) );
-		this.addBehaviour(new freePicker());
+		this.addBehaviour(new getShelfAgents(this, 15000));
+		this.addBehaviour(new UpdatePickerStatus());
+		this.addBehaviour(new GetNewOrder());
 	}
 	
-	@SuppressWarnings("unused")
-	private class getRobotAgents extends TickerBehaviour {
+	private class getShelfAgents extends TickerBehaviour {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public getRobotAgents(Agent a, long period) {
+		public getShelfAgents(Agent a, long period) {
 			super(a, period);
 		}
 		
@@ -96,10 +98,138 @@ public class SimPickerAgent extends Agent {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}	
 	
-	private class freePicker extends CyclicBehaviour {
+	private class UpdatePickerStatus extends CyclicBehaviour {
 		/**
 		 * 
 		 */
+		private static final long serialVersionUID = 1L;
+
+		@SuppressWarnings("unchecked")
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+					MessageTemplate.MatchOntology("requestParts"));
+			ACLMessage msg = myAgent.receive(mt);
+			if(msg != null){
+				System.out.println(myAgent.getLocalName()
+						+ ": Received order. Status: busy.");
+				HashMap<String, Integer> mappy;
+				try {
+					mappy = (HashMap<String, Integer>)msg.getContentObject();
+					System.out.println("Received objects:");
+					System.out.println(mappy.toString());
+					DFAgentDescription template = new DFAgentDescription();
+					ServiceDescription sd = new ServiceDescription();
+					// Search for agents who offer a fetch service.
+					sd.setType("offer-pieces");
+					template.addServices(sd);
+					try {
+						// Searching process.
+						DFAgentDescription[] result = DFService.search(myAgent, template); 
+						System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
+						System.out.println("Found the following active agents:");
+						activeAgent = new AID[result.length];
+						// Found Agents.
+						for (int i = 0; i < result.length; ++i) {
+							// Listing the agents ID's found.
+							activeAgent[i] = result[i].getName();
+							System.out.println(activeAgent[i].getName());
+						}
+						System.out.println("------------------------------------\n");
+						ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+						for (int i = 0; i < result.length; ++i) {
+							cfp.addReceiver(result[i].getName());
+						}
+						String message = "screw_driver,3";
+						System.out.println("MESSAGE: " + message);
+						cfp.setContent(message);
+						cfp.setContentObject(msg.getContentObject());
+						myAgent.send(cfp);
+						send(cfp);
+					}
+					catch (FIPAException fe) {
+						fe.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					send(msg);
+				} catch (UnreadableException e) {
+					// TODO Auto-generated catch block
+					System.out.println("No elements found in the request");
+					e.printStackTrace();
+				}
+				
+				busy = true;
+				try {
+				Thread.sleep(10000);
+				}catch(Exception e){
+					
+				}
+			}else{
+			block();
+			}
+		}
+
+	}
+
+	private class GetNewOrder extends OneShotBehaviour {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void action() {
+			// Update the list of robot agents.
+			DFAgentDescription template = new DFAgentDescription();
+			ServiceDescription sd = new ServiceDescription();
+			// Search for agents who offer a fetch service.
+			sd.setType("order");
+			template.addServices(sd);
+			System.out.println("------------------------------------");
+			try {
+				// Searching process.
+				DFAgentDescription[] orders = DFService.search(myAgent,
+						template);
+				System.out.println(myAgent.getLocalName()
+						+ " [searching orders].");
+				System.out.println("Found the following orders:");
+				activeAgent = new AID[orders.length];
+				// Found Agents.
+				if (orders.length == 0) {
+					System.out.println("  > No available orders.");
+				} else {
+					for (int i = 0; i < orders.length; ++i) {
+						// Listing the agents ID's found.
+						activeAgent[i] = orders[i].getName();
+						System.out.println("  > " + activeAgent[i].getName());
+					}
+				}
+				System.out.println("------------------------------------\n");
+				//Requesting order assignment
+				ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
+				assign.addReceiver(orders[0].getName());
+				assign.setOntology("assignment");
+				myAgent.send(assign);
+				System.out.println(getLocalName()+": Requested "+orders[0].getName().getLocalName()+".");
+				
+			} catch (FIPAException fe) {
+				System.err.println(myAgent.getLocalName()
+						+ ": Error sending the message.");
+			}
+		}
+
+	}
+
+}
+
+	
+	/**
+	
+	private class freePicker extends CyclicBehaviour {
+		
 		private static final long serialVersionUID = 1L;
 
 		public void action() {
@@ -144,8 +274,7 @@ public class SimPickerAgent extends Agent {
 							System.out.println(activeAgent[i].getName());
 						}
 						System.out.println("------------------------------------\n");
-						/* Sending Messages to the found agents. */
-						ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+8						ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 						for (int i = 0; i < result.length; ++i) {
 							cfp.addReceiver(result[i].getName());
 						}
@@ -177,3 +306,4 @@ public class SimPickerAgent extends Agent {
 	}
 
 }
+**/

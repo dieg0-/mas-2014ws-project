@@ -27,6 +27,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 public class ShelfAgent extends Agent {
 	
@@ -142,14 +143,25 @@ public class ShelfAgent extends Agent {
 			if (message != null) {
 				//System.out.print(myAgent.getLocalName() + ": ");
 				//System.out.println("message-> " + message.getContent());
-				String[] parsedMessage = message.getContent().split(",");
+				//String[] parsedMessage = message.getContent().split(",");
 				// The first part of the content contains the piece requested, and the second
 				//  the amount needed.
-				String piece = parsedMessage[0];
-				int amount = Integer.parseInt(parsedMessage[1]);
+				//System.out.println("MSG: " +  message.getContent());
+				//System.out.println("LENGTH: " + parsedMessage.length);
+				//String piece = parsedMessage[0];
+				//int amount = Integer.parseInt(parsedMessage[1]);
+				HashMap<String, Integer> mappy;
+				try {
+					mappy = (HashMap<String, Integer>)message.getContentObject();
+					System.out.println("Shelf received objects:");
+					System.out.println(mappy.toString());
+				} catch (UnreadableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
-				ACLMessage reply = message.createReply();
-				
+				//ACLMessage reply = message.createReply();
+				/**
 				// Checks if the piece is available.
 				if(inventory.containsKey(piece)){
 					Integer availablePieces = inventory.get(piece);
@@ -172,7 +184,7 @@ public class ShelfAgent extends Agent {
 					System.out.println(myAgent.getLocalName() + ": Sorry, " + piece + "s are not available.");
 					reply.setContent("The piece is unfortunately not available");
 				}
-				myAgent.send(reply);
+				myAgent.send(reply);**/
 			}
 			else {
 				block();
