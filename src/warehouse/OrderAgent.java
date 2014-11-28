@@ -35,14 +35,14 @@ public class OrderAgent extends Agent {
 	HashMap <String,Integer> partList;
 	boolean completed;
 	boolean assigned;
-	int orderNum;
+	String orderNum;
 	protected DFAgentDescription dfd;
 	
 	@SuppressWarnings("unchecked")
 	protected void setup(){
 		Object [] args = getArguments();
 		partList = (HashMap<String,Integer>)args[0];
-		orderNum = (Integer) args[1];
+		orderNum = (String) args[1];
 		completed = false;
 		assigned = false;
 		
@@ -56,7 +56,7 @@ public class OrderAgent extends Agent {
 		
 		try {  
             DFService.register(this,dfd); 
-            System.out.println("Subscribed");
+            //System.out.println("Subscribed");
         }catch (FIPAException fe) { 
         	fe.printStackTrace(); 
         }

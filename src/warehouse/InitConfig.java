@@ -1,41 +1,34 @@
 package warehouse;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
+
 
 
 //import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import warehouse.dummies.Warehouse;
 import warehouse.dummies.Order;
-import warehouse.dummies.Product;
 
 public class InitConfig {
 	
+	Warehouse warehouse;
+	
 	void createXML(){
 		Warehouse wh = new Warehouse();
-		
+		DecimalFormat uidFormat = new DecimalFormat("0000");
 		//Creating Orders
-		ArrayList<Order> orderlist = new ArrayList();
-		Order o1 = new Order("0001");
-		Order o2 = new Order("0002");
-		orderlist.add(o1);
-		orderlist.add(o2);
+		ArrayList<Order> orderlist = new ArrayList<Order>();
+		for (int i=0; i<10;i++){
+			Order o = new Order(uidFormat.format(i+1));
+			orderlist.add(o);
+		}
 		
 		wh.setOrderList(orderlist);
 		
@@ -65,11 +58,12 @@ public class InitConfig {
 			   File XMLfile = new File("conf/warehouse/kiva2.config.xml");
 
 			   // this will create Java object - warehouse from the XML file
-			   Warehouse wh = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
+			   this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
 			   
-			   ArrayList<Order> orderList = wh.getOrderList();
-			   printOrders(orderList);
+			   //ArrayList<Order> orderList = this.warehouse.getOrderList();
+			   //printOrders(orderList);
 			   
+			   System.out.println("Configuration read succesfuly.");
 			   
 			  } catch (JAXBException e) {
 			   // some exception occured
@@ -84,6 +78,20 @@ public class InitConfig {
 			System.out.println(o.toString());
 		}
 		
+	}
+	
+	ArrayList<Object[]> getOrders(){
+		
+		ArrayList<Order> ol = this.warehouse.getOrderList();
+		ArrayList<Object[]> orderArgs = new ArrayList<Object[]>();
+	
+		for(Order o:ol){
+			Object[] args = new Object[ol.size()];
+			args[0]=o.getPartList();
+			args[1]=o.getUID();	
+			orderArgs.add(args);
+		}		
+		return orderArgs;
 	}
 	
 	

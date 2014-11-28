@@ -29,17 +29,22 @@ public class WarehouseAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 	// The order list maps the available lists to it's status (pending or
 	// finished)
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> orderListStatus;
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> pendingOrders;
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> completedOrders;
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> processingOrders;
 	
+	InitConfig config;
 
 	/* Agent initialization */
 	protected void setup() {
 		System.out.println(getLocalName() + ": Started.");
 		//Load config file
-		InitConfig config = new InitConfig();
+		config = new InitConfig();
 		config.createXML();
 		config.readXML();
 				
@@ -50,9 +55,10 @@ public class WarehouseAgent extends Agent {
 		Object[] args = getArguments();
 
 		// Add behaviours
+		addBehaviour(new initialOrders());
 		addBehaviour(new CreateOrder());
 		addBehaviour(new availablePicker());
-		
+		System.out.println(getLocalName()+": Loaded behaviours");
 		
 	}
 
@@ -144,6 +150,40 @@ public class WarehouseAgent extends Agent {
 			partList.put("cover", 1);
 			partList.put("blade", rnd.nextInt(6));		
 			return partList;
+		}
+	}
+	
+	private class initialOrders extends OneShotBehaviour{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void action(){
+			AgentContainer c = getContainerController();
+			ArrayList<Object[]> orders = config.getOrders();
+			System.out.println(myAgent.getLocalName()+": Initial orders loaded: "+orders.size());
+			
+			try {
+				for(Object[] o:orders){
+					String orderNum = (String)o[1];
+					Object[] args = new Object[2];
+					args[0] = o[0];
+					args[1] = o[1];
+					AgentController a = c.createNewAgent("Order"+
+							orderNum, "warehouse.OrderAgent",
+							args);
+					a.start();
+				}
+			}catch (Exception e) {
+				System.out.println("There is something wrong");
+				e.printStackTrace();
+			}
+			
+			
+				
+			
+			
 		}
 	}
 
