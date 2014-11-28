@@ -12,31 +12,42 @@ package warehouse;
 
 //import order.OrderAgent;
 
-import jade.core.AID;
 import jade.core.Agent;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 import java.util.*;
 
+
 public class WarehouseAgent extends Agent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// The order list maps the available lists to it's status (pending or
 	// finished)
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> orderListStatus;
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> pendingOrders;
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> completedOrders;
+	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> processingOrders;
+	
+	InitConfig config;
 
 	/* Agent initialization */
 	protected void setup() {
 		System.out.println(getLocalName() + ": Started.");
+		//Load config file
+		config = new InitConfig();
+		config.createXML();
+		config.readXML();
+				
 		orderListStatus = new Hashtable<Integer, String>();
 
 		// Get the list of orders as a start-up argument
@@ -44,8 +55,11 @@ public class WarehouseAgent extends Agent {
 		Object[] args = getArguments();
 
 		// Add behaviours
+		addBehaviour(new initialOrders());
 		addBehaviour(new CreateOrder());
 		addBehaviour(new availablePicker());
+		System.out.println(getLocalName()+": Loaded behaviours");
+		
 	}
 
 	// Put agent clean-up operations here
@@ -138,6 +152,40 @@ public class WarehouseAgent extends Agent {
 			return partList;
 		}
 	}
+	
+	private class initialOrders extends OneShotBehaviour{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void action(){
+			AgentContainer c = getContainerController();
+			ArrayList<Object[]> orders = config.getOrders();
+			System.out.println(myAgent.getLocalName()+": Initial orders loaded: "+orders.size());
+			
+			try {
+				for(Object[] o:orders){
+					String orderNum = (String)o[1];
+					Object[] args = new Object[2];
+					args[0] = o[0];
+					args[1] = o[1];
+					AgentController a = c.createNewAgent("Order"+
+							orderNum, "warehouse.OrderAgent",
+							args);
+					a.start();
+				}
+			}catch (Exception e) {
+				System.out.println("There is something wrong");
+				e.printStackTrace();
+			}
+			
+			
+				
+			
+			
+		}
+	}
 
 	@SuppressWarnings("serial")
 	private class availablePicker extends CyclicBehaviour {
@@ -157,5 +205,5 @@ public class WarehouseAgent extends Agent {
 
 		}
 	}
-
+	
 }
