@@ -15,19 +15,21 @@ import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Random;
 
 public class OrderCreator extends Agent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Random randomGenerator = new Random();
 	int randomOrder;
 	
 	
 	protected void setup() {
 		randomOrder = randomGenerator.nextInt(1000);
-		System.out.println(getLocalName()+":  Started.");
-		System.out.println(getLocalName() + ": Created random order.");
+		//System.out.println(getLocalName()+":  Started.");
+		//System.out.println(getLocalName() + ": Created random order.");
 		
 		addBehaviour(new sendOrder());
 	}
@@ -36,13 +38,14 @@ public class OrderCreator extends Agent {
 		// Printout a dismissal message
 		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
-	
-	
-	
-	
-	
+		
 	private class sendOrder extends OneShotBehaviour {
-		  public void action() {
+		  /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void action() {
 			  System.out.println(myAgent.getLocalName()+": Sending order...");
 			  ACLMessage order = new ACLMessage(ACLMessage.INFORM);
 			  order.setOntology("newOrder");
