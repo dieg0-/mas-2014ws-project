@@ -64,11 +64,15 @@ public class SimPickerAgent extends Agent {
 
 	}
 	
+	/**
+	 * This is just a temporary method, while messages received from orders are
+	 * adjusted.
+	 */
 	public HashMap<String, Integer> initMap(){
 		BufferedReader in;
 		HashMap<String, Integer> mappy = new HashMap<String, Integer>();
 		try {
-			in = new BufferedReader(new FileReader("conf/shelves/shelf1.txt"));
+			in = new BufferedReader(new FileReader("conf/shelves/shelfDefault.txt"));
 			String line = "";
 
 			while ((line = in.readLine()) != null) {

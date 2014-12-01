@@ -40,7 +40,7 @@ public class ShelfAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, Integer> inventory;
 	//private boolean busy;
-	private Pose position;
+	protected Pose position;
 	
 	protected DFAgentDescription dfd;
 	
@@ -185,11 +185,21 @@ public class ShelfAgent extends Agent {
 					mappy = (HashMap<String, Integer>)message.getContentObject();
 					System.out.println("Shelf received objects:");
 					System.out.println(mappy.toString());
-					if(checkWholeInventory(mappy))
-						System.out.println("All pieces are available");
-					else
+					if(checkWholeInventory(mappy)){
+						System.out.println("All pieces are available. Sending position...");
+						ACLMessage reply = message.createReply();
+						reply.setPerformative(ACLMessage.PROPOSE);
+						reply.setContent("Enough pieces available");
+						double myPosition[] = position.poseToArray();
+						reply.setContentObject(myPosition);
+						myAgent.send(reply);
+					}else{
 						System.out.println("Insufficient pieces");
+					}
 				} catch (UnreadableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
