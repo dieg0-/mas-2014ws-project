@@ -11,6 +11,7 @@ All Rights Reserved.
 package shelf;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import jade.lang.acl.UnreadableException;
 
 public class ShelfAgent extends Agent {
 	
+	public static String shelfDir = "conf/shelves/shelf";
 	/**
 	 * 
 	 */
@@ -48,14 +50,16 @@ public class ShelfAgent extends Agent {
 		position = new Pose();
 		position.randomInit(true);
 		inventory = new HashMap<String, Integer>();
-		initInventory();
+		Object[] args = this.getArguments();
+		String inventoryType;
+		if (args != null && args.length > 0) {
+			inventoryType = (String) args[0];
+		}else {
+			inventoryType = "DEFAULT";
+		}
+		initInventory(inventoryType);
 		//this.busy = false;
-		// Testing purposes.. This shouldn't be predefined for all agents.
-		/**
-		inventory.put("vtx", 16);
-		inventory.put("wires", 12);
-		inventory.put("motor", 18);
-		**/
+
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
 		
@@ -128,11 +132,15 @@ public class ShelfAgent extends Agent {
 		return answer;
 	}
 	
-	public void initInventory(){
+	public void initInventory(String inventoryType){
 		BufferedReader in;
 		try {
-			in = new BufferedReader(new FileReader("conf/shelves/shelfDefault.txt"));
+			File inventoryFile = new File(shelfDir + inventoryType + ".txt");
+			if(!inventoryFile.exists())
+				inventoryType = "Default";
+			in = new BufferedReader(new FileReader(shelfDir + inventoryType + ".txt"));
 			String line = "";
+			System.out.println("Initializing inventory of type -- " + inventoryType + " --.");
 
 			while ((line = in.readLine()) != null) {
 			    String parts[] = line.split(",");

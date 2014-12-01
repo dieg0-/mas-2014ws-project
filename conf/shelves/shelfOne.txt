@@ -1,0 +1,5 @@
+wires,100
+cables,100
+motor,100
+blade,100
+gimbal,100
