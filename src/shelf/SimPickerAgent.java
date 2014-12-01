@@ -208,10 +208,10 @@ public class SimPickerAgent extends Agent {
 	
 	private class UpdatePickerStatus extends CyclicBehaviour {
 		/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+		  * 
+		  */
+		private static final long serialVersionUID = 1L;
+		//private AID closestShelf;
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
@@ -260,6 +260,11 @@ public class SimPickerAgent extends Agent {
 					System.out.println(myAgent.getLocalName() + ": Requesting pieces");
 					cfp.setContentObject(mappy);
 					myAgent.send(cfp);
+					/**
+					 * Simulate Seller - Buyer case-behaviour to wait for the answer of queried shelves
+					 * Look for proposals, not refuses
+					 * Keep the closest shelf.
+					 */
 				} catch (FIPAException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

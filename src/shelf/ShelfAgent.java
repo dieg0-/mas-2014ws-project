@@ -203,32 +203,7 @@ public class ShelfAgent extends Agent {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				//ACLMessage reply = message.createReply();
-				/**
-				// Checks if the piece is available.
-				if(inventory.containsKey(piece)){
-					Integer availablePieces = inventory.get(piece);
-					// Check how many are there in stock.
-					if(availablePieces >= amount){
-						reply.setPerformative(ACLMessage.PROPOSE);
-						reply.setContent("Enough pieces available");
-						System.out.println(myAgent.getLocalName() + ": Enough " + piece + "s available.");
-						// This shouldn't happen yet, the picker should select a shelf...
-						// just for testing purposes:
-						updateInventory(piece, amount);
-					}else{
-						reply.setPerformative(ACLMessage.PROPOSE);
-						System.out.println(myAgent.getLocalName() + ": Only " + availablePieces + " " + piece + "s available.");
-						reply.setContent("Only " + availablePieces + " are available.");
-					}
-				// Ideally, a shelf shouldn't respond if it doesn't have the available piece.
-				}else{
-					reply.setPerformative(ACLMessage.REFUSE);
-					System.out.println(myAgent.getLocalName() + ": Sorry, " + piece + "s are not available.");
-					reply.setContent("The piece is unfortunately not available");
-				}
-				myAgent.send(reply);**/
+	
 			}
 			else {
 				block();
