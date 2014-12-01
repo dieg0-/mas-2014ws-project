@@ -68,7 +68,7 @@ public class SimPickerAgent extends Agent {
 		BufferedReader in;
 		HashMap<String, Integer> mappy = new HashMap<String, Integer>();
 		try {
-			in = new BufferedReader(new FileReader("conf/shelves/shelfDefault.txt"));
+			in = new BufferedReader(new FileReader("conf/shelves/shelf1.txt"));
 			String line = "";
 
 			while ((line = in.readLine()) != null) {

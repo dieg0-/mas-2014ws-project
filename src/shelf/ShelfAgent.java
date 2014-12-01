@@ -15,6 +15,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import utilities.Pose;
 
@@ -110,6 +113,21 @@ public class ShelfAgent extends Agent {
 		return answer;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public boolean checkWholeInventory(HashMap<String, Integer> order){
+		boolean answer = true;
+		Set orderSet = order.entrySet();
+		Iterator iter = orderSet.iterator();
+		while(iter.hasNext()){
+			@SuppressWarnings("unchecked")
+			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+			if(!checkPieceInInventory(lookup.getKey(), lookup.getValue()))
+				return false;
+		}
+		
+		return answer;
+	}
+	
 	public void initInventory(){
 		BufferedReader in;
 		try {
@@ -167,6 +185,10 @@ public class ShelfAgent extends Agent {
 					mappy = (HashMap<String, Integer>)message.getContentObject();
 					System.out.println("Shelf received objects:");
 					System.out.println(mappy.toString());
+					if(checkWholeInventory(mappy))
+						System.out.println("All pieces are available");
+					else
+						System.out.println("Insufficient pieces");
 				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
