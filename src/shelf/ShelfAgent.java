@@ -137,10 +137,12 @@ public class ShelfAgent extends Agent {
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@SuppressWarnings("unchecked")
 		public void action() {
 			MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
+				System.out.println("Shelf received order");
 				//System.out.print(myAgent.getLocalName() + ": ");
 				//System.out.println("message-> " + message.getContent());
 				//String[] parsedMessage = message.getContent().split(",");
@@ -152,6 +154,7 @@ public class ShelfAgent extends Agent {
 				//int amount = Integer.parseInt(parsedMessage[1]);
 				HashMap<String, Integer> mappy;
 				try {
+					System.out.println(message.getContentObject());
 					mappy = (HashMap<String, Integer>)message.getContentObject();
 					System.out.println("Shelf received objects:");
 					System.out.println(mappy.toString());
