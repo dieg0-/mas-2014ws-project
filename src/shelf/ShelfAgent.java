@@ -140,7 +140,7 @@ public class ShelfAgent extends Agent {
 				inventoryType = "Default";
 			in = new BufferedReader(new FileReader(shelfDir + inventoryType + ".txt"));
 			String line = "";
-			System.out.println("Initializing inventory of type -- " + inventoryType + " --.");
+			System.out.println(this.getLocalName() + ": Initializing inventory of type -- " + inventoryType + " --.");
 
 			while ((line = in.readLine()) != null) {
 			    String parts[] = line.split(",");
@@ -177,24 +177,16 @@ public class ShelfAgent extends Agent {
 			MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
-				System.out.println("Shelf received order");
+				System.out.println(myAgent.getLocalName() +": Order request received");
 				//System.out.print(myAgent.getLocalName() + ": ");
-				//System.out.println("message-> " + message.getContent());
-				//String[] parsedMessage = message.getContent().split(",");
-				// The first part of the content contains the piece requested, and the second
-				//  the amount needed.
-				//System.out.println("MSG: " +  message.getContent());
-				//System.out.println("LENGTH: " + parsedMessage.length);
-				//String piece = parsedMessage[0];
-				//int amount = Integer.parseInt(parsedMessage[1]);
+
 				HashMap<String, Integer> mappy;
 				try {
 					System.out.println(message.getContentObject());
 					mappy = (HashMap<String, Integer>)message.getContentObject();
-					System.out.println("Shelf received objects:");
 					System.out.println(mappy.toString());
 					if(checkWholeInventory(mappy)){
-						System.out.println("All pieces are available. Sending position...");
+						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");
 						ACLMessage reply = message.createReply();
 						reply.setPerformative(ACLMessage.PROPOSE);
 						reply.setContent("Enough pieces available");
@@ -202,7 +194,7 @@ public class ShelfAgent extends Agent {
 						reply.setContentObject(myPosition);
 						myAgent.send(reply);
 					}else{
-						System.out.println("Insufficient pieces");
+						System.out.println(myAgent.getLocalName() + ": Insufficient pieces");
 					}
 				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block

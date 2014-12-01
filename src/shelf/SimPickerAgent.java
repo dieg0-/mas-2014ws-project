@@ -23,7 +23,6 @@ import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 public class SimPickerAgent extends Agent {
 	
@@ -243,7 +242,7 @@ public class SimPickerAgent extends Agent {
 				try {
 					result = DFService.search(myAgent, template);
 					System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
-					System.out.println("Found the following active agents:");
+					System.out.println(myAgent.getLocalName() + ": Found the following active agents:");
 					activeAgent = new AID[result.length];
 					// Found Agents.
 					for (int i = 0; i < result.length; ++i) {
@@ -260,16 +259,11 @@ public class SimPickerAgent extends Agent {
 
 					System.out.println(myAgent.getLocalName() + ": Requesting pieces");
 					cfp.setContentObject(mappy);
-					System.out.println("Bla Bla " + mappy.toString());
-					System.out.println("My content " + cfp.getContentObject());
 					myAgent.send(cfp);
 				} catch (FIPAException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
