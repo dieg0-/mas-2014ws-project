@@ -62,5 +62,15 @@ public class Pose implements Serializable {
 		return pose;
 	}
 	
+	public double[] poseToArray(){
+		double aPose[] = {this.getX(), this.getY()};
+		return aPose;
+	}
+	
+	public Pose arrayToPose(double[] aPose){
+		Pose pose = new Pose(aPose[0], aPose[1]);
+		return pose;
+	}
+	
 
 }

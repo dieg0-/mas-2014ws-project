@@ -11,10 +11,14 @@ All Rights Reserved.
 package shelf;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import utilities.Pose;
 
@@ -31,13 +35,14 @@ import jade.lang.acl.UnreadableException;
 
 public class ShelfAgent extends Agent {
 	
+	public static String shelfDir = "conf/shelves/shelf";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, Integer> inventory;
 	//private boolean busy;
-	private Pose position;
+	protected Pose position;
 	
 	protected DFAgentDescription dfd;
 	
@@ -45,14 +50,16 @@ public class ShelfAgent extends Agent {
 		position = new Pose();
 		position.randomInit(true);
 		inventory = new HashMap<String, Integer>();
-		initInventory();
+		Object[] args = this.getArguments();
+		String inventoryType;
+		if (args != null && args.length > 0) {
+			inventoryType = (String) args[0];
+		}else {
+			inventoryType = "DEFAULT";
+		}
+		initInventory(inventoryType);
 		//this.busy = false;
-		// Testing purposes.. This shouldn't be predefined for all agents.
-		/**
-		inventory.put("vtx", 16);
-		inventory.put("wires", 12);
-		inventory.put("motor", 18);
-		**/
+
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
 		
@@ -101,11 +108,39 @@ public class ShelfAgent extends Agent {
 		} );
 	}
 	
-	public void initInventory(){
+	public boolean checkPieceInInventory(String piece, int amount){
+		boolean answer = false;
+		if(this.inventory.containsKey(piece)){
+			if(this.inventory.get(piece) >= amount)
+				answer = true;
+		}
+		return answer;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public boolean checkWholeInventory(HashMap<String, Integer> order){
+		boolean answer = true;
+		Set orderSet = order.entrySet();
+		Iterator iter = orderSet.iterator();
+		while(iter.hasNext()){
+			@SuppressWarnings("unchecked")
+			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+			if(!checkPieceInInventory(lookup.getKey(), lookup.getValue()))
+				return false;
+		}
+		
+		return answer;
+	}
+	
+	public void initInventory(String inventoryType){
 		BufferedReader in;
 		try {
-			in = new BufferedReader(new FileReader("conf/shelves/shelfDefault.txt"));
+			File inventoryFile = new File(shelfDir + inventoryType + ".txt");
+			if(!inventoryFile.exists())
+				inventoryType = "Default";
+			in = new BufferedReader(new FileReader(shelfDir + inventoryType + ".txt"));
 			String line = "";
+			System.out.println(this.getLocalName() + ": Initializing inventory of type -- " + inventoryType + " --.");
 
 			while ((line = in.readLine()) != null) {
 			    String parts[] = line.split(",");
@@ -137,54 +172,42 @@ public class ShelfAgent extends Agent {
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@SuppressWarnings("unchecked")
 		public void action() {
 			MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
+				System.out.println(myAgent.getLocalName() +": Order request received");
 				//System.out.print(myAgent.getLocalName() + ": ");
-				//System.out.println("message-> " + message.getContent());
-				//String[] parsedMessage = message.getContent().split(",");
-				// The first part of the content contains the piece requested, and the second
-				//  the amount needed.
-				//System.out.println("MSG: " +  message.getContent());
-				//System.out.println("LENGTH: " + parsedMessage.length);
-				//String piece = parsedMessage[0];
-				//int amount = Integer.parseInt(parsedMessage[1]);
+
 				HashMap<String, Integer> mappy;
 				try {
+					System.out.println(message.getContentObject());
 					mappy = (HashMap<String, Integer>)message.getContentObject();
-					System.out.println("Shelf received objects:");
 					System.out.println(mappy.toString());
+					ACLMessage reply = message.createReply();
+					if(checkWholeInventory(mappy)){
+						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");
+						
+						reply.setPerformative(ACLMessage.PROPOSE);
+						reply.setContent("Enough pieces available");
+						double myPosition[] = position.poseToArray();
+						reply.setContentObject(myPosition);
+						myAgent.send(reply);
+					}else{
+						reply.setPerformative(ACLMessage.REFUSE);
+						reply.setContent("Not enough pieces available");
+						System.out.println(myAgent.getLocalName() + ": Insufficient pieces");
+						myAgent.send(reply);
+					}
 				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				
-				//ACLMessage reply = message.createReply();
-				/**
-				// Checks if the piece is available.
-				if(inventory.containsKey(piece)){
-					Integer availablePieces = inventory.get(piece);
-					// Check how many are there in stock.
-					if(availablePieces >= amount){
-						reply.setPerformative(ACLMessage.PROPOSE);
-						reply.setContent("Enough pieces available");
-						System.out.println(myAgent.getLocalName() + ": Enough " + piece + "s available.");
-						// This shouldn't happen yet, the picker should select a shelf...
-						// just for testing purposes:
-						updateInventory(piece, amount);
-					}else{
-						reply.setPerformative(ACLMessage.PROPOSE);
-						System.out.println(myAgent.getLocalName() + ": Only " + availablePieces + " " + piece + "s available.");
-						reply.setContent("Only " + availablePieces + " are available.");
-					}
-				// Ideally, a shelf shouldn't respond if it doesn't have the available piece.
-				}else{
-					reply.setPerformative(ACLMessage.REFUSE);
-					System.out.println(myAgent.getLocalName() + ": Sorry, " + piece + "s are not available.");
-					reply.setContent("The piece is unfortunately not available");
-				}
-				myAgent.send(reply);**/
+	
 			}
 			else {
 				block();
