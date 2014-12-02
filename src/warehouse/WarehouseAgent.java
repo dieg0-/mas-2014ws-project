@@ -19,6 +19,7 @@ import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 
@@ -30,17 +31,23 @@ public class WarehouseAgent extends Agent {
 	// The order list maps the available lists to it's status (pending or
 	// finished)
 	@SuppressWarnings("unused")
-	private Hashtable<Integer, String> orderListStatus;
+	private Hashtable<String, String> orderPicker;
 	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> pendingOrders;
 	@SuppressWarnings("unused")
 	private Hashtable<Integer, String> completedOrders;
 	@SuppressWarnings("unused")
-	private Hashtable<Integer, String> processingOrders;
-	
+	private Hashtable<Integer, String> assignedOrders;
+	int currentOrder;
 	InitConfig config;
 
-	/* Agent initialization */
+	/** 
+	 * Agent initialization. 
+	 * <li>Creates and/or reads the xml condfiguration file. 
+	 * <li>Initializes the order list status
+	 * <li>Loads the initial behaviours
+	 * 
+	 */
 	protected void setup() {
 		System.out.println(getLocalName() + ": Started.");
 		//Load config file
@@ -50,12 +57,11 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   
 				
-		orderListStatus = new Hashtable<Integer, String>();
+		orderPicker = new Hashtable<String, String>();
 
 		// Add behaviours
 		addBehaviour(new initialOrders());
 		addBehaviour(new CreateOrder());
-		addBehaviour(new availablePicker());
 		System.out.println(getLocalName()+": Loaded behaviours");
 		
 	}
@@ -65,8 +71,11 @@ public class WarehouseAgent extends Agent {
 		// Printout a dismissal message
 		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
-
+	
 	@SuppressWarnings("serial")
+	/**
+	 * Cyclic behavior that updates order's list status.
+	 */
 	public class updateOrderLists extends CyclicBehaviour {
 
 		public void action() {
@@ -86,30 +95,35 @@ public class WarehouseAgent extends Agent {
 	}
 
 	
-	
+	/**
+	 * Cyclic behaviour that creates random orders on the fly. 
+	 */
 	@SuppressWarnings("serial")
 	private class CreateOrder extends CyclicBehaviour {
 		public void action() {
 			AgentContainer c = getContainerController();
 			Object[] args = new Object[2];
 			args[0] = readOrder();
-
+			DecimalFormat uidFormat = new DecimalFormat("0000");
+			
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
 					MessageTemplate.MatchOntology("newOrder"));
 
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) { // Message received. Process it String order =
+				
 				int orderNum = Integer.parseInt(msg.getContent());
-				args[1]=orderNum;
+				String ordNum = uidFormat.format(orderNum);
+				args[1]=ordNum;
 				System.out.println(myAgent.getLocalName()
-						+ ": Received order...");
+						+ ": Received new order...");
 
 				try {
 					System.out.println(myAgent.getLocalName()
 							+ ": Creating OrderAgent");
-					AgentController a = c.createNewAgent("Order"+
-							Integer.toString(orderNum), "warehouse.OrderAgent",
+					AgentController a = c.createNewAgent("Order "+
+							ordNum, "warehouse.OrderAgent",
 							args);
 					// System.out.println("Attempting to start OrderAgent");
 					a.start();
@@ -123,9 +137,12 @@ public class WarehouseAgent extends Agent {
 			} else {
 				block();
 			}
-
 		}
 		
+		/**
+		 * Creates a part list with random quantities.
+		 * @return partList	HashMap<String,Integer> part list created randomly.
+		 */
 		HashMap<String,Integer> readOrder(){
 			Random rnd = new Random();
 			HashMap<String,Integer> partList = new HashMap <String,Integer>();
@@ -150,7 +167,9 @@ public class WarehouseAgent extends Agent {
 			return partList;
 		}
 	}
-	
+	/**
+	 * Loads initial orders stored in the xml configuration file.
+	 */
 	private class initialOrders extends OneShotBehaviour{
 		/**
 		 * 
@@ -161,14 +180,14 @@ public class WarehouseAgent extends Agent {
 			AgentContainer c = getContainerController();
 			ArrayList<Object[]> orders = config.getOrderArgs();
 			System.out.println(myAgent.getLocalName()+": Initial orders loaded: "+orders.size());
-			
+			currentOrder=orders.size();
 			try {
 				for(Object[] o:orders){
 					String orderNum = (String)o[1];
 					Object[] args = new Object[2];
 					args[0] = o[0];
 					args[1] = o[1];
-					AgentController a = c.createNewAgent("Order"+
+					AgentController a = c.createNewAgent("Order "+
 							orderNum, "warehouse.OrderAgent",
 							args);
 					a.start();
@@ -176,30 +195,7 @@ public class WarehouseAgent extends Agent {
 			}catch (Exception e) {
 				System.out.println("There is something wrong");
 				e.printStackTrace();
-			}
-			
-			
-				
-			
-			
-		}
-	}
-
-	@SuppressWarnings("serial")
-	private class availablePicker extends CyclicBehaviour {
-		public void action() {
-			MessageTemplate mt = MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
-					MessageTemplate.MatchOntology("freepicker"));
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
-				System.out.println(myAgent.getLocalName() + ": Picker "
-						+ msg.getSender().getLocalName() + " is available.");
-
-			} else {
-				block();
-			}
-
+			}			
 		}
 	}
 	
