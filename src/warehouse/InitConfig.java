@@ -42,7 +42,7 @@ public class InitConfig {
 		}
 	}
 	/**
-	 * Reads a default configuration file called kiva2.config.xml.
+	 * Reads a default configuration file called kiva3.config.xml.
 	 * Configuration files must be stored in the folder conf/warehouse/
 	 */	
 	
@@ -55,7 +55,7 @@ public class InitConfig {
 			   Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
 			   // specify the location and name of xml file to be read
-			   File XMLfile = new File("conf/warehouse/kiva2.config.xml");
+			   File XMLfile = new File("conf/warehouse/kiva3.config.xml");
 
 			   // this will create Java object - warehouse from the XML file
 			   this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
