@@ -19,7 +19,6 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAAgentManagement.Property;
 import jade.lang.acl.ACLMessage;
 import utilities.Pose;
 
@@ -62,10 +61,6 @@ public class RobotAgent extends Agent {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("fetch");
 		sd.setName("Fetch-Service");
-		Property p = new Property();
-		p.setName("position");
-		p.setValue(position.parsePose());
-		sd.addProperties(p);
 		this.dfd.addServices(sd);
 		/* The robot agent must be provided with an argument which contains
 		 * the identification number of the agent. If such argument is not
@@ -118,6 +113,11 @@ public class RobotAgent extends Agent {
 		 * robot as a print out.
 		 */
 		public void action() {
+			try {
+				DFService.deregister(myAgent);
+			} catch (FIPAException fe) {
+				System.err.println(myAgent.getLocalName() + ": couldn't unregister.");
+			}
 			String current_pos = String.format("(%.2f, %.2f)", position.getX(), position.getY());
 			System.out.println("  > Location: " + current_pos + ").");
 			ACLMessage reply = this.message.createReply();
@@ -141,6 +141,11 @@ public class RobotAgent extends Agent {
 		}
 	
 		public boolean done() {
+			try {
+				DFService.register(myAgent, dfd);
+			} catch (FIPAException fe) {
+				System.err.println("\n[ERR] Agent could not be registered.");
+			}
 			return true;
 		}
 	}
@@ -185,12 +190,7 @@ public class RobotAgent extends Agent {
 		 * shelf to its original position, the done() method is executed.
 		 */
 		public void action() {
-			System.out.println(myAgent.getLocalName() + ": [fetching].");
-			System.out.println("  > Picker at: " + this.picker_position);
-			System.out.println("  > Target at: " + this.target);
-			System.out.println("--------------------------\n");
 			try {
-				
 				DFService.deregister(myAgent);
 				Thread.sleep(this.timeout*1000);
 			}
@@ -200,6 +200,10 @@ public class RobotAgent extends Agent {
 			catch (Exception e) {
 				System.err.println(myAgent.getLocalName() + ": terminated abruptly.");
 			}
+			System.out.println(myAgent.getLocalName() + ": [fetching].");
+			System.out.println("  > Picker at: " + this.picker_position);
+			System.out.println("  > Target at: " + this.target);
+			System.out.println("--------------------------\n");
 		}
 		/**
 		 * Successfully completing the fetch action of a specified shelf. The
