@@ -55,7 +55,7 @@ public class InitConfig {
 			   Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
 			   // specify the location and name of xml file to be read
-			   File XMLfile = new File("conf/warehouse/kiva3.config.xml");
+			   File XMLfile = new File("conf/warehouse/kiva2.config.xml");
 
 			   // this will create Java object - warehouse from the XML file
 			   this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
@@ -94,7 +94,6 @@ public class InitConfig {
 			   // some exception occured
 			   e.printStackTrace();
 			  }
-
 	}
 	
 	void printOrders(ArrayList<Order> ol){

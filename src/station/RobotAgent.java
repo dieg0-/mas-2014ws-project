@@ -10,6 +10,8 @@ All Rights Reserved.
 
 package station;
 
+import java.io.IOException;
+
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
@@ -17,7 +19,6 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAAgentManagement.Property;
 import jade.lang.acl.ACLMessage;
 import utilities.Pose;
 
@@ -60,10 +61,6 @@ public class RobotAgent extends Agent {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("fetch");
 		sd.setName("Fetch-Service");
-		Property p = new Property();
-		p.setName("position");
-		p.setValue(position.parsePose());
-		sd.addProperties(p);
 		this.dfd.addServices(sd);
 		/* The robot agent must be provided with an argument which contains
 		 * the identification number of the agent. If such argument is not
@@ -101,25 +98,54 @@ public class RobotAgent extends Agent {
 	 * @return position of the robot agent.
 	 */
 	private class LocalizationBehaviour extends SimpleBehaviour {
+		
+		protected ACLMessage message;
 		/**
 		 * Override constructor of the SimpleBehavior.
 		 * @param a	this agent.
 		 */
-		public LocalizationBehaviour(Agent a) {
-			super(a);			
+		public LocalizationBehaviour(Agent a, ACLMessage message) {
+			super(a);
+			this.message = message;
 		}
 		/**
 		 * Main action of the behavior. It returns the position of the
 		 * robot as a print out.
 		 */
 		public void action() {
+			try {
+				DFService.deregister(myAgent);
+			} catch (FIPAException fe) {
+				System.err.println(myAgent.getLocalName() + ": couldn't unregister.");
+			}
 			String current_pos = String.format("(%.2f, %.2f)", position.getX(), position.getY());
 			System.out.println("  > Location: " + current_pos + ").");
-			System.out.println("--------------------\n");
-			block(250);
+			ACLMessage reply = this.message.createReply();
+			if(this.message != null) {
+				reply.setPerformative(ACLMessage.PROPOSE);
+				double myPosition[] = position.poseToArray();
+				try {
+					reply.setContentObject(myPosition);
+					myAgent.send(reply);
+					System.out.println("  > I have sent my localization");
+					System.out.println("-------------------------\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				reply.setPerformative(ACLMessage.REFUSE);
+				System.out.println(myAgent.getLocalName() + ": Error. Message invalid.");
+				myAgent.send(reply);
+				System.out.println("-------------------------\n");
+			}
 		}
 	
 		public boolean done() {
+			try {
+				DFService.register(myAgent, dfd);
+			} catch (FIPAException fe) {
+				System.err.println("\n[ERR] Agent could not be registered.");
+			}
 			return true;
 		}
 	}
@@ -137,17 +163,22 @@ public class RobotAgent extends Agent {
 	private class FetchBehaviour extends SimpleBehaviour {
 		
 		private long timeout;
+		private String picker_position;
 		private String target;
+		protected ACLMessage message;
 		/**
 		 * Override constructor of the SimpleBehavior.
 		 * @param a					this agent.
 		 * @param time_sleep		duration of sleeping.
 		 * @param shelf_position	position of the shelf.
 		 */
-		public FetchBehaviour(Agent a, long time_sleep, String shelf_position) {
+		public FetchBehaviour(Agent a, long time_sleep, String positions, ACLMessage msg) {
 			super(a);
+			String pos[] = positions.split(",");
 			this.timeout = time_sleep;
-			this.target = shelf_position;
+			this.picker_position = String.format("%s,%s", pos[0], pos[1]);
+			this.target = String.format("%s,%s", pos[2], pos[3]);
+			this.message = msg;
 		}
 		/**
 		 * Main action of the behavior. It works as follow:
@@ -159,11 +190,7 @@ public class RobotAgent extends Agent {
 		 * shelf to its original position, the done() method is executed.
 		 */
 		public void action() {
-			System.out.println(myAgent.getLocalName() + ": [fetching].");
-			System.out.println("  > Target at: " + this.target);
-			System.out.println("--------------------------\n");
 			try {
-				
 				DFService.deregister(myAgent);
 				Thread.sleep(this.timeout*1000);
 			}
@@ -173,6 +200,10 @@ public class RobotAgent extends Agent {
 			catch (Exception e) {
 				System.err.println(myAgent.getLocalName() + ": terminated abruptly.");
 			}
+			System.out.println(myAgent.getLocalName() + ": [fetching].");
+			System.out.println("  > Picker at: " + this.picker_position);
+			System.out.println("  > Target at: " + this.target);
+			System.out.println("--------------------------\n");
 		}
 		/**
 		 * Successfully completing the fetch action of a specified shelf. The
@@ -183,9 +214,13 @@ public class RobotAgent extends Agent {
 		public boolean done() {
 			System.out.println("\n------------------------------------");
 			System.out.println(myAgent.getLocalName() + ": [report].");
-			System.out.println("  > Task accomplished.");
+			System.out.println("  > Shelf has been fetched.");
 			System.out.println("------------------------------------\n");
+			ACLMessage reply = this.message.createReply();
+			reply.setPerformative(ACLMessage.PROPOSE);
+			myAgent.send(reply);
 			try {
+				Thread.sleep(this.timeout*1000);
 				DFService.register(myAgent, dfd);
 			}
 			catch (Exception e) {
@@ -227,10 +262,10 @@ public class RobotAgent extends Agent {
 					System.out.println("  > Busy: " + busy);
 				}
 				else if (msg_command.matches("localization")) {
-					myAgent.addBehaviour(new LocalizationBehaviour(myAgent));
+					myAgent.addBehaviour(new LocalizationBehaviour(myAgent, msg));
 				}
 				else if (msg_command.matches("fetch")) {
-					myAgent.addBehaviour(new FetchBehaviour(myAgent, 20, msg_content));
+					myAgent.addBehaviour(new FetchBehaviour(myAgent, 20, msg_content, msg));
 				}
 				else {
 					System.out.println("  > No valid command.");
