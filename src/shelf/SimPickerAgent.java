@@ -23,6 +23,7 @@ import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 public class SimPickerAgent extends Agent {
 	
@@ -211,7 +212,9 @@ public class SimPickerAgent extends Agent {
 		  * 
 		  */
 		private static final long serialVersionUID = 1L;
+		private int repliesCnt = 0;
 		//private AID closestShelf;
+		
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
@@ -259,22 +262,48 @@ public class SimPickerAgent extends Agent {
 
 					System.out.println(myAgent.getLocalName() + ": Requesting pieces");
 					cfp.setContentObject(mappy);
+					cfp.setConversationId("select-shelf");
+					//cfp.setReplyWith("cfp"+System.currentTimeMillis()); 
+					
 					myAgent.send(cfp);
 					/**
 					 * Simulate Seller - Buyer case-behaviour to wait for the answer of queried shelves
 					 * Look for proposals, not refuses
 					 * Keep the closest shelf.
 					 */
+					//////////////////////////////////////////////////////////////////////////////////////////////
+					MessageTemplate selectShelfTemplate = MessageTemplate.MatchConversationId("select-shelf");
+					System.out.println("Replies count: " + repliesCnt);
+					System.out.println("Active agents count: " + activeAgent.length);
+					while(repliesCnt < activeAgent.length){
+						ACLMessage reply = myAgent.receive(selectShelfTemplate);
+						if (reply != null) {
+							// Reply received
+							if (reply.getPerformative() == ACLMessage.PROPOSE) {
+								// This is an offer 
+								double shelfPosition[] = (double[]) reply.getContentObject();
+								System.out.println(shelfPosition[0] + ", " + shelfPosition[1]);
+								System.out.println("Something Something");
+							}
+							repliesCnt++;
+						}
+						else {
+							block();
+						}
+					}
+					
+					
+					/////////////////////////////////////////////////////////////////////////////////////////////
 				} catch (FIPAException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (UnreadableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				} 
-	
-			
-				
 				
 				
 				busy = true;

@@ -185,16 +185,20 @@ public class ShelfAgent extends Agent {
 					System.out.println(message.getContentObject());
 					mappy = (HashMap<String, Integer>)message.getContentObject();
 					System.out.println(mappy.toString());
+					ACLMessage reply = message.createReply();
 					if(checkWholeInventory(mappy)){
 						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");
-						ACLMessage reply = message.createReply();
+						
 						reply.setPerformative(ACLMessage.PROPOSE);
 						reply.setContent("Enough pieces available");
 						double myPosition[] = position.poseToArray();
 						reply.setContentObject(myPosition);
 						myAgent.send(reply);
 					}else{
+						reply.setPerformative(ACLMessage.REFUSE);
+						reply.setContent("Not enough pieces available");
 						System.out.println(myAgent.getLocalName() + ": Insufficient pieces");
+						myAgent.send(reply);
 					}
 				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block
