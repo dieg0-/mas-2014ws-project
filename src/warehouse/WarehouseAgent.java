@@ -45,14 +45,12 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getLocalName() + ": Started.");
 		//Load config file
 		config = new InitConfig();
-		config.createXML();
+		//config.createXML();
 		config.readXML();
+		System.out.println(getLocalName()+": Configuration read succesfuly.");
+		   
 				
 		orderListStatus = new Hashtable<Integer, String>();
-
-		// Get the list of orders as a start-up argument
-		@SuppressWarnings("unused")
-		Object[] args = getArguments();
 
 		// Add behaviours
 		addBehaviour(new initialOrders());
@@ -161,7 +159,7 @@ public class WarehouseAgent extends Agent {
 
 		public void action(){
 			AgentContainer c = getContainerController();
-			ArrayList<Object[]> orders = config.getOrders();
+			ArrayList<Object[]> orders = config.getOrderArgs();
 			System.out.println(myAgent.getLocalName()+": Initial orders loaded: "+orders.size());
 			
 			try {
@@ -198,7 +196,6 @@ public class WarehouseAgent extends Agent {
 				System.out.println(myAgent.getLocalName() + ": Picker "
 						+ msg.getSender().getLocalName() + " is available.");
 
-				// TODO Send OrderAgent to free PickerAgent
 			} else {
 				block();
 			}

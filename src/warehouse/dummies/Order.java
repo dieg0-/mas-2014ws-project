@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(namespace = "warehouse.dummies.Warehouse")
+@XmlRootElement(namespace = "warehouse.dummies.Orders")
 @XmlType(propOrder = {"UID","products"})
 public class Order {	
 		String ordNum;
@@ -78,6 +78,12 @@ public class Order {
 		}
 		
 		public HashMap<String,Integer> getPartList(){
+			this.partList = new HashMap<String,Integer>();
+			for (Product p:productList){
+				partList.put(p.getName(), p.getQuantity());
+			}
+			//System.out.println("Product list:"+productList.size());
+			//System.out.println("Part list: "+partList.size());
 			return this.partList;
 		}
 		

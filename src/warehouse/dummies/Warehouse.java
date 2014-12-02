@@ -1,29 +1,26 @@
 package warehouse.dummies;
 
-import java.util.ArrayList;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import warehouse.dummies.Order;
+import warehouse.dummies.Orders;
 
-@XmlRootElement
-@XmlType(propOrder = {"orderList"})
-public class Warehouse {
+@XmlRootElement(name="warehouse")
+@XmlType(propOrder = {"orders"})
+public class Warehouse {	
+	Orders orderList;
 	
+	//@XmlElementWrapper(name = "orders")
+	//@XmlElement(name = "order")
+	@XmlElement(name = "orders")
+	public Orders getOrders(){
+		return orderList;		
+	}
 	
-	private ArrayList<Order> orderList;
-	
-		public ArrayList<Order> getOrderList(){
-			return orderList;		
-		}
-		
-		@XmlElementWrapper(name = "orders")
-		@XmlElement(name = "order")
-		public void setOrderList(ArrayList<Order> ol){
-			this.orderList = ol;
-		}
-	
+	public void setOrders(Orders ol){
+		this.orderList = ol;
+	}
+
 }
