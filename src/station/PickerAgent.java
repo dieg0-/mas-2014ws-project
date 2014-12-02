@@ -2,7 +2,7 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 4.4.n.
+@version: 4.5.n.
 @since 02.12.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
-
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -28,18 +27,23 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import utilities.PrinterUtil;
+import shelf.ShelfAgent;
 import utilities.Pose;
 
 /**
- * Picker agent which is in charge of the dynamic between the orders, the robots
+ * <!--PICKER AGENT CLASS-->
+ * <p>Picker agent which is in charge of the dynamic between the orders, the robots
  * and the shelves. It picks an order, broadcasts the needed parts to the shelves
  * and picks the robot nearest to a chosen shelf; it then commands the robot
- * to fetch the shelf.
- * <p>
- * Attributes:
- * <li>activeAgent  - array of IDs which store found free RobotAgent.
- * <li>printer		- utility to implement colored messages.
- * <li>busy			- status of the picker agent.	
+ * to fetch the shelf.</p>
+ * <b>Attributes:</b>
+ * <ul>
+ * 	<li> <i>activeAgent:</i> array of IDs which store found free RobotAgent. </li>
+ * 	<li> <i>printer:</i> utility to implement colored messages. </li>
+ *  <li> <i>position:</i> an instance of the class {@link Pose} with the picker position.
+ * 	<li> <i>busy:</i> status of the picker agent. </li>
+ * </ul>
+ * @author [DNA] Diego, Nicolas, Argentina
  */
 @SuppressWarnings("serial")
 public class PickerAgent extends Agent {
@@ -57,18 +61,14 @@ public class PickerAgent extends Agent {
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
-		/* TODO: [Diego] Broadcasting the order to the shelves to
-		 * search for the parts. From the shelves which answered
-		 * one is chosen according to the distant of it w.r.t. the
-		 * picker. The picker must retrieve the localization of the
-		 * shelf (coordinates) and send them to the chosen robot.
-		 * The coordinates of the shelf is simulated with an instance
-		 * of the class pose, randomly initialized.
-		 */
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
-		
+		/* TODO: The picker must retrieve the localization of the
+		 * shelf (coordinates) and send them to the chosen robot.
+		 * By now, the coordinates of the shelf is simulated with an instance
+		 * of the class pose, randomly initialized.
+		 */
 		Pose virtualShelf = new Pose();
 		virtualShelf.randomInit(false);
 		// Behaviors for the pickerAgent.
@@ -78,18 +78,23 @@ public class PickerAgent extends Agent {
 		this.addBehaviour(new GetNewOrder());
 		this.addBehaviour(new GetRobotAgents(this, virtualShelf));
 		this.addBehaviour(new UpdatePickerStatus());
-		
-
 	}
 	
 	/**
-	 * Behavior which is executed cyclicly every specified amount
-	 * of time given by the argument period. The pickerAgent will
-	 * query for robotAgents which are registered to the DF, description
+	 * <!--GET ROBOT AGETNS BEHAVIOUR-->
+	 * <p>Behavior which is executed cyclicly every specified amount
+	 * of time given by the argument period. This agent will
+	 * query for {@link RobotAgent} which are registered to the DF, description
 	 * facilitator, and are offering the service of "fetch". Then,
-	 * it will choose the robot nearest to the shelf, and send to it the
-	 * coordinates of the target.
-	 *
+	 * it will choose the robot nearest to a selected {@link ShelfAgent},
+	 * and send to it the coordinates of the target.</p>
+	 * <b>Attributes:</b>
+	 * <ul>
+	 * 	<li> <i>repliesCnt:</i> a counter to retrieve every reply from the robot agents.</li>
+	 *  <li> <i>currentMinDistance:</i> shorter distance from the picker to the robots found.</li>
+	 *  <li> <i>closestRobot:</i> ID of the robot which happens to be closest.</li>
+	 * 	<li> <i>target:</i> an instance of {@link Pose} with the chosen shelf position.</li>
+	 * </ul>
 	 **/
 	private class GetRobotAgents extends SimpleBehaviour {
 		
@@ -97,26 +102,30 @@ public class PickerAgent extends Agent {
 		protected double currentMinDistance = Double.MAX_VALUE;
 		protected AID closestRobot;
 		protected Pose target;
+		
 		/**
 		 * Override constructor of a TickerBehavior
 		 * @param a			this agent.
-		 * @param period	amount of time between execution of the behavior in ms.
 		 * @param targetS	location of the target shelf as an instance of {@link Pose}.
 		 */
 		public GetRobotAgents(Agent a, Pose targetS) {
 			super(a);
 			this.target = targetS;
 		}
+		
 		/**
 		 * Main action of the behavior. It implements the following thread of 
 		 * actions:
-		 * <li> Search for {@link RobotAgent}s which offer the service "fetch".
-		 * Such robots are said to be free.
-		 * <li> Once the IDs of the robots are extracted, it compares the
-		 * position of the agents w.r.t. the target shelf.
-		 * <li> The nearest robot wins, and the coordinates of the target is
-		 * set to it.
-		 * <p><p>
+		 * <ol>
+		 * 	<li> Search for {@link RobotAgent}s which offer the service "fetch".
+		 * Such robots are said to be free. </li>
+		 * 	<li> Once the IDs of the robots are extracted, it ask the agents for
+		 * their current position. </li>
+		 *  <li> The closest robot to the shelf is chosen, according to the replies.
+		 * 	<li> Coordinates of the chosen {@link ShelfAgent} are sent to the robot. </li>
+		 *  <li> Once the robot replies, announcing the arrival of the shelf, the
+		 *  behavior ends.
+		 * </ol>
 		 */
 		public void action() {
 			DFAgentDescription[] result = null;
@@ -125,17 +134,22 @@ public class PickerAgent extends Agent {
 			// Creation of Template for the search.
 			sd.setType("fetch");
 			template.addServices(sd);
+			/* We simulated now a TickBehavior. Every 15 seconds, this agent
+			 * will query for robots which are free; i.e., robots which are
+			 * registered to the description facilitator and offering the
+			 * service.
+			 */
 			try {
 				boolean found = false;
 				while (!found) {
-					// Searching process.
+					// STEP 1. Searching process.
 					result = DFService.search(myAgent, template);
 					// PRINTOUTS: Agents found.
 					System.out.println("------------------------------------");
 					System.out.println(myAgent.getLocalName() + ": [searching agents].");
 					System.out.println("Active agents:");
 					activeAgent = new AID[result.length];
-					// If not agents are found, do nothing.
+					// If not agents are found, do wait 15 seconds and repeat.
 					if (result.length == 0) {
 						System.out.println("  > No free agents.");
 						System.out.println("------------------------------------\n");
@@ -145,7 +159,7 @@ public class PickerAgent extends Agent {
 						found = true;
 					}
 				}
-				// Choose the nearest robot to the shelf.
+				// STEP 2. Asking for the found agents' positions.
 				for (int i = 0; i < result.length; ++i) {
 					// Listing the agents ID's found.
 					activeAgent[i] = result[i].getName();
@@ -153,26 +167,23 @@ public class PickerAgent extends Agent {
 				}
 				System.out.println("Robot picking will take place.");
 				System.out.println("------------------------------------\n");
-				/* TODO: Choose the nearest robot to the shelf, and add
-				 * him as the receiver of the message.
-				 */
 				ACLMessage query = new ACLMessage(ACLMessage.CFP);
 				for (int i = 0; i < result.length; ++i) {
 					query.addReceiver(result[i].getName());
 				}
-				// Fill the message's body and send it.
+				// Fill the message's body to request the positions of the found agents.
 				query.setOntology("localization");
 				query.setConversationId("select-robot");
-				//query.setContent(this.target.parsePose());
 				myAgent.send(query);
-				/****************************************************************/
+				
+				// STEP 3. Choosing the robot closest to the shelf.
 				MessageTemplate selectRobotTemplate = MessageTemplate.MatchConversationId("select-robot");
 				while(this.repliesCnt < activeAgent.length) {
 					ACLMessage reply = myAgent.receive(selectRobotTemplate);
 					if (reply != null) {
 						// Reply received
 						if (reply.getPerformative() == ACLMessage.PROPOSE) {
-							// This is an offer 
+							// Comparing distances and chosing the shortest.
 							double robotPosition[] = (double[]) reply.getContentObject();
 							Pose robotPose = new Pose();
 							robotPose = robotPose.arrayToPose(robotPosition);
@@ -188,21 +199,26 @@ public class PickerAgent extends Agent {
 						block();
 					}	
 				}
+				//PRINTOUTS: Informing which agent was the closest one.
 				Thread.sleep(1000);
 				System.out.println("------------------------------------");
 				System.out.println(myAgent.getLocalName() + ": [commanding to fetch].");
-				System.out.println("  > Closet robot found: " + this.closestRobot.getName());
+				System.out.println("  > Closet robot found: " + this.closestRobot.getLocalName());
 				System.out.println("  > Fetch sent to the chosen agent.");
 				System.out.println("  > Waiting for finalization.");
 				System.out.println("------------------------------------");
+				
+				// STEP 4. Commanding the fetch action.
 				ACLMessage command = new ACLMessage(ACLMessage.CFP);
 				command.addReceiver(this.closestRobot);
 				command.setOntology("fetch");
 				command.setConversationId("shelf-here");
+				// Positions of this agent and the target shelf, in this order.
 				String content = String.format("%s,%s", position.parsePose(), this.target.parsePose());
 				command.setContent(content);
 				myAgent.send(command);
-				/*******************************************************************************/
+				
+				//STEP 5. Waiting for the shelf to arrive.
 				boolean here = false;
 				MessageTemplate shelfHereTemplate = MessageTemplate.MatchConversationId("shelf-here");
 				while (!here) {
@@ -233,20 +249,26 @@ public class PickerAgent extends Agent {
 			
 		}
 		
+		/**
+		 * Once the shelf is in the station, the processing of updating the inventory
+		 * of the shelf starts, aiming to the completion of the order.
+		 */
 		public boolean done(){
+			//TODO: invoke the behavior for doing the inventory update or something.
 			return true;
 		}
 	}
 
 	/**
-	 * Safe delete of the agent.
+	 * <!--TAKEDOWN-->
+	 * <p>Safe delete of the agent.</p>
 	 */
 	protected void takeDown() {
 		System.out.println("PickerAgent Killed!!!!!!!!.");
 	}
 
 /************************************************************************************
- ********************************** ARGEN'S BLOCK **********************************
+ ********************************** Di'Argen's Block **********************************
  ************************************************************************************/
 	
 	private class UpdatePickerStatus extends CyclicBehaviour {
