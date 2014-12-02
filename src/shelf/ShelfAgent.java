@@ -33,6 +33,11 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+/**
+ * 
+ * @author Diego, Nicolas, Argentina
+ *
+ */
 public class ShelfAgent extends Agent {
 	
 	public static String shelfDir = "conf/shelves/shelf";

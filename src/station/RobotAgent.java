@@ -2,7 +2,7 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 4.4.n.
+@version: 4.5.n.
 @since 02.12.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
@@ -18,6 +18,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import shelf.ShelfAgent;
 import utilities.Pose;
 import java.io.IOException;
 
@@ -27,17 +28,18 @@ import java.io.IOException;
  * task of this agent is to fetch a shelf commanded by the {@link PickerAgent}.
  * They do not communicate directly with the shelves; instead, the communication
  * is done indirectly through the picker.</p>
- * Attributes:
+ * <b>Attributes:</b>
  * <ul>
  * 	<li> <i>id:</i> the unique identification number of the robot.
  * 	<li> <i>position:</i> an instance of the class {@link Pose} with the robot position.
  * 	<li> <i>busy:</i> flag to reflect the status of the robot.
  * 	<li> <i>dfd:</i> agent description with the services offered.
  * </ul>
+ * @author [DNA] Diego, Nicolas, Argentina
  */
 @SuppressWarnings("serial")
 public class RobotAgent extends Agent {
-	// Attributes.
+	
 	private String id;
 	protected Pose position;
 	private boolean busy;
@@ -108,11 +110,11 @@ public class RobotAgent extends Agent {
 	 * <p>Behavior which is executed one time if the message sent by the {@link PickerAgent}
 	 * has the ontology "localization". It will returns the current position
 	 * of the robot.</p>
-	 * Attributes:
+	 * <b>Attributes:</b>
 	 * <ul>
 	 * 	<li> <i>message:</i> the message sent to the robot from the picker.</li>
 	 * </ul>
-	 * Outcome:
+	 * <b>Outcome:</b>
 	 * <ul>
 	 * 	<li> position of the robot agent.
 	 * </ul>
@@ -198,14 +200,14 @@ public class RobotAgent extends Agent {
 	 * the thread of the agent into sleep for a given amount of time. The
 	 * time should simulate the distance the robot must travel in order to
 	 * reach the shelf and brought it back to the station.</p>
-	 * Attributes:
+	 * <b>Attributes:</b>
 	 * <ul>
 	 * 	<li> <i>timeout:</i> duration which the thread will be sleeping. </li>
 	 * 	<li> <i>picker_position:</i> position of the {@link PickerAgent} </li>
-	 * 	<li> <i>target:</i> position of the {@link shelf.ShelfAgent} as a string. </li>
+	 * 	<li> <i>target:</i> position of the {@link ShelfAgent} as a string. </li>
 	 *  <li> <i>message:</i>  the message sent to the robot from the picker. </li>
 	 * </ul>
-	 * Outcome:
+	 * <b>Outcome:</b>
 	 * <ul>
 	 * 	<li> A message to the picker agent informing that the shelf is in the station. </li>
 	 * </ul>
