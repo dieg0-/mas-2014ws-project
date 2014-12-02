@@ -230,14 +230,21 @@ public class SimPickerAgent extends Agent {
 				
 				/////////////// Just a test until received message is fixed ////////////////
 				HashMap<String, Integer> mappy = initMap();
+				//HashMap<String, Integer> realMappy = new HashMap<String, Integer>();
 				System.out.println(mappy.toString());
 				////////////////////////////////////////////////////////////////////////////
 				
 				/**
-				//mappy = (HashMap<String, Integer>)msg.getContentObject();
-				//System.out.println("Order correctly received! Order size: " + mappy.size());
-				//System.out.println(mappy.toString());
+				try {
+					realMappy = (HashMap<String, Integer>)msg.getContentObject();
+					System.out.println("Order correctly received! Order size: " + realMappy.size());
+					System.out.println(realMappy.toString());
+				} catch (UnreadableException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 				**/
+				
 				
 				DFAgentDescription template = new DFAgentDescription();
 				ServiceDescription sd = new ServiceDescription();
