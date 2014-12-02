@@ -29,9 +29,13 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-@SuppressWarnings("serial")
+
 public class OrderAgent extends Agent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	HashMap <String,Integer> partList;
 	boolean completed;
 	boolean assigned;
@@ -45,6 +49,8 @@ public class OrderAgent extends Agent {
 		orderNum = (String) args[1];
 		completed = false;
 		assigned = false;
+		
+		//printPartList(partList);
 		
 		this.dfd = new DFAgentDescription();
         this.dfd.setName(getAID()); 
@@ -94,6 +100,11 @@ public class OrderAgent extends Agent {
 	}
 
 	private class CompletedOrder extends CyclicBehaviour{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public void action(){
 			if (completed == true){
 			System.out.println(myAgent.getLocalName()+": Order completed...");
@@ -111,6 +122,11 @@ public class OrderAgent extends Agent {
 	}
 	
 	private class MissingPieces extends CyclicBehaviour{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public void action(){
 			//TODO Check hashtable qty vs parts
 			block();
@@ -118,6 +134,10 @@ public class OrderAgent extends Agent {
 	}
 	
 	private class requestParts extends OneShotBehaviour {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		AID picker;
 		public requestParts(AID a){
 			picker = a;
@@ -138,6 +158,11 @@ public class OrderAgent extends Agent {
 		  }
 	
 	private class orderStatus extends CyclicBehaviour{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public void action(){
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),

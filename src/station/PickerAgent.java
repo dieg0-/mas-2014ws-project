@@ -10,7 +10,11 @@ All Rights Reserved.
 
 package station;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.Map.Entry;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -23,6 +27,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAAgentManagement.Property;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 import utilities.PrinterUtil;
 import utilities.Pose;
 
@@ -192,19 +197,44 @@ public class PickerAgent extends Agent {
 				System.out.println(myAgent.getLocalName()
 						+ ": Received order. Status: busy.");
 				busy = true;
+				
+				try {
+					HashMap<String,Integer> parts = (HashMap<String,Integer>)msg.getContentObject();
+					System.out.println(parts.size());
+					//printPartList(parts);
+				} catch (UnreadableException e1) {
+					e1.printStackTrace();
+				}
+				
+				/**
 				try {
 				Thread.sleep(10000);
 				}catch(Exception e){
 					
-				}
+				}*/
 			}else{
 			block();
 			}
 		}
-
+		
+		void printPartList(HashMap<String,Integer> mp){
+			Set<Entry<String, Integer>> set = mp.entrySet();
+			Iterator<Entry<String, Integer>> i = set.iterator();
+			System.out.println("___________________");
+			while(i.hasNext()) {
+		         Entry<String, Integer> me = i.next();
+		         System.out.print(me.getKey() + ": ");
+		         System.out.println(me.getValue());
+		      }
+			System.out.println("___________________");
+		}
 	}
-
-	private class GetNewOrder extends OneShotBehaviour {
+	/**
+	 * Behaviour that looks for any available OrderAgent subscribed in the DF and requesting 
+	 * one of them being assigned to him.
+	 *
+	 */
+	private class GetNewOrder extends OneShotBehaviour {//@TODO Make this behaviour cyclic
 
 		public void action() {
 			// Update the list of robot agents.

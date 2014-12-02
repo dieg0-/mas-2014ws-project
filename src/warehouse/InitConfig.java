@@ -2,7 +2,6 @@ package warehouse;
 
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBContext;
@@ -12,6 +11,8 @@ import javax.xml.bind.Unmarshaller;
 
 
 
+
+import warehouse.dummies.Orders;
 //import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import warehouse.dummies.Warehouse;
 import warehouse.dummies.Order;
@@ -22,21 +23,16 @@ public class InitConfig {
 	
 	void createXML(){
 		Warehouse wh = new Warehouse();
-		DecimalFormat uidFormat = new DecimalFormat("0000");
-		//Creating Orders
-		ArrayList<Order> orderlist = new ArrayList<Order>();
-		for (int i=0; i<10;i++){
-			Order o = new Order(uidFormat.format(i+1));
-			orderlist.add(o);
-		}
 		
-		wh.setOrderList(orderlist);
+		//Creating Orders
+		Orders x = new Orders(10);
+		wh.setOrders(x);
 		
 		try{
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			File XMLfile = new File("conf/warehouse/kiva2.config.xml");
+			File XMLfile = new File("conf/warehouse/kiva3.config.xml");
 			jaxbMarshaller.marshal(wh, XMLfile);
 			//jaxbMarshaller.marshal(wh, System.out);
 			System.out.println("Configuration created");
@@ -45,6 +41,10 @@ public class InitConfig {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Reads a default configuration file called kiva2.config.xml.
+	 * Configuration files must be stored in the folder conf/warehouse/
+	 */	
 	
 	void readXML(){
 		try {
@@ -55,15 +55,40 @@ public class InitConfig {
 			   Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
 			   // specify the location and name of xml file to be read
-			   File XMLfile = new File("conf/warehouse/kiva2.config.xml");
+			   File XMLfile = new File("conf/warehouse/kiva3.config.xml");
 
 			   // this will create Java object - warehouse from the XML file
 			   this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
 			   
-			   //ArrayList<Order> orderList = this.warehouse.getOrderList();
-			   //printOrders(orderList);
-			   
 			   System.out.println("Configuration read succesfuly.");
+			   
+			  } catch (JAXBException e) {
+			   // some exception occured
+			   e.printStackTrace();
+			  }
+
+	}
+	
+	/**
+	 * Read a configuration file.
+	 * 
+	 * Configuration files must be stored in the folder conf/warehouse/
+	 * @param xml name of the xml file to be read. e.g. "kiva.config.xml"
+	 */	
+	void readXML(String xml){
+		try {
+
+			   // create JAXB context and initializing Marshaller
+			   JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
+
+			   Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+			   // specify the location and name of xml file to be read
+			   File XMLfile = new File("conf/warehouse/"+xml);
+
+			   // this will create Java object - warehouse from the XML file
+			   this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
+			   
 			   
 			  } catch (JAXBException e) {
 			   // some exception occured
@@ -79,11 +104,20 @@ public class InitConfig {
 		}
 		
 	}
-	
-	ArrayList<Object[]> getOrders(){
+	/**
+	 * Returns an array of Objects containing the arguments required to construct all OrderAgent
+	 * found in the config file. Each element in orderArgs is composed of Object[] args.
+	 * @return orderArgs ArrayList<Object[]> orderArgs
+	 * @return args[0] HashMap<String,Integer> partList
+	 * @return args[1] int order uid
+	 */
+	ArrayList<Object[]> getOrderArgs(){
 		
-		ArrayList<Order> ol = this.warehouse.getOrderList();
+		Orders orders = this.warehouse.getOrders();
+		ArrayList<Order> ol = orders.getOrderList();
 		ArrayList<Object[]> orderArgs = new ArrayList<Object[]>();
+		
+		//System.out.println(ol.toString());
 	
 		for(Order o:ol){
 			Object[] args = new Object[ol.size()];
@@ -92,6 +126,7 @@ public class InitConfig {
 			orderArgs.add(args);
 		}		
 		return orderArgs;
+		
 	}
 	
 	
