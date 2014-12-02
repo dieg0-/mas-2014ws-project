@@ -2,8 +2,8 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 3.5.n.
-@since 27.11.2014 
+@version: 4.4.n.
+@since 02.12.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
 **/

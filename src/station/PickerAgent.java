@@ -1,9 +1,9 @@
 /**
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
-@author: Argentina Ortega Sainz, Nicol�s Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 3.5.n.
-@since 27.11.2014 
+@author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
+@version: 4.4.n.
+@since 02.12.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
  **/
@@ -19,7 +19,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.core.behaviours.TickerBehaviour;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -75,9 +75,10 @@ public class PickerAgent extends Agent {
 		/* TODO: implement the GetRobotAgents behavior to be called after
 		 * the logic of the GetNewOrder Behavior [Argentina].
 		 */
-		this.addBehaviour(new GetRobotAgents(this, 15000, virtualShelf));
-		this.addBehaviour(new UpdatePickerStatus());
 		this.addBehaviour(new GetNewOrder());
+		this.addBehaviour(new GetRobotAgents(this, virtualShelf));
+		this.addBehaviour(new UpdatePickerStatus());
+		
 
 	}
 	
@@ -90,20 +91,20 @@ public class PickerAgent extends Agent {
 	 * coordinates of the target.
 	 *
 	 **/
-	private class GetRobotAgents extends TickerBehaviour {
+	private class GetRobotAgents extends SimpleBehaviour {
 		
-		protected Pose target;
 		protected int repliesCnt = 0;
 		protected double currentMinDistance = Double.MAX_VALUE;
 		protected AID closestRobot;
+		protected Pose target;
 		/**
 		 * Override constructor of a TickerBehavior
 		 * @param a			this agent.
 		 * @param period	amount of time between execution of the behavior in ms.
 		 * @param targetS	location of the target shelf as an instance of {@link Pose}.
 		 */
-		public GetRobotAgents(Agent a, long period, Pose targetS) {
-			super(a, period);
+		public GetRobotAgents(Agent a, Pose targetS) {
+			super(a);
 			this.target = targetS;
 		}
 		/**
@@ -117,101 +118,106 @@ public class PickerAgent extends Agent {
 		 * set to it.
 		 * <p><p>
 		 */
-		protected void onTick() {
+		public void action() {
+			DFAgentDescription[] result = null;
 			DFAgentDescription template = new DFAgentDescription();
 			ServiceDescription sd = new ServiceDescription();
 			// Creation of Template for the search.
 			sd.setType("fetch");
 			template.addServices(sd);
-			System.out.println("------------------------------------");
 			try {
-				// Searching process.
-				DFAgentDescription[] result = DFService.search(myAgent, template);
-				// PRINTOUTS: Agents found.
-				System.out.println(myAgent.getLocalName() + ": [searching agents].");
-				System.out.println("Active agents:");
-				activeAgent = new AID[result.length];
-				// If not agents are found, do nothing.
-				if (result.length == 0) {
-					System.out.println("  > No free agents.");
-					System.out.println("------------------------------------\n");
+				boolean found = false;
+				while (!found) {
+					// Searching process.
+					result = DFService.search(myAgent, template);
+					// PRINTOUTS: Agents found.
+					System.out.println("------------------------------------");
+					System.out.println(myAgent.getLocalName() + ": [searching agents].");
+					System.out.println("Active agents:");
+					activeAgent = new AID[result.length];
+					// If not agents are found, do nothing.
+					if (result.length == 0) {
+						System.out.println("  > No free agents.");
+						System.out.println("------------------------------------\n");
+						Thread.sleep(15000);
+					}
+					else {
+						found = true;
+					}
 				}
-				// Else, choose the nearest robot to the shelf.
-				else {
-					for (int i = 0; i < result.length; ++i) {
-						// Listing the agents ID's found.
-						activeAgent[i] = result[i].getName();
-						System.out.println("  > " + activeAgent[i].getName());
-					}
-					System.out.println("Robot picking will take place.");
-					System.out.println("------------------------------------\n");
-					/* TODO: Choose the nearest robot to the shelf, and add
-					 * him as the receiver of the message.
-					 */
-					ACLMessage query = new ACLMessage(ACLMessage.CFP);
-					for (int i = 0; i < result.length; ++i) {
-						query.addReceiver(result[i].getName());
-					}
-					// Fill the message's body and send it.
-					query.setOntology("localization");
-					query.setConversationId("select-robot");
-					//query.setContent(this.target.parsePose());
-					myAgent.send(query);
-					/****************************************************************/
-					MessageTemplate selectRobotTemplate = MessageTemplate.MatchConversationId("select-robot");
-					while(this.repliesCnt < activeAgent.length) {
-						ACLMessage reply = myAgent.receive(selectRobotTemplate);
-						if (reply != null) {
-							// Reply received
-							if (reply.getPerformative() == ACLMessage.PROPOSE) {
-								// This is an offer 
-								double robotPosition[] = (double[]) reply.getContentObject();
-								Pose robotPose = new Pose();
-								robotPose = robotPose.arrayToPose(robotPosition);
-								double distance = robotPose.distance(position);
-								if(distance <= currentMinDistance){
-									this.currentMinDistance = distance;
-									this.closestRobot = reply.getSender();
-								}
+				// Choose the nearest robot to the shelf.
+				for (int i = 0; i < result.length; ++i) {
+					// Listing the agents ID's found.
+					activeAgent[i] = result[i].getName();
+					System.out.println("  > " + activeAgent[i].getName());
+				}
+				System.out.println("Robot picking will take place.");
+				System.out.println("------------------------------------\n");
+				/* TODO: Choose the nearest robot to the shelf, and add
+				 * him as the receiver of the message.
+				 */
+				ACLMessage query = new ACLMessage(ACLMessage.CFP);
+				for (int i = 0; i < result.length; ++i) {
+					query.addReceiver(result[i].getName());
+				}
+				// Fill the message's body and send it.
+				query.setOntology("localization");
+				query.setConversationId("select-robot");
+				//query.setContent(this.target.parsePose());
+				myAgent.send(query);
+				/****************************************************************/
+				MessageTemplate selectRobotTemplate = MessageTemplate.MatchConversationId("select-robot");
+				while(this.repliesCnt < activeAgent.length) {
+					ACLMessage reply = myAgent.receive(selectRobotTemplate);
+					if (reply != null) {
+						// Reply received
+						if (reply.getPerformative() == ACLMessage.PROPOSE) {
+							// This is an offer 
+							double robotPosition[] = (double[]) reply.getContentObject();
+							Pose robotPose = new Pose();
+							robotPose = robotPose.arrayToPose(robotPosition);
+							double distance = robotPose.distance(position);
+							if(distance <= currentMinDistance){
+								this.currentMinDistance = distance;
+								this.closestRobot = reply.getSender();
 							}
-							this.repliesCnt++;
 						}
-						else {
-							block();
-						}
-						
+						this.repliesCnt++;
 					}
-					Thread.sleep(1000);
-					System.out.println("------------------------------------");
-					System.out.println(myAgent.getLocalName() + ": [commanding to fetch].");
-					System.out.println("  > Closet robot found: " + this.closestRobot.getName());
-					System.out.println("  > Fetch sent to the chosen agent.");
-					System.out.println("  > Waiting for finalization.");
-					System.out.println("------------------------------------");
-					ACLMessage command = new ACLMessage(ACLMessage.CFP);
-					command.addReceiver(this.closestRobot);
-					command.setOntology("fetch");
-					command.setConversationId("shelf-here");
-					String content = String.format("%s,%s", position.parsePose(), this.target.parsePose());
-					command.setContent(content);
-					myAgent.send(command);
-					/*******************************************************************************/
-					boolean here = false;
-					MessageTemplate shelfHereTemplate = MessageTemplate.MatchConversationId("shelf-here");
-					while (!here) {
-						ACLMessage confimation = myAgent.receive(shelfHereTemplate);
-						if (confimation != null) {
-							System.out.println("------------------------------------");
-							System.out.println(myAgent.getLocalName() + ": [status].");
-							System.out.println("  > Shelf here");
-							System.out.println("  > Proceding with the order.");
-							System.out.println("------------------------------------\n");
-							here = true;
-							//TODO: handling the shelf inventory update, inform the order
-							//that completion has been reached. Command the robot to return
-							//shelf to its original position.
-							Thread.sleep(5000);
-						}
+					else {
+						block();
+					}	
+				}
+				Thread.sleep(1000);
+				System.out.println("------------------------------------");
+				System.out.println(myAgent.getLocalName() + ": [commanding to fetch].");
+				System.out.println("  > Closet robot found: " + this.closestRobot.getName());
+				System.out.println("  > Fetch sent to the chosen agent.");
+				System.out.println("  > Waiting for finalization.");
+				System.out.println("------------------------------------");
+				ACLMessage command = new ACLMessage(ACLMessage.CFP);
+				command.addReceiver(this.closestRobot);
+				command.setOntology("fetch");
+				command.setConversationId("shelf-here");
+				String content = String.format("%s,%s", position.parsePose(), this.target.parsePose());
+				command.setContent(content);
+				myAgent.send(command);
+				/*******************************************************************************/
+				boolean here = false;
+				MessageTemplate shelfHereTemplate = MessageTemplate.MatchConversationId("shelf-here");
+				while (!here) {
+					ACLMessage confimation = myAgent.receive(shelfHereTemplate);
+					if (confimation != null) {
+						System.out.println("------------------------------------");
+						System.out.println(myAgent.getLocalName() + ": [status].");
+						System.out.println("  > Shelf here");
+						System.out.println("  > Proceding with the order.");
+						System.out.println("------------------------------------\n");
+						here = true;
+						//TODO: handling the shelf inventory update, inform the order
+						//that completion has been reached. Command the robot to return
+						//shelf to its original position.
+						Thread.sleep(5000);
 					}
 				}
 			} catch (FIPAException fe) {
@@ -225,6 +231,10 @@ public class PickerAgent extends Agent {
 						+ ": Interrumption Exception.");
 			}
 			
+		}
+		
+		public boolean done(){
+			return true;
 		}
 	}
 
