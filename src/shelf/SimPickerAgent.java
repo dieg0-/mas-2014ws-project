@@ -35,6 +35,7 @@ public class SimPickerAgent extends Agent {
 	@SuppressWarnings("unused")
 	private PrinterUtil printer;
 	protected boolean busy;
+	protected Pose position;
 
 	protected void setup() {
 		this.printer = new PrinterUtil(5);
@@ -52,6 +53,8 @@ public class SimPickerAgent extends Agent {
 		 * The coordinates of the shelf is simulated with an instance
 		 * of the class pose, randomly initialized.
 		 */
+		position = new Pose();
+		position.randomInit(false);
 		Pose virtualShelf = new Pose();
 		virtualShelf.randomInit(false);
 		// Behaviors for the pickerAgent.
@@ -213,7 +216,8 @@ public class SimPickerAgent extends Agent {
 		  */
 		private static final long serialVersionUID = 1L;
 		private int repliesCnt = 0;
-		//private AID closestShelf;
+		private AID closestShelf;
+		private double currentMinDistance = 10000;
 		
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
@@ -263,14 +267,9 @@ public class SimPickerAgent extends Agent {
 					System.out.println(myAgent.getLocalName() + ": Requesting pieces");
 					cfp.setContentObject(mappy);
 					cfp.setConversationId("select-shelf");
-					//cfp.setReplyWith("cfp"+System.currentTimeMillis()); 
 					
 					myAgent.send(cfp);
-					/**
-					 * Simulate Seller - Buyer case-behaviour to wait for the answer of queried shelves
-					 * Look for proposals, not refuses
-					 * Keep the closest shelf.
-					 */
+
 					//////////////////////////////////////////////////////////////////////////////////////////////
 					MessageTemplate selectShelfTemplate = MessageTemplate.MatchConversationId("select-shelf");
 					System.out.println("Replies count: " + repliesCnt);
@@ -282,8 +281,13 @@ public class SimPickerAgent extends Agent {
 							if (reply.getPerformative() == ACLMessage.PROPOSE) {
 								// This is an offer 
 								double shelfPosition[] = (double[]) reply.getContentObject();
-								System.out.println(shelfPosition[0] + ", " + shelfPosition[1]);
-								System.out.println("Something Something");
+								Pose shelfPose = new Pose();
+								shelfPose = shelfPose.arrayToPose(shelfPosition);
+								double distance = shelfPose.distance(position);
+								if(distance <= currentMinDistance){
+									currentMinDistance = distance;
+									closestShelf = reply.getSender();
+								}
 							}
 							repliesCnt++;
 						}
@@ -291,7 +295,12 @@ public class SimPickerAgent extends Agent {
 							block();
 						}
 					}
-					
+					System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
+					/**
+					 * 
+					 * Now, tell the selected shelf that he's the one!!!
+					 * 
+					 */
 					
 					/////////////////////////////////////////////////////////////////////////////////////////////
 				} catch (FIPAException e1) {
