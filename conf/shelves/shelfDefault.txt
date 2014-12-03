@@ -1,3 +1,12 @@
+vtx,100
+gimbal,100
+wires,100
+cover,100
+motor,100
+base,100
+blade,100
+globalmount,100
+arms,100
 esc,100
 nazam,100
 rx,100
