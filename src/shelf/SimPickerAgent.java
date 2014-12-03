@@ -232,7 +232,6 @@ public class SimPickerAgent extends Agent {
 				/////////////// Just a test until received message is fixed ////////////////
 				//HashMap<String, Integer> mappy = initMap();
 				HashMap<String, Integer> mappy = new HashMap<String, Integer>();
-				System.out.println(mappy.toString());
 				////////////////////////////////////////////////////////////////////////////
 				
 				
@@ -261,7 +260,7 @@ public class SimPickerAgent extends Agent {
 					for (int i = 0; i < result.length; ++i) {
 						// Listing the agents ID's found.
 						activeAgent[i] = result[i].getName();
-						System.out.println(activeAgent[i].getName());
+						//System.out.println(activeAgent[i].getName());
 					}
 					System.out.println("------------------------------------\n");
 					/* Sending Messages to the found agents. */
@@ -278,8 +277,6 @@ public class SimPickerAgent extends Agent {
 
 					//////////////////////////////////////////////////////////////////////////////////////////////
 					MessageTemplate selectShelfTemplate = MessageTemplate.MatchConversationId("select-shelf");
-					System.out.println("Replies count: " + repliesCnt);
-					System.out.println("Active agents count: " + activeAgent.length);
 					while(repliesCnt < activeAgent.length){
 						ACLMessage reply = myAgent.receive(selectShelfTemplate);
 						if (reply != null) {

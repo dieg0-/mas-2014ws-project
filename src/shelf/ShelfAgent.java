@@ -162,7 +162,7 @@ public class ShelfAgent extends Agent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(inventory.toString());
+		//System.out.println(inventory.toString());
         
 	}
 	
@@ -183,7 +183,6 @@ public class ShelfAgent extends Agent {
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
 				System.out.println(myAgent.getLocalName() +": Order request received");
-				//System.out.print(myAgent.getLocalName() + ": ");
 				try {
 					DFService.deregister(myAgent);
 				} catch (FIPAException e1) {
@@ -192,13 +191,10 @@ public class ShelfAgent extends Agent {
 				}
 				HashMap<String, Integer> mappy;
 				try {
-					System.out.println(message.getContentObject());
 					mappy = (HashMap<String, Integer>)message.getContentObject();
-					System.out.println(mappy.toString());
 					ACLMessage reply = message.createReply();
 					if(checkWholeInventory(mappy)){
-						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");
-						
+						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");			
 						reply.setPerformative(ACLMessage.PROPOSE);
 						reply.setContent("Enough pieces available");
 						double myPosition[] = position.poseToArray();
