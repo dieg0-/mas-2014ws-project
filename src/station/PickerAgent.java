@@ -285,7 +285,7 @@ public class PickerAgent extends Agent {
 				try {
 					@SuppressWarnings("unchecked")
 					HashMap<String,Integer> parts = (HashMap<String,Integer>)msg.getContentObject();
-					//System.out.println(parts.size());
+					System.out.println(parts.size());
 					//printPartList(parts);
 				} catch (UnreadableException e1) {
 					e1.printStackTrace();
