@@ -76,8 +76,9 @@ public class PickerAgent extends Agent {
 		 * the logic of the GetNewOrder Behavior [Argentina].
 		 */
 		this.addBehaviour(new GetNewOrder());
-		this.addBehaviour(new GetRobotAgents(this, virtualShelf));
 		this.addBehaviour(new UpdatePickerStatus());
+		//this.addBehaviour(new GetRobotAgents(this, virtualShelf));
+		
 	}
 	
 	/**
@@ -286,10 +287,15 @@ public class PickerAgent extends Agent {
 					@SuppressWarnings("unchecked")
 					HashMap<String,Integer> parts = (HashMap<String,Integer>)msg.getContentObject();
 					System.out.println(parts.size());
-					//printPartList(parts);
+					printPartList(parts);
 				} catch (UnreadableException e1) {
 					e1.printStackTrace();
 				}
+				
+				Pose virtualShelf = new Pose();
+				virtualShelf.randomInit(false);
+				
+				addBehaviour(new GetRobotAgents(myAgent, virtualShelf));
 				
 				/**
 				try {
