@@ -184,7 +184,12 @@ public class ShelfAgent extends Agent {
 			if (message != null) {
 				System.out.println(myAgent.getLocalName() +": Order request received");
 				//System.out.print(myAgent.getLocalName() + ": ");
-
+				try {
+					DFService.deregister(myAgent);
+				} catch (FIPAException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				HashMap<String, Integer> mappy;
 				try {
 					System.out.println(message.getContentObject());
@@ -211,6 +216,12 @@ public class ShelfAgent extends Agent {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}
+				try {
+					DFService.register(myAgent, dfd);
+				}
+				catch (FIPAException fe) {
+					fe.printStackTrace();
 				}
 	
 			}
