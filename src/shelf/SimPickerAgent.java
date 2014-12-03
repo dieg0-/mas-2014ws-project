@@ -219,6 +219,7 @@ public class SimPickerAgent extends Agent {
 		private AID closestShelf;
 		private double currentMinDistance = 10000;
 		
+		@SuppressWarnings("unchecked")
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
@@ -229,21 +230,19 @@ public class SimPickerAgent extends Agent {
 						+ ": Received order. Status: busy.");
 				
 				/////////////// Just a test until received message is fixed ////////////////
-				HashMap<String, Integer> mappy = initMap();
-				//HashMap<String, Integer> mappy = new HashMap<String, Integer>();
+				//HashMap<String, Integer> mappy = initMap();
+				HashMap<String, Integer> mappy = new HashMap<String, Integer>();
 				System.out.println(mappy.toString());
 				////////////////////////////////////////////////////////////////////////////
 				
-				/**
+				
 				try {
 					mappy = (HashMap<String, Integer>)msg.getContentObject();
-					System.out.println("Order correctly received! Order size: " + mappy.size());
-					System.out.println(mappy.toString());
 				} catch (UnreadableException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-				**/
+				
 				
 				
 				DFAgentDescription template = new DFAgentDescription();
