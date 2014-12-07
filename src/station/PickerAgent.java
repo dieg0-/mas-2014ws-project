@@ -11,6 +11,7 @@ All Rights Reserved.
 package station;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import jade.core.AID;
 import jade.core.Agent;
@@ -338,11 +339,14 @@ public class PickerAgent extends Agent {
 
 					//////////////////////////////////////////////////////////////////////////////////////////////
 					MessageTemplate selectShelfTemplate = MessageTemplate.MatchConversationId("select-shelf");
+					ArrayList<AID> viableAgents = new ArrayList<AID>();
 					while(repliesCnt < activeAgent.length){
 						ACLMessage reply = myAgent.receive(selectShelfTemplate);
 						if (reply != null) {
+							
 							// Reply received
 							if (reply.getPerformative() == ACLMessage.PROPOSE) {
+								viableAgents.add(reply.getSender());
 								// This is an offer 
 								double shelfPosition[] = (double[]) reply.getContentObject();
 								Pose shelfPose = new Pose();
@@ -355,12 +359,24 @@ public class PickerAgent extends Agent {
 								}
 							}
 							repliesCnt++;
+						
 						}
 						else {
 							block();
 						}
 					}
 					System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
+					
+					ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+					for (int i = 0; i < viableAgents.size(); i++) {
+						if(viableAgents.get(i) != closestShelf){
+							informMsg.addReceiver(viableAgents.get(i));
+						}
+					}
+					//informMsg.setConversationId("command-register");
+					informMsg.setContent("REREGISTER");
+					myAgent.send(informMsg);
+					
 					addBehaviour(new GetRobotAgents(myAgent, currentBestPose));
 					
 					/////////////////////////////////////////////////////////////////////////////////////////////

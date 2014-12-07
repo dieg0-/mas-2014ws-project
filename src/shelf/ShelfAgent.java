@@ -196,7 +196,24 @@ public class ShelfAgent extends Agent {
 						double myPosition[] = position.poseToArray();
 						reply.setContentObject(myPosition);
 						myAgent.send(reply);
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+						ACLMessage informMessage = myAgent.receive(informTemplate);
+						if(informMessage != null){
+							System.out.println("Message not null");
+							if(informMessage.getContent().matches("REREGISTER")){
+								registerService();
+							}
+						}else{
+							block();
+						}
 					}else{
+						registerService();
 						reply.setPerformative(ACLMessage.REFUSE);
 						reply.setContent("Not enough pieces available");
 						System.out.println(myAgent.getLocalName() + ": Insufficient pieces");
@@ -210,7 +227,7 @@ public class ShelfAgent extends Agent {
 					e.printStackTrace();
 				}
 				
-				registerService();
+				//registerService();
 	
 			}
 			else {
@@ -221,6 +238,7 @@ public class ShelfAgent extends Agent {
 		public void registerService(){
 			try {
 				DFService.register(myAgent, dfd);
+				System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
 				fe.printStackTrace();
@@ -229,7 +247,9 @@ public class ShelfAgent extends Agent {
 		
 		public void deregisterService(){
 			try {
-				DFService.deregister(myAgent, dfd);
+				DFService.deregister(myAgent);
+				System.out.println(myAgent.getLocalName() + ": deregistering service.");
+
 			}
 			catch (FIPAException fe) {
 				fe.printStackTrace();
