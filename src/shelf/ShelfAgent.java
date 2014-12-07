@@ -166,6 +166,7 @@ public class ShelfAgent extends Agent {
         
 	}
 	
+	
 	/**
 	 * @description Verifies if the pieces requested are available.
 	 * @author diego
@@ -183,12 +184,7 @@ public class ShelfAgent extends Agent {
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
 				System.out.println(myAgent.getLocalName() +": Order request received");
-				try {
-					DFService.deregister(myAgent);
-				} catch (FIPAException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				deregisterService();
 				HashMap<String, Integer> mappy;
 				try {
 					mappy = (HashMap<String, Integer>)message.getContentObject();
@@ -213,16 +209,30 @@ public class ShelfAgent extends Agent {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				try {
-					DFService.register(myAgent, dfd);
-				}
-				catch (FIPAException fe) {
-					fe.printStackTrace();
-				}
+				
+				registerService();
 	
 			}
 			else {
 				block();
+			}
+		}
+		
+		public void registerService(){
+			try {
+				DFService.register(myAgent, dfd);
+			}
+			catch (FIPAException fe) {
+				fe.printStackTrace();
+			}
+		}
+		
+		public void deregisterService(){
+			try {
+				DFService.deregister(myAgent, dfd);
+			}
+			catch (FIPAException fe) {
+				fe.printStackTrace();
 			}
 		}
 	}  
