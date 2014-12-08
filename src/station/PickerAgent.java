@@ -13,6 +13,7 @@ package station;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -39,7 +40,7 @@ import utilities.Pose;
  * <ul>
  * 	<li> <i>activeAgent:</i> array of IDs which store found free RobotAgent. </li>
  * 	<li> <i>printer:</i> utility to implement colored messages. </li>
- *  <li> <i>position:</i> an instance of the class {@link Pose} with the picker position.
+ *  <li> <i>position:</i> an instance of the class {@link Pose} with the picker position. </li>
  * 	<li> <i>busy:</i> status of the picker agent. </li>
  * </ul>
  * @author [DNA] Diego, Nicolas, Argentina
@@ -63,17 +64,10 @@ public class PickerAgent extends Agent {
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
-		/* TODO: The picker must retrieve the localization of the
-		 * shelf (coordinates) and send them to the chosen robot.
-		 * By now, the coordinates of the shelf is simulated with an instance
-		 * of the class pose, randomly initialized.
-		 */
+		
 		Pose virtualShelf = new Pose();
 		virtualShelf.randomInit(false);
 		// Behaviors for the pickerAgent.
-		/* TODO: implement the GetRobotAgents behavior to be called after
-		 * the logic of the GetNewOrder Behavior [Argentina].
-		 */
 		this.addBehaviour(new GetNewOrder());
 		this.addBehaviour(new UpdatePickerStatus());
 		//this.addBehaviour(new GetRobotAgents(this, virtualShelf));
@@ -183,7 +177,7 @@ public class PickerAgent extends Agent {
 					if (reply != null) {
 						// Reply received
 						if (reply.getPerformative() == ACLMessage.PROPOSE) {
-							// Comparing distances and chosing the shortest.
+							// Comparing distances and choosing the shortest.
 							double robotPosition[] = (double[]) reply.getContentObject();
 							Pose robotPose = new Pose();
 							robotPose = robotPose.arrayToPose(robotPosition);
@@ -227,7 +221,7 @@ public class PickerAgent extends Agent {
 						System.out.println("------------------------------------");
 						System.out.println(myAgent.getLocalName() + ": [status].");
 						System.out.println("  > Shelf here");
-						System.out.println("  > Proceding with the order.");
+						System.out.println("  > Proceeding with the order.");
 						System.out.println("------------------------------------\n");
 						here = true;
 						//TODO: handling the shelf inventory update, inform the order
@@ -254,7 +248,19 @@ public class PickerAgent extends Agent {
 		 * of the shelf starts, aiming to the completion of the order.
 		 */
 		public boolean done(){
+			ACLMessage command = new ACLMessage(ACLMessage.CFP);
+			command.addReceiver(this.closestRobot);
+			command.setOntology("return");
+			myAgent.send(command);
 			//TODO: invoke the behavior for doing the inventory update or something.
+			try {
+				// Print out purposes. Just a delay to avoid truncated print outs.
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				System.err.println("Thread could not be put to sleep.");
+			}
+			myAgent.addBehaviour(new GetNewOrder());
+			myAgent.addBehaviour(new UpdatePickerStatus());
 			return true;
 		}
 	}

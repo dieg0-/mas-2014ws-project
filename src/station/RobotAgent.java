@@ -20,6 +20,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import shelf.ShelfAgent;
 import utilities.Pose;
+
 import java.io.IOException;
 
 /**
@@ -30,8 +31,8 @@ import java.io.IOException;
  * is done indirectly through the picker.</p>
  * <b>Attributes:</b>
  * <ul>
- * 	<li> <i>id:</i> the unique identification number of the robot.
  * 	<li> <i>position:</i> an instance of the class {@link Pose} with the robot position.
+ * <li> <i>shelf_position:</i> an instance of the class {@link Pose} with the shelf position. </li>
  * 	<li> <i>busy:</i> flag to reflect the status of the robot.
  * 	<li> <i>dfd:</i> agent description with the services offered.
  * </ul>
@@ -40,8 +41,8 @@ import java.io.IOException;
 @SuppressWarnings("serial")
 public class RobotAgent extends Agent {
 	
-	private String id;
 	protected Pose position;
+	protected Pose shelf_position;
 	private boolean busy;
 	protected DFAgentDescription dfd;
 	
@@ -64,41 +65,20 @@ public class RobotAgent extends Agent {
 		sd.setType("fetch");
 		sd.setName("Fetch-Service");
 		this.dfd.addServices(sd);
-		/* The robot agent must be provided with an argument which contains
-		 * the identification number of the agent. If such argument is not
-		 * provided, the agent won't be created.
-		 * TODO: revise if we need arguments for the robot agents or not.
+		/* Trying to register the Agent Description into the description
+		 * facilitator (DF).
 		 */
-		Object[] args = this.getArguments();
-		if (args != null && args.length > 0) {
-			this.id = (String) args[0];
-			// PRINTOUTS: ID Message.
-			System.out.println("ID: " + this.id);
-			System.out.println("  > Waiting.");
-			/* Trying to register the Agent Description into the description
-			 * facilitator (DF).
-			 */
-			try {
-				DFService.register(this, dfd);
-				// Waiting for the picker agent to request the robot to fetch.
-				this.addBehaviour(new WaitForCommand());
-			}
-			/* If the process of registering the agent to the description facilitator
-			 * fails, delete the agent. Make no sense to offer the service if no
-			 * registration has been made. 
-			 */
-			catch (FIPAException fe) {
-				System.err.println("\n[ERR] Agent could not be registered.");
-				System.err.println("Agent will be deleted.");
-				doDelete();
-			}
+		try {
+			DFService.register(this, dfd);
+			// Waiting for the picker agent to request the robot to fetch.
+			this.addBehaviour(new WaitForCommand());
 		}
-		/* If no arguments have been passed when creating the agent, it won't be
-		 * registered to the description facilitator and, therefore, will be 
-		 * deleted.
+		/* If the process of registering the agent to the description facilitator
+		 * fails, delete the agent. Make no sense to offer the service if no
+		 * registration has been made. 
 		 */
-		else {
-			System.err.println("\n[ERR] No ID given. Agent won't be register.");
+		catch (FIPAException fe) {
+			System.err.println("\n[ERR] Agent could not be registered.");
 			System.err.println("Agent will be deleted.");
 			doDelete();
 		}
@@ -152,7 +132,7 @@ public class RobotAgent extends Agent {
 			}
 			// This agent position.
 			String current_pos = String.format("(%.2f, %.2f)", position.getX(), position.getY());
-			System.out.println("  > Location: " + current_pos + ").");
+			System.out.println("  > Location: " + current_pos);
 			// Generation the reply message to the picker which ask for it.
 			ACLMessage reply = this.message.createReply();
 			if(this.message != null) {
@@ -233,6 +213,7 @@ public class RobotAgent extends Agent {
 			this.timeout = time_sleep;
 			this.picker_position = String.format("%s,%s", pos[0], pos[1]);
 			this.target = String.format("%s,%s", pos[2], pos[3]);
+			shelf_position = new Pose(Double.valueOf(pos[2]), Double.valueOf(pos[3]));
 			this.message = msg;
 		}
 		
@@ -284,12 +265,46 @@ public class RobotAgent extends Agent {
 			ACLMessage reply = this.message.createReply();
 			reply.setPerformative(ACLMessage.PROPOSE);
 			myAgent.send(reply);
+			return true;
+		}
+	}
+	
+	/**
+	 * <!--RETURN BEHAVIOUR-->
+	 *
+	 */
+	private class ReturnBehaviour extends SimpleBehaviour {
+		
+		private long timeout;
+		
+		public ReturnBehaviour(Agent a, long timeout) {
+			super(a);
+			this.timeout = timeout;
+		}
+		
+		public void action() {
+			// PRINTOUTS: information of where the picker and the shelf are.
+			System.out.println(myAgent.getLocalName() + ": [returning].");
+			System.out.println("  > Shelf will be returned to: " + shelf_position.parsePose());
+			System.out.println("--------------------------\n");
 			try {
 				Thread.sleep(this.timeout*1000);
+			} catch (InterruptedException e) {
+				System.err.println("Thread error. Could not put to sleep");
+			}
+		}
+		
+		public boolean done() {
+			System.out.println("\n------------------------------------");
+			System.out.println(myAgent.getLocalName() + ": [report].");
+			System.out.println("  > Shelf has been returned.");
+			System.out.println("------------------------------------\n");
+			try {
 				DFService.register(myAgent, dfd);
 			}
 			catch (Exception e) {
-				
+				System.err.println("\n[ERR] Agent could not be registered.");
+				myAgent.doDelete();
 			}
 			return true;
 		}
@@ -336,6 +351,9 @@ public class RobotAgent extends Agent {
 				}
 				else if (msg_command.matches("fetch")) {
 					myAgent.addBehaviour(new FetchBehaviour(myAgent, 20, msg_content, msg));
+				}
+				else if (msg_command.matches("return")) {
+					myAgent.addBehaviour(new ReturnBehaviour(myAgent, 20));
 				}
 				else {
 					System.out.println("  > No valid command.");
