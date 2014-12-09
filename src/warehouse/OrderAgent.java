@@ -152,6 +152,7 @@ public class OrderAgent extends Agent {
 			  }catch(IOException e){}
 			  
 			  order.addReceiver(picker);
+			  order.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(order);
 			  //doDelete();
 			} 
