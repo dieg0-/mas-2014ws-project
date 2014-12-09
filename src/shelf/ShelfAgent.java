@@ -137,6 +137,30 @@ public class ShelfAgent extends Agent {
 		return answer;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public void updateWholeInventory(final HashMap<String, Integer> order){
+		addBehaviour(new OneShotBehaviour() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;	
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void action() {
+				Set orderSet = order.entrySet();
+				Iterator iter = orderSet.iterator();
+				while(iter.hasNext()){
+					Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+					String piece = lookup.getKey();
+					int amount = lookup.getValue();
+					inventory.put(piece, inventory.get(piece) - amount);
+					System.out.println(myAgent.getName() + ": Only " + inventory.get(piece) + " " + piece + "s left.");
+				}
+			}						
+		});
+	}
+	
 	public void initInventory(String inventoryType){
 		BufferedReader in;
 		try {
@@ -207,6 +231,9 @@ public class ShelfAgent extends Agent {
 						if(informMessage != null){
 							System.out.println("Message not null");
 							if(informMessage.getContent().matches("REREGISTER")){
+								registerService();
+							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
+								updateWholeInventory(mappy);
 								registerService();
 							}
 						}else{
