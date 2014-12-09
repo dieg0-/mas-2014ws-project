@@ -22,9 +22,11 @@ import java.util.Set;
 
 import utilities.Pose;
 
+//import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -229,7 +231,6 @@ public class ShelfAgent extends Agent {
 						MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 						ACLMessage informMessage = myAgent.receive(informTemplate);
 						if(informMessage != null){
-							System.out.println("Message not null");
 							if(informMessage.getContent().matches("REREGISTER")){
 								registerService();
 							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
@@ -237,7 +238,8 @@ public class ShelfAgent extends Agent {
 								registerService();
 							}
 						}else{
-							block();
+							addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
+							//block();
 						}
 					}else{
 						registerService();
@@ -268,7 +270,7 @@ public class ShelfAgent extends Agent {
 				System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				//fe.printStackTrace();
 			}
 		}
 		
@@ -279,10 +281,64 @@ public class ShelfAgent extends Agent {
 
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				//fe.printStackTrace();
 			}
 		}
 	}  
+	
+	private class cyclicMessageWaiter extends SimpleBehaviour {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected HashMap<String, Integer> order = new HashMap<String, Integer>();
+		
+		public cyclicMessageWaiter(Agent a, HashMap<String, Integer> mappy) {
+			super(a);
+			this.order = mappy;
+		}
+		
+		public void action(){
+			boolean terminationFlag = false;
+			
+			while(!terminationFlag){
+				MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+				ACLMessage informMessage = myAgent.receive(informTemplate);
+				if(informMessage != null){
+					if(informMessage.getContent().matches("REREGISTER")){
+						terminationFlag = true;
+						registerService();
+					}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
+						updateWholeInventory(this.order);
+						terminationFlag = true;
+						registerService();
+					}
+				}else{
+					//System.out.println("NULL BLAH!");
+					block();
+				}
+			}
+		}
+		
+		public void registerService(){
+			try {
+				DFService.register(myAgent, dfd);
+				System.out.println(myAgent.getLocalName() + ": registering service.");
+			}
+			catch (FIPAException fe) {
+				//fe.printStackTrace();
+			}
+		}
+
+		@Override
+		public boolean done() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+		
+		
+	}
 
 
 	

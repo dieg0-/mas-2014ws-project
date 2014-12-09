@@ -2,7 +2,7 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 5.2.n.
+@version: 5.4.n.
 @since 09.12.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
@@ -34,7 +34,7 @@ import java.io.IOException;
  * <b>Attributes:</b>
  * <ul>
  * 	<li> <i>position:</i> an instance of the class {@link Pose} with the robot position.
- * <li> <i>shelf_position:</i> an instance of the class {@link Pose} with the shelf position. </li>
+ *  <li> <i>shelf_position:</i> an instance of the class {@link Pose} with the shelf position. </li>
  * 	<li> <i>busy:</i> flag to reflect the status of the robot.
  * 	<li> <i>dfd:</i> agent description with the services offered.
  * </ul>
@@ -45,8 +45,8 @@ public class RobotAgent extends Agent {
 	
 	protected Pose position;
 	protected Pose shelf_position;
-	private boolean busy;
 	protected DFAgentDescription dfd;
+	private boolean busy;
 	
 	protected void setup() {
 		// PRINTOUTS: Initialization Messages
@@ -100,6 +100,7 @@ public class RobotAgent extends Agent {
 	 * <ul>
 	 * 	<li> position of the robot agent.
 	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class LocalizationBehaviour extends SimpleBehaviour {
 		
@@ -193,7 +194,7 @@ public class RobotAgent extends Agent {
 	 * <ul>
 	 * 	<li> A message to the picker agent informing that the shelf is in the station. </li>
 	 * </ul>
-	 * 
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class FetchBehaviour extends SimpleBehaviour {
 		
@@ -255,9 +256,8 @@ public class RobotAgent extends Agent {
 		
 		/**
 		 * Successfully completing the fetch action of a specified shelf. The
-		 * agent tries to re-register into the description facilitator DF to
-		 * announce it is free again, and therefore, it can be found again by
-		 * the picker agent.
+		 * agent sends a message to the picker agent to inform it that the
+		 * the requested shelf is in the station.
 		 */
 		public boolean done() {
 			System.out.println("\n------------------------------------");
@@ -273,21 +273,47 @@ public class RobotAgent extends Agent {
 	
 	/**
 	 * <!--RETURN BEHAVIOUR-->
-	 *
+	 * <p>Behavior which simulates the action of return the current shelf which
+	 * has been selected to fill an order. The duration is simulated again with
+	 * a thread sleep. Once the robot brings back the shelf, it informs the shelf
+	 * that is time to re-register to the yellow pages, indicating that the
+	 * shelf is back in the game.</p>
+	 * <b>Attributes:</b>
+	 * <ul>
+	 * 	<li> <i>timeout:</i> duration which the thread will be sleeping. </li>
+	 *  <li> <i>message:</i>  the message sent to this robot from the {@link ShelfAgent}. </li>
+	 * </ul>
+	 * <b>Outcome:</b>
+	 * <ul>
+	 * 	<li> A message to the shelf agent informing that it needs to re-register. </li>
+	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class ReturnBehaviour extends SimpleBehaviour {
 		
 		private long timeout;
 		private ACLMessage message;
 		
+		/**
+		 * Override constructor of the SimpleBehavior.
+		 * @param a				this agent.
+		 * @param timeout		duration of sleeping in seconds.
+		 * @param msg			the message sent by the picker.
+		 */
 		public ReturnBehaviour(Agent a, long timeout, ACLMessage msg) {
 			super(a);
 			this.timeout = timeout;
 			this.message = msg;
 		}
 		
+		/**
+		 * Main action of the behavior. Once the picker commands the robot agent to
+		 * return the shelf back to its position, the robot agent will inform the
+		 * shelf that it is time to re-register.
+		 */
 		public void action() {
 			try {
+				// Getting the ID of the shelf.
 				AID shelfID = (AID)this.message.getContentObject();
 				// PRINTOUTS: information of where the picker and the shelf are.
 				System.out.println(myAgent.getLocalName() + ": [returning].");
@@ -295,10 +321,10 @@ public class RobotAgent extends Agent {
 				System.out.println("  > Returned to: " + shelf_position.parsePose());
 				System.out.println("--------------------------\n");
 				Thread.sleep(this.timeout*1000);
-				
+				// Creates and sends the message to the shelf.
 				ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
 				informMsg.addReceiver(shelfID);
-				informMsg.setContent("UPDATE-REREGISTER-BEHAPPY");
+				informMsg.setContent("UPDATE-REREGISTER-BE-HAPPY");
 				myAgent.send(informMsg);
 			} catch (InterruptedException e) {
 				System.err.println("Thread error. Could not put to sleep");
@@ -307,6 +333,12 @@ public class RobotAgent extends Agent {
 			}
 		}
 		
+		/**
+		 * Successfully completing the return action of the selected shelf. The
+		 * agent tries to re-register into the description facilitator DF to
+		 * announce it is free again, and therefore, it can be found again by
+		 * the picker agent.
+		 */
 		public boolean done() {
 			System.out.println("\n------------------------------------");
 			System.out.println(myAgent.getLocalName() + ": [report].");
@@ -328,6 +360,7 @@ public class RobotAgent extends Agent {
 	 * <p>Cyclic behavior which is constantly executed. It waits until
 	 * a message form the {@link PickerAgent} is received to
 	 * execute the action() method.</p>
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private	class WaitForCommand extends CyclicBehaviour {
 		

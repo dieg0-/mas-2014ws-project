@@ -2,7 +2,7 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 5.2.n.
+@version: 5.4.n.
 @since 09.12.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
@@ -27,15 +27,17 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import utilities.PrinterUtil;
-import shelf.ShelfAgent;
 import utilities.Pose;
+import shelf.ShelfAgent;
+import warehouse.OrderAgent;
+
 
 /**
  * <!--PICKER AGENT CLASS-->
- * <p>Picker agent which is in charge of the dynamic between the orders, the robots
- * and the shelves. It picks an order, broadcasts the needed parts to the shelves
- * and picks the robot nearest to a chosen shelf; it then commands the robot
- * to fetch the shelf.</p>
+ * <p>Picker agent which is in charge of the dynamic between the {@link OrderAgent}, the
+ * {@link RobotAgent} and the {@link ShelfAgent}. It picks an order, broadcasts the needed 
+ * parts to the shelves and picks the robot nearest to a chosen shelf; it then commands 
+ * the robot to fetch the shelf.</p>
  * <b>Attributes:</b>
  * <ul>
  * 	<li> <i>activeAgent:</i> array of IDs which store found free RobotAgent. </li>
@@ -64,18 +66,13 @@ public class PickerAgent extends Agent {
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
-		
-		Pose virtualShelf = new Pose();
-		virtualShelf.randomInit(false);
 		// Behaviors for the pickerAgent.
 		this.addBehaviour(new GetNewOrder());
 		this.addBehaviour(new UpdatePickerStatus());
-		//this.addBehaviour(new GetRobotAgents(this, virtualShelf));
-		
 	}
 	
 	/**
-	 * <!--GET ROBOT AGETNS BEHAVIOUR-->
+	 * <!--GET ROBOT AGENTS BEHAVIOUR-->
 	 * <p>Behavior which is executed cyclicly every specified amount
 	 * of time given by the argument period. This agent will
 	 * query for {@link RobotAgent} which are registered to the DF, description
@@ -87,8 +84,10 @@ public class PickerAgent extends Agent {
 	 * 	<li> <i>repliesCnt:</i> a counter to retrieve every reply from the robot agents.</li>
 	 *  <li> <i>currentMinDistance:</i> shorter distance from the picker to the robots found.</li>
 	 *  <li> <i>closestRobot:</i> ID of the robot which happens to be closest.</li>
+	 *  <li> <i>closetsShelf:</i> ID of the shelf which happens to be closest.</li>
 	 * 	<li> <i>target:</i> an instance of {@link Pose} with the chosen shelf position.</li>
 	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 **/
 	private class GetRobotAgents extends SimpleBehaviour {
 		
@@ -99,9 +98,10 @@ public class PickerAgent extends Agent {
 		protected Pose target;
 		
 		/**
-		 * Override constructor of a TickerBehavior
-		 * @param a			this agent.
-		 * @param targetS	location of the target shelf as an instance of {@link Pose}.
+		 * Override constructor of a SimpleBehaviour.
+		 * @param a				this agent.
+		 * @param targetS		location of the target shelf as an instance of {@link Pose}.
+		 * @param closestShelf	ID of the shelf selected.
 		 */
 		public GetRobotAgents(Agent a, Pose targetS, AID targetID) {
 			super(a);
@@ -130,7 +130,7 @@ public class PickerAgent extends Agent {
 			// Creation of Template for the search.
 			sd.setType("fetch");
 			template.addServices(sd);
-			/* We simulated now a TickBehavior. Every 15 seconds, this agent
+			/* We simulate now a TickBehavior. Every 15 seconds, this agent
 			 * will query for robots which are free; i.e., robots which are
 			 * registered to the description facilitator and offering the
 			 * service.
@@ -199,7 +199,7 @@ public class PickerAgent extends Agent {
 				Thread.sleep(1000);
 				System.out.println("------------------------------------");
 				System.out.println(myAgent.getLocalName() + ": [commanding to fetch].");
-				System.out.println("  > Closet robot found: " + this.closestRobot.getLocalName());
+				System.out.println("  > Closest robot found: " + this.closestRobot.getLocalName());
 				System.out.println("  > Fetch sent to the chosen agent.");
 				System.out.println("  > Waiting for finalization.");
 				System.out.println("------------------------------------");
@@ -266,6 +266,7 @@ public class PickerAgent extends Agent {
 			} catch (InterruptedException e) {
 				System.err.println("Thread could not be put to sleep.");
 			}
+			// Asking for a new Order, given that the previous one was "completed".
 			myAgent.addBehaviour(new GetNewOrder());
 			myAgent.addBehaviour(new UpdatePickerStatus());
 			return true;
@@ -284,10 +285,13 @@ public class PickerAgent extends Agent {
  ********************************** Di'Argen's Block **********************************
  ************************************************************************************/
 	
+	/**
+	 * <!--UPDATE PICKER STATUS-->
+	 * <p> Description </p>
+	 * @author [DNA] Diego, Nicolas, Argentina
+	 */
 	private class UpdatePickerStatus extends CyclicBehaviour {
-		/**
-		  * 
-		  */
+		
 		private static final long serialVersionUID = 1L;
 		private int repliesCnt = 0;
 		private AID closestShelf;
@@ -325,9 +329,18 @@ public class PickerAgent extends Agent {
 				sd.setType("offer-pieces");
 				template.addServices(sd);
 				// Searching process.
-				DFAgentDescription[] result;
+				DFAgentDescription[] result = null;
 				try {
-					result = DFService.search(myAgent, template);
+					boolean found = false;
+					while (!found) {
+						result = DFService.search(myAgent, template);
+						if(result.length == 0){
+							//System.out.println(myAgent.getLocalName() + ": no free shelves found");
+						}else{
+							found = true;
+						}
+					}
+					
 					System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
 					System.out.println(myAgent.getLocalName() + ": Found the following active agents:");
 					activeAgent = new AID[result.length];
@@ -419,9 +432,10 @@ public class PickerAgent extends Agent {
 	}
 	
 	/**
+	 * <!--GET NEW ORDER-->
 	 * Behaviour that looks for any available OrderAgent subscribed in the DF and requesting 
 	 * one of them being assigned to him.
-	 *
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class GetNewOrder extends OneShotBehaviour {//@TODO Make this behaviour cyclic
 
