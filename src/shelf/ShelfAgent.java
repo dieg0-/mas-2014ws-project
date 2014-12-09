@@ -270,7 +270,7 @@ public class ShelfAgent extends Agent {
 				System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				//fe.printStackTrace();
 			}
 		}
 		
@@ -281,7 +281,7 @@ public class ShelfAgent extends Agent {
 
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				//fe.printStackTrace();
 			}
 		}
 	}  
@@ -327,7 +327,7 @@ public class ShelfAgent extends Agent {
 				System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
-				fe.printStackTrace();
+				//fe.printStackTrace();
 			}
 		}
 
