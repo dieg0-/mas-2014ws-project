@@ -8,9 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 import warehouse.dummies.Orders;
 
 @XmlRootElement(name="warehouse")
-@XmlType(propOrder = {"orders"})
+@XmlType(propOrder = {"orders","robots"})
 public class Warehouse {	
 	Orders orderList;
+	Robots robotList;
 	
 	//@XmlElementWrapper(name = "orders")
 	//@XmlElement(name = "order")
@@ -23,4 +24,13 @@ public class Warehouse {
 		this.orderList = ol;
 	}
 
+	@XmlElement(name = "robots")
+	public Robots getRobots(){
+		return robotList;
+	}
+	
+	public void setRobots(Robots rl){
+		this.robotList=rl;
+	}
+		
 }

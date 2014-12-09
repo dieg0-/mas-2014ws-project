@@ -12,7 +12,9 @@ import javax.xml.bind.Unmarshaller;
 
 
 
+
 import warehouse.dummies.Orders;
+import warehouse.dummies.Robots;
 //import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import warehouse.dummies.Warehouse;
 import warehouse.dummies.Order;
@@ -26,7 +28,9 @@ public class InitConfig {
 		
 		//Creating Orders
 		Orders x = new Orders(10);
+		Robots y = new Robots(3);
 		wh.setOrders(x);
+		wh.setRobots(y);
 		
 		try{
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
