@@ -51,12 +51,17 @@ public class WarehouseAgent extends Agent {
 		config.readXML();
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   
-				
+		pendingOrders = new ArrayList<String>();		
+		assignedOrders = new ArrayList<String>();		
+		completedOrders = new ArrayList<String>();		
 
 		// Add behaviours
 		addBehaviour(new initialOrders());
 		addBehaviour(new CreateOrder());
+		addBehaviour(new updateOrderLists());
 		System.out.println(getLocalName()+": Loaded behaviours");
+		//System.out.println(getLocalName()+": Initial orders loaded: "+pendingOrders.size());
+		
 		
 	}
 
@@ -73,28 +78,29 @@ public class WarehouseAgent extends Agent {
 	public class updateOrderLists extends CyclicBehaviour {
 
 		public void action() {
-			MessageTemplate completed = MessageTemplate.and(
+			MessageTemplate completedMT = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
 					MessageTemplate.MatchOntology("Completed Order"));
-			ACLMessage completedMsg = myAgent.receive(completed);
+			ACLMessage completedMsg = myAgent.receive(completedMT);
 			
-			MessageTemplate assigned = MessageTemplate.and(
+			MessageTemplate assignedMT = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchOntology("requestParts"));
-			ACLMessage assignMsg = myAgent.receive(assigned);
+			ACLMessage assignMsg = myAgent.receive(assignedMT);
 			
 			if (assignMsg !=null){
 				String assignedOrder = assignMsg.getSender().getLocalName();
+				System.out.println(assignedOrder);
 				pendingOrders.remove(assignedOrder);
 				assignedOrders.add(assignedOrder);
-				System.out.println(myAgent.getLocalName()+": "+pendingOrders.size()+" pending orders and "+assignedOrders.size()+"assigned orders.");
+				System.out.println(myAgent.getLocalName()+": There is a total of "+pendingOrders.size()+" pending orders and "+assignedOrders.size()+" assigned orders.");
 			} else	if (completedMsg != null) {
 				String order = completedMsg.getSender().getLocalName();
 				System.out.println(myAgent.getLocalName() + ": "
 						+ order + " is completed.");
 				assignedOrders.remove(order);
 				completedOrders.add(order);
-				System.out.println(myAgent.getLocalName()+": "+completedOrders.size()+" completed.");
+				System.out.println(myAgent.getLocalName()+": "+completedOrders.size()+" total orders completed.");
 				// TODO Update hash-tables for each list type
 				// TODO Add templates for each type of update
 			} else {
@@ -124,7 +130,7 @@ public class WarehouseAgent extends Agent {
 				
 				int orderNum = Integer.parseInt(msg.getContent());
 				String ordNum = uidFormat.format(orderNum);
-				pendingOrders.add(ordNum);
+				pendingOrders.add("Order "+ordNum);
 				args[1]=ordNum;
 				System.out.println(myAgent.getLocalName()
 						+ ": Received new order...");
@@ -197,12 +203,13 @@ public class WarehouseAgent extends Agent {
 					Object[] args = new Object[2];
 					args[0] = o[0];
 					args[1] = o[1];
-					pendingOrders.add(orderNum);
+					pendingOrders.add("Order "+orderNum);
 					AgentController a = c.createNewAgent("Order "+
 							orderNum, "warehouse.OrderAgent",
 							args);
 					a.start();
 				}
+				System.out.println(pendingOrders.toString());
 			}catch (Exception e) {
 				System.out.println("There is something wrong");
 				e.printStackTrace();
