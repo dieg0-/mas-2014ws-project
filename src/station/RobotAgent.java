@@ -45,8 +45,8 @@ public class RobotAgent extends Agent {
 	
 	protected Pose position;
 	protected Pose shelf_position;
-	private boolean busy;
 	protected DFAgentDescription dfd;
+	private boolean busy;
 	
 	protected void setup() {
 		// PRINTOUTS: Initialization Messages
