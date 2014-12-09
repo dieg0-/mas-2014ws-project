@@ -10,10 +10,10 @@ All Rights Reserved.
 
 package station;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map.Entry;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -40,7 +40,7 @@ import utilities.Pose;
  * <ul>
  * 	<li> <i>activeAgent:</i> array of IDs which store found free RobotAgent. </li>
  * 	<li> <i>printer:</i> utility to implement colored messages. </li>
- *  <li> <i>position:</i> an instance of the class {@link Pose} with the picker position.
+ *  <li> <i>position:</i> an instance of the class {@link Pose} with the picker position. </li>
  * 	<li> <i>busy:</i> status of the picker agent. </li>
  * </ul>
  * @author [DNA] Diego, Nicolas, Argentina
@@ -64,17 +64,10 @@ public class PickerAgent extends Agent {
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
-		/* TODO: The picker must retrieve the localization of the
-		 * shelf (coordinates) and send them to the chosen robot.
-		 * By now, the coordinates of the shelf is simulated with an instance
-		 * of the class pose, randomly initialized.
-		 */
+		
 		Pose virtualShelf = new Pose();
 		virtualShelf.randomInit(false);
 		// Behaviors for the pickerAgent.
-		/* TODO: implement the GetRobotAgents behavior to be called after
-		 * the logic of the GetNewOrder Behavior [Argentina].
-		 */
 		this.addBehaviour(new GetNewOrder());
 		this.addBehaviour(new UpdatePickerStatus());
 		//this.addBehaviour(new GetRobotAgents(this, virtualShelf));
@@ -184,7 +177,7 @@ public class PickerAgent extends Agent {
 					if (reply != null) {
 						// Reply received
 						if (reply.getPerformative() == ACLMessage.PROPOSE) {
-							// Comparing distances and chosing the shortest.
+							// Comparing distances and choosing the shortest.
 							double robotPosition[] = (double[]) reply.getContentObject();
 							Pose robotPose = new Pose();
 							robotPose = robotPose.arrayToPose(robotPosition);
@@ -228,7 +221,7 @@ public class PickerAgent extends Agent {
 						System.out.println("------------------------------------");
 						System.out.println(myAgent.getLocalName() + ": [status].");
 						System.out.println("  > Shelf here");
-						System.out.println("  > Proceding with the order.");
+						System.out.println("  > Proceeding with the order.");
 						System.out.println("------------------------------------\n");
 						here = true;
 						//TODO: handling the shelf inventory update, inform the order
@@ -255,7 +248,19 @@ public class PickerAgent extends Agent {
 		 * of the shelf starts, aiming to the completion of the order.
 		 */
 		public boolean done(){
+			ACLMessage command = new ACLMessage(ACLMessage.CFP);
+			command.addReceiver(this.closestRobot);
+			command.setOntology("return");
+			myAgent.send(command);
 			//TODO: invoke the behavior for doing the inventory update or something.
+			try {
+				// Print out purposes. Just a delay to avoid truncated print outs.
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				System.err.println("Thread could not be put to sleep.");
+			}
+			myAgent.addBehaviour(new GetNewOrder());
+			myAgent.addBehaviour(new UpdatePickerStatus());
 			return true;
 		}
 	}
@@ -273,6 +278,16 @@ public class PickerAgent extends Agent {
  ************************************************************************************/
 	
 	private class UpdatePickerStatus extends CyclicBehaviour {
+		/**
+		  * 
+		  */
+		private static final long serialVersionUID = 1L;
+		private int repliesCnt = 0;
+		private AID closestShelf;
+		private double currentMinDistance = 10000;
+		private Pose currentBestPose = new Pose();
+		
+		@SuppressWarnings("unchecked")
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
@@ -281,46 +296,126 @@ public class PickerAgent extends Agent {
 			if(msg != null){
 				System.out.println(myAgent.getLocalName()
 						+ ": Received order. Status: busy.");
-				busy = true;
+				
+				/////////////// Just a test until received message is fixed ////////////////
+				//HashMap<String, Integer> mappy = initMap();
+				HashMap<String, Integer> mappy = new HashMap<String, Integer>();
+				////////////////////////////////////////////////////////////////////////////
+				
 				
 				try {
-					@SuppressWarnings("unchecked")
-					HashMap<String,Integer> parts = (HashMap<String,Integer>)msg.getContentObject();
-					System.out.println(parts.size());
-					printPartList(parts);
-				} catch (UnreadableException e1) {
-					e1.printStackTrace();
+					mappy = (HashMap<String, Integer>)msg.getContentObject();
+				} catch (UnreadableException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				}
 				
-				Pose virtualShelf = new Pose();
-				virtualShelf.randomInit(false);
 				
-				addBehaviour(new GetRobotAgents(myAgent, virtualShelf));
 				
-				/**
+				DFAgentDescription template = new DFAgentDescription();
+				ServiceDescription sd = new ServiceDescription();
+				// Search for agents who offer pieces (offer-pieces service).
+				sd.setType("offer-pieces");
+				template.addServices(sd);
+				// Searching process.
+				DFAgentDescription[] result;
 				try {
-				Thread.sleep(2000);
+					result = DFService.search(myAgent, template);
+					System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
+					System.out.println(myAgent.getLocalName() + ": Found the following active agents:");
+					activeAgent = new AID[result.length];
+					// Found Agents.
+					for (int i = 0; i < result.length; ++i) {
+						// Listing the agents ID's found.
+						activeAgent[i] = result[i].getName();
+						//System.out.println(activeAgent[i].getName());
+					}
+					System.out.println("------------------------------------\n");
+					/* Sending Messages to the found agents. */
+					ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+					for (int i = 0; i < result.length; ++i) {
+						cfp.addReceiver(result[i].getName());
+					}
+
+					System.out.println(myAgent.getLocalName() + ": Requesting pieces");
+					cfp.setContentObject(mappy);
+					cfp.setConversationId("select-shelf");
+					
+					myAgent.send(cfp);
+
+					//////////////////////////////////////////////////////////////////////////////////////////////
+					MessageTemplate selectShelfTemplate = MessageTemplate.MatchConversationId("select-shelf");
+					ArrayList<AID> viableAgents = new ArrayList<AID>();
+					while(repliesCnt < activeAgent.length){
+						ACLMessage reply = myAgent.receive(selectShelfTemplate);
+						if (reply != null) {
+							
+							// Reply received
+							if (reply.getPerformative() == ACLMessage.PROPOSE) {
+								viableAgents.add(reply.getSender());
+								// This is an offer 
+								double shelfPosition[] = (double[]) reply.getContentObject();
+								Pose shelfPose = new Pose();
+								shelfPose = shelfPose.arrayToPose(shelfPosition);
+								double distance = shelfPose.distance(position);
+								if(distance <= currentMinDistance){
+									currentMinDistance = distance;
+									closestShelf = reply.getSender();
+									currentBestPose = shelfPose;
+								}
+							}
+							repliesCnt++;
+						
+						}
+						else {
+							block();
+						}
+					}
+					System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
+					
+					ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+					for (int i = 0; i < viableAgents.size(); i++) {
+						if(viableAgents.get(i) != closestShelf){
+							informMsg.addReceiver(viableAgents.get(i));
+						}
+					}
+					//informMsg.setConversationId("command-register");
+					informMsg.setContent("REREGISTER");
+					myAgent.send(informMsg);
+					
+					/**
+					 * ID. of best shelf is available within the variable AID closestShelf.
+					 * The Shelf is waiting for a message with performative: ACLMessage.INFORM 
+					 *  and with content: "REREGISTER"
+					 */
+					addBehaviour(new GetRobotAgents(myAgent, currentBestPose));
+					
+					/////////////////////////////////////////////////////////////////////////////////////////////
+				} catch (FIPAException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (UnreadableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+				
+				
+				busy = true;
+				try {
+					Thread.sleep(10000);
 				}catch(Exception e){
 					
-				}*/
+				}
 			}else{
-			block();
+				block();
 			}
 		}
-		
-		@SuppressWarnings("unused")
-		void printPartList(HashMap<String,Integer> mp){
-			Set<Entry<String, Integer>> set = mp.entrySet();
-			Iterator<Entry<String, Integer>> i = set.iterator();
-			System.out.println("___________________");
-			while(i.hasNext()) {
-		         Entry<String, Integer> me = i.next();
-		         System.out.print(me.getKey() + ": ");
-		         System.out.println(me.getValue());
-		      }
-			System.out.println("___________________");
-		}
+
 	}
+	
 	/**
 	 * Behaviour that looks for any available OrderAgent subscribed in the DF and requesting 
 	 * one of them being assigned to him.
