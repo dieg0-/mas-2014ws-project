@@ -22,6 +22,7 @@ import java.util.Set;
 
 import utilities.Pose;
 
+//import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -237,7 +238,8 @@ public class ShelfAgent extends Agent {
 								registerService();
 							}
 						}else{
-							block();
+							addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
+							//block();
 						}
 					}else{
 						registerService();
@@ -283,6 +285,52 @@ public class ShelfAgent extends Agent {
 			}
 		}
 	}  
+	
+	private class cyclicMessageWaiter extends CyclicBehaviour {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected HashMap<String, Integer> order = new HashMap<String, Integer>();
+		
+		public cyclicMessageWaiter(Agent a, HashMap<String, Integer> mappy) {
+			super(a);
+			this.order = mappy;
+		}
+		
+		public void action(){
+			System.out.println(myAgent.getLocalName() + ": Waiting Cycle!!");
+			MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+			ACLMessage informMessage = myAgent.receive(informTemplate);
+			if(informMessage != null){
+				System.out.println("MY CONTENT IS: " + informMessage.getContent());
+				System.out.println("Message not null");
+				if(informMessage.getContent().matches("REREGISTER")){
+					registerService();
+				}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
+					updateWholeInventory(this.order);
+					registerService();
+				}
+			}else{
+				System.out.println("NULL BLAH!");
+				block();
+			}
+			
+		}
+		
+		public void registerService(){
+			try {
+				DFService.register(myAgent, dfd);
+				System.out.println(myAgent.getLocalName() + ": registering service.");
+			}
+			catch (FIPAException fe) {
+				fe.printStackTrace();
+			}
+		}
+		
+		
+	}
 
 
 	
