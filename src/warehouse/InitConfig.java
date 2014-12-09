@@ -32,7 +32,7 @@ public class InitConfig {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			File XMLfile = new File("conf/warehouse/kiva3.config.xml");
+			File XMLfile = new File("conf/warehouse/kiva4.config.xml");
 			jaxbMarshaller.marshal(wh, XMLfile);
 			//jaxbMarshaller.marshal(wh, System.out);
 			System.out.println("Configuration created");
@@ -55,7 +55,7 @@ public class InitConfig {
 			   Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
 			   // specify the location and name of xml file to be read
-			   File XMLfile = new File("conf/warehouse/kiva3.config.xml");
+			   File XMLfile = new File("conf/warehouse/kiva4.config.xml");
 
 			   // this will create Java object - warehouse from the XML file
 			   this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
