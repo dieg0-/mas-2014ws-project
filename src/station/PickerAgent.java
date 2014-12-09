@@ -2,8 +2,8 @@
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 4.5.n.
-@since 02.12.2014 
+@version: 5.2.n.
+@since 09.12.2014 
 HBRS - Multiagent Systems
 All Rights Reserved.  
  **/
@@ -95,6 +95,7 @@ public class PickerAgent extends Agent {
 		protected int repliesCnt = 0;
 		protected double currentMinDistance = Double.MAX_VALUE;
 		protected AID closestRobot;
+		protected AID closestShelf;
 		protected Pose target;
 		
 		/**
@@ -102,9 +103,10 @@ public class PickerAgent extends Agent {
 		 * @param a			this agent.
 		 * @param targetS	location of the target shelf as an instance of {@link Pose}.
 		 */
-		public GetRobotAgents(Agent a, Pose targetS) {
+		public GetRobotAgents(Agent a, Pose targetS, AID targetID) {
 			super(a);
 			this.target = targetS;
+			this.closestShelf = targetID;
 		}
 		
 		/**
