@@ -50,7 +50,6 @@ public class OrderAgent extends Agent {
 		completed = false;
 		assigned = false;
 		
-		//printPartList(partList);
 		
 		this.dfd = new DFAgentDescription();
         this.dfd.setName(getAID()); 
@@ -62,19 +61,15 @@ public class OrderAgent extends Agent {
 		
 		try {  
             DFService.register(this,dfd); 
-            //System.out.println("Subscribed");
         }catch (FIPAException fe) { 
         	fe.printStackTrace(); 
         }
 		
 		System.out.println(getLocalName() + ": Started.");
-		//partList = new Hashtable<String, Integer>();
 		//System.out.println("Order "+getLocalName() + ": Requesting the following parts:");
 		//printPartList(partList);
 		
 		//Behaviours
-			//addBehaviour(new requestParts());
-			addBehaviour(new CompletedOrder());
 			addBehaviour(new MissingPieces());
 			addBehaviour(new orderStatus());
 			
@@ -99,14 +94,14 @@ public class OrderAgent extends Agent {
 		doDelete();
 	}
 
-	private class CompletedOrder extends CyclicBehaviour{
+	private class CompletedOrder extends OneShotBehaviour{
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
 		public void action(){
-			if (completed == true){
+			//if (completed == true){
 			System.out.println(myAgent.getLocalName()+": Order completed...");
 			  ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 			  compMsg.setOntology("Completed Order");
@@ -114,9 +109,9 @@ public class OrderAgent extends Agent {
 			  compMsg.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(compMsg);
 			  doDelete();
-			}else{
-				block();
-			}
+			//}else{
+				//block();
+			//}
 			
 		}
 	}
@@ -146,14 +141,13 @@ public class OrderAgent extends Agent {
 			  System.out.println(getAID().getLocalName()+ ": Requesting parts...");
 			  ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 			  order.setOntology("requestParts");
-			  //order.setContent(Integer.toString(randomOrder));
 			  try{
 			  order.setContentObject(partList);
 			  }catch(IOException e){}
 			  
 			  order.addReceiver(picker);
+			  order.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(order);
-			  //doDelete();
 			} 
 		  }
 	
@@ -164,21 +158,29 @@ public class OrderAgent extends Agent {
 		private static final long serialVersionUID = 1L;
 
 		public void action(){
-			MessageTemplate mt = MessageTemplate.and(
+			MessageTemplate assignMT = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchOntology("assignment"));
+			
+			MessageTemplate completeMT = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+					MessageTemplate.MatchOntology("Completed Order"));
 
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null){
+			ACLMessage assignMsg = myAgent.receive(assignMT);
+			ACLMessage completeMsg = myAgent.receive(completeMT);
+			if (assignMsg != null){
 				ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
 				reply.setOntology("assignment");
 				
-				System.out.println(getLocalName()+" assigned to "+msg.getSender().getLocalName()+".");
+				System.out.println(getLocalName()+" assigned to "+assignMsg.getSender().getLocalName()+".");
 				assigned=true;
-				addBehaviour(new requestParts(msg.getSender()));
+				addBehaviour(new requestParts(assignMsg.getSender()));
 				try { 
 					DFService.deregister(myAgent); 
 					}catch (Exception e) {}
+			}else if (completeMsg != null){
+				//completed = true;
+				addBehaviour(new CompletedOrder());
 			}else{
 				block();
 			}

@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(namespace = "warehouse.dummies.Warehouse")
@@ -26,8 +25,7 @@ public class Orders {
 	}
 	
 	
-	@XmlElementWrapper(name="order")
-	@XmlElement(name="products")
+	@XmlElement(name="order")
 	public ArrayList<Order>getOrderList(){
 		return orderList;
 	}
