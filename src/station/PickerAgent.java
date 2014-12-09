@@ -383,6 +383,11 @@ public class PickerAgent extends Agent {
 					informMsg.setContent("REREGISTER");
 					myAgent.send(informMsg);
 					
+					/**
+					 * ID. of best shelf is available within the variable AID closestShelf.
+					 * The Shelf is waiting for a message with performative: ACLMessage.INFORM 
+					 *  and with content: "REREGISTER"
+					 */
 					addBehaviour(new GetRobotAgents(myAgent, currentBestPose));
 					
 					/////////////////////////////////////////////////////////////////////////////////////////////
