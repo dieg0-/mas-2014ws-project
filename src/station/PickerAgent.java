@@ -69,6 +69,7 @@ public class PickerAgent extends Agent {
 		// Behaviors for the pickerAgent.
 		this.addBehaviour(new GetNewOrder());
 		this.addBehaviour(new UpdatePickerStatus());
+		this.addBehaviour(new OrderUpdate());
 	}
 	
 	/**
@@ -482,4 +483,25 @@ public class PickerAgent extends Agent {
 
 	}
 
+	
+	
+	
+	private class OrderUpdate extends CyclicBehaviour{
+		public void action(){
+			MessageTemplate completeMT = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+					MessageTemplate.MatchOntology("Final Shelf"));
+			
+			ACLMessage completeMsg = myAgent.receive(completeMT);
+			ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
+			reply.setOntology("Completed Order");
+			if(completeMsg != null){
+				System.out.println(myAgent.getLocalName()+": Requesting new order.");
+				reply.addReceiver(completeMsg.getSender());
+				addBehaviour(new GetNewOrder());	
+			}else{
+				block();
+			}			
+		}
+	}
 }
