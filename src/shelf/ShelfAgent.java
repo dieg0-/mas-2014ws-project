@@ -143,7 +143,7 @@ public class ShelfAgent extends Agent {
 			/**
 			 * 
 			 */
-			private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;	
 
 			@SuppressWarnings("unchecked")
 			@Override
@@ -233,6 +233,7 @@ public class ShelfAgent extends Agent {
 							if(informMessage.getContent().matches("REREGISTER")){
 								registerService();
 							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
+								updateWholeInventory(mappy);
 								registerService();
 							}
 						}else{
