@@ -50,7 +50,6 @@ public class OrderAgent extends Agent {
 		completed = false;
 		assigned = false;
 		
-		//printPartList(partList);
 		
 		this.dfd = new DFAgentDescription();
         this.dfd.setName(getAID()); 
@@ -62,19 +61,15 @@ public class OrderAgent extends Agent {
 		
 		try {  
             DFService.register(this,dfd); 
-            //System.out.println("Subscribed");
         }catch (FIPAException fe) { 
         	fe.printStackTrace(); 
         }
 		
 		System.out.println(getLocalName() + ": Started.");
-		//partList = new Hashtable<String, Integer>();
 		//System.out.println("Order "+getLocalName() + ": Requesting the following parts:");
 		//printPartList(partList);
 		
 		//Behaviours
-			//addBehaviour(new requestParts());
-			//addBehaviour(new CompletedOrder());
 			addBehaviour(new MissingPieces());
 			addBehaviour(new orderStatus());
 			
@@ -146,7 +141,6 @@ public class OrderAgent extends Agent {
 			  System.out.println(getAID().getLocalName()+ ": Requesting parts...");
 			  ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 			  order.setOntology("requestParts");
-			  //order.setContent(Integer.toString(randomOrder));
 			  try{
 			  order.setContentObject(partList);
 			  }catch(IOException e){}
@@ -154,7 +148,6 @@ public class OrderAgent extends Agent {
 			  order.addReceiver(picker);
 			  order.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(order);
-			  //doDelete();
 			} 
 		  }
 	
