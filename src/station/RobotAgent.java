@@ -295,10 +295,9 @@ public class RobotAgent extends Agent {
 				System.out.println("  > Returned to: " + shelf_position.parsePose());
 				System.out.println("--------------------------\n");
 				Thread.sleep(this.timeout*1000);
-				
 				ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
 				informMsg.addReceiver(shelfID);
-				informMsg.setContent("UPDATE-REREGISTER-BEHAPPY");
+				informMsg.setContent("UPDATE-REREGISTER-BE-HAPPY");
 				myAgent.send(informMsg);
 			} catch (InterruptedException e) {
 				System.err.println("Thread error. Could not put to sleep");

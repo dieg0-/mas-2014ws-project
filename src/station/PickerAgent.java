@@ -75,7 +75,7 @@ public class PickerAgent extends Agent {
 	}
 	
 	/**
-	 * <!--GET ROBOT AGETNS BEHAVIOUR-->
+	 * <!--GET ROBOT AGENTS BEHAVIOUR-->
 	 * <p>Behavior which is executed cyclicly every specified amount
 	 * of time given by the argument period. This agent will
 	 * query for {@link RobotAgent} which are registered to the DF, description
