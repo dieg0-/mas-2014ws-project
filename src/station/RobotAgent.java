@@ -10,6 +10,7 @@ All Rights Reserved.
 
 package station;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
@@ -18,6 +19,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import shelf.ShelfAgent;
 import utilities.Pose;
 
@@ -276,21 +278,32 @@ public class RobotAgent extends Agent {
 	private class ReturnBehaviour extends SimpleBehaviour {
 		
 		private long timeout;
+		private ACLMessage message;
 		
-		public ReturnBehaviour(Agent a, long timeout) {
+		public ReturnBehaviour(Agent a, long timeout, ACLMessage msg) {
 			super(a);
 			this.timeout = timeout;
+			this.message = msg;
 		}
 		
 		public void action() {
-			// PRINTOUTS: information of where the picker and the shelf are.
-			System.out.println(myAgent.getLocalName() + ": [returning].");
-			System.out.println("  > Shelf will be returned to: " + shelf_position.parsePose());
-			System.out.println("--------------------------\n");
 			try {
+				AID shelfID = (AID)this.message.getContentObject();
+				// PRINTOUTS: information of where the picker and the shelf are.
+				System.out.println(myAgent.getLocalName() + ": [returning].");
+				System.out.println("  > Shelf: " + shelfID.getLocalName());
+				System.out.println("  > Returned to: " + shelf_position.parsePose());
+				System.out.println("--------------------------\n");
 				Thread.sleep(this.timeout*1000);
+				
+				ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+				informMsg.addReceiver(shelfID);
+				informMsg.setContent("UPDATE-REREGISTER-BEHAPPY");
+				myAgent.send(informMsg);
 			} catch (InterruptedException e) {
 				System.err.println("Thread error. Could not put to sleep");
+			} catch (UnreadableException e) {
+				
 			}
 		}
 		
@@ -353,7 +366,7 @@ public class RobotAgent extends Agent {
 					myAgent.addBehaviour(new FetchBehaviour(myAgent, 20, msg_content, msg));
 				}
 				else if (msg_command.matches("return")) {
-					myAgent.addBehaviour(new ReturnBehaviour(myAgent, 20));
+					myAgent.addBehaviour(new ReturnBehaviour(myAgent, 20, msg));
 				}
 				else {
 					System.out.println("  > No valid command.");
