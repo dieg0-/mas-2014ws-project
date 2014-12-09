@@ -329,9 +329,18 @@ public class PickerAgent extends Agent {
 				sd.setType("offer-pieces");
 				template.addServices(sd);
 				// Searching process.
-				DFAgentDescription[] result;
+				DFAgentDescription[] result = null;
 				try {
-					result = DFService.search(myAgent, template);
+					boolean found = false;
+					while (!found) {
+						result = DFService.search(myAgent, template);
+						if(result.length == 0){
+							//System.out.println(myAgent.getLocalName() + ": no free shelves found");
+						}else{
+							found = true;
+						}
+					}
+					
 					System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
 					System.out.println(myAgent.getLocalName() + ": Found the following active agents:");
 					activeAgent = new AID[result.length];
