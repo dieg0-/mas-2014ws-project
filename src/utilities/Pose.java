@@ -20,7 +20,7 @@ import java.util.Random;
  * <ul>
  * 	<li> <i>x:</i> x-coordinate of the position. </li>
  * 	<li> <i>y:</i> y-coordinate of the position. </li>
- *  <li> <i>mapSize:</i> size of the warehouse area, where the agents live.
+ *  <li> <i>mapSize:</i> size of the warehouse area, where the agents live. </li>
  * </ul> 
  * @author [DNA] Diego, Nicolas, Argentina
  *
