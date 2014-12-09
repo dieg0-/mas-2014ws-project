@@ -26,6 +26,7 @@ import utilities.Pose;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -230,7 +231,6 @@ public class ShelfAgent extends Agent {
 						MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 						ACLMessage informMessage = myAgent.receive(informTemplate);
 						if(informMessage != null){
-							System.out.println("Message not null");
 							if(informMessage.getContent().matches("REREGISTER")){
 								registerService();
 							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
@@ -286,7 +286,7 @@ public class ShelfAgent extends Agent {
 		}
 	}  
 	
-	private class cyclicMessageWaiter extends CyclicBehaviour {
+	private class cyclicMessageWaiter extends SimpleBehaviour {
 		
 		/**
 		 * 
@@ -300,23 +300,25 @@ public class ShelfAgent extends Agent {
 		}
 		
 		public void action(){
-			System.out.println(myAgent.getLocalName() + ": Waiting Cycle!!");
-			MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-			ACLMessage informMessage = myAgent.receive(informTemplate);
-			if(informMessage != null){
-				System.out.println("MY CONTENT IS: " + informMessage.getContent());
-				System.out.println("Message not null");
-				if(informMessage.getContent().matches("REREGISTER")){
-					registerService();
-				}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
-					updateWholeInventory(this.order);
-					registerService();
-				}
-			}else{
-				System.out.println("NULL BLAH!");
-				block();
-			}
+			boolean terminationFlag = false;
 			
+			while(!terminationFlag){
+				MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+				ACLMessage informMessage = myAgent.receive(informTemplate);
+				if(informMessage != null){
+					if(informMessage.getContent().matches("REREGISTER")){
+						terminationFlag = true;
+						registerService();
+					}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
+						updateWholeInventory(this.order);
+						terminationFlag = true;
+						registerService();
+					}
+				}else{
+					//System.out.println("NULL BLAH!");
+					block();
+				}
+			}
 		}
 		
 		public void registerService(){
@@ -327,6 +329,12 @@ public class ShelfAgent extends Agent {
 			catch (FIPAException fe) {
 				fe.printStackTrace();
 			}
+		}
+
+		@Override
+		public boolean done() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 		
 		
