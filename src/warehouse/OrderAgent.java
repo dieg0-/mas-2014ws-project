@@ -128,12 +128,25 @@ public class OrderAgent extends Agent {
 		private static final long serialVersionUID = 1L;
 
 		public void action(){
-			//TODO Check hashtable qty vs parts
+			
 			MessageTemplate partsMT = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchOntology("Check Part List"));
 			ACLMessage partsMsg = myAgent.receive(partsMT);
 			
+			MessageTemplate checkMT = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+					MessageTemplate.MatchOntology("Check Part List"));
+			ACLMessage temp = myAgent.receive(checkMT);
+			
+			if (temp !=null){
+				//
+				System.out.println(myAgent.getLocalName()+": Updating missing pieces...");
+				  ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
+				  compMsg.setOntology("Final shelf");
+				  compMsg.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
+				  send(compMsg);
+			}
 			if (partsMsg !=null){
 				try {
 					@SuppressWarnings("unchecked")

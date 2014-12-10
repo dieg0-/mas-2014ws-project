@@ -63,6 +63,7 @@ public class PickerAgent extends Agent {
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
+		printer.print("Try");
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
@@ -410,6 +411,14 @@ public class PickerAgent extends Agent {
 					informMsg.setContent("REREGISTER");
 					myAgent.send(informMsg);
 					
+					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
+					ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+					notify.setOntology("Check Part List");
+					notify.addReceiver(msg.getSender());
+					send(notify);
+					
+					
+					
 					addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf));
 					
 					/////////////////////////////////////////////////////////////////////////////////////////////
@@ -512,8 +521,8 @@ public class PickerAgent extends Agent {
 			reply.setOntology("Completed Order");
 			
 			if(orderMsg != null && shelfMsg !=null){
-				System.out.println(myAgent.getLocalName()+": Requesting new order!!!");
-				System.out.println(orderMsg.getSender());
+				System.out.println(myAgent.getLocalName()+": Requesting new order.");
+				///System.out.println(orderMsg.getSender());
 				//TODO This needs to be synced with the shelf leaving!
 				reply.addReceiver(orderMsg.getSender());
 				send(reply);
