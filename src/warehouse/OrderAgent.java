@@ -75,8 +75,8 @@ public class OrderAgent extends Agent {
 		//printPartList(partList);
 		
 		//Behaviours
-			addBehaviour(new MissingPieces());
 			addBehaviour(new orderStatus());
+			addBehaviour(new MissingPieces());
 			
 	}
 	
@@ -160,13 +160,13 @@ public class OrderAgent extends Agent {
 					}else{
 						System.out.println("Need a new shelf");
 						ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
-						  order.setOntology("requestParts");
-						  try{
-							  order.setContentObject(missingParts);
-						  }catch(IOException e){}
-						  
-						  order.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
-						  send(order);
+						order.setOntology("requestParts");
+						try{
+							order.setContentObject(missingParts);
+						}catch(IOException e){}
+  
+						order.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
+						send(order);
 					}					
 				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block
@@ -202,22 +202,20 @@ public class OrderAgent extends Agent {
 		  }
 	
 	private class orderStatus extends CyclicBehaviour{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		public void action(){
 			MessageTemplate assignMT = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchOntology("assignment"));
-			
+			ACLMessage assignMsg = myAgent.receive(assignMT);
+
 			MessageTemplate completeMT = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
 					MessageTemplate.MatchOntology("Completed Order"));
-
-			ACLMessage assignMsg = myAgent.receive(assignMT);
 			ACLMessage completeMsg = myAgent.receive(completeMT);
+			
+			
 			if (assignMsg != null){
 				ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
 				reply.setOntology("assignment");
@@ -227,9 +225,8 @@ public class OrderAgent extends Agent {
 				addBehaviour(new requestParts(assignMsg.getSender()));
 				try { 
 					DFService.deregister(myAgent); 
-					}catch (Exception e) {}
+				}catch (Exception e) {}
 			}else if (completeMsg != null){
-				//completed = true;
 				addBehaviour(new CompletedOrder());
 			}else{
 				block();
