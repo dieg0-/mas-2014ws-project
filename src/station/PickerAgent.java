@@ -232,10 +232,10 @@ public class PickerAgent extends Agent {
 						//shelf to its original position.
 						Thread.sleep(5000);
 						
-						ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
-						reply.setOntology("Completed Order");
+						//ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
+						//reply.setOntology("Completed Order");
 						//reply.addReceiver();
-						send(reply);
+						//send(reply);
 						
 					}
 				}
@@ -503,24 +503,19 @@ public class PickerAgent extends Agent {
 					MessageTemplate.MatchOntology("Shelf on place"));
 			
 			//What happens when they don't arrive at the same time?
-			MessageTemplate completeMT = MessageTemplate.and(orderMT, shelfMT);
+			//MessageTemplate completeMT = MessageTemplate.and(orderMT, shelfMT);
 			
-			ACLMessage completeMsg = myAgent.receive(completeMT);
+			//ACLMessage completeMsg = myAgent.receive(completeMT);
 			ACLMessage orderMsg = myAgent.receive(orderMT);
 			ACLMessage shelfMsg = myAgent.receive(shelfMT);
 			ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
 			reply.setOntology("Completed Order");
 			
-			
-			if(orderMsg != null)
-				System.out.println("Order");
-			if(shelfMsg != null)
-				System.out.println("Shelf");
-			
-			if(completeMsg != null){
-				System.out.println(myAgent.getLocalName()+": Requesting new order.");
+			if(orderMsg != null && shelfMsg !=null){
+				System.out.println(myAgent.getLocalName()+": Requesting new order!!!");
+				System.out.println(orderMsg.getSender());
 				//TODO This needs to be synced with the shelf leaving!
-				reply.addReceiver(completeMsg.getSender());
+				reply.addReceiver(orderMsg.getSender());
 				send(reply);
 				addBehaviour(new GetNewOrder());	
 			}else{
