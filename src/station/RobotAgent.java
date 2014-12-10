@@ -266,7 +266,11 @@ public class RobotAgent extends Agent {
 			System.out.println("------------------------------------\n");
 			ACLMessage reply = this.message.createReply();
 			reply.setPerformative(ACLMessage.PROPOSE);
+			ACLMessage notify = this.message.createReply();
+			notify.setPerformative(ACLMessage.INFORM);
+			notify.setOntology("Shelf on place");
 			myAgent.send(reply);
+			myAgent.send(notify);
 			return true;
 		}
 	}

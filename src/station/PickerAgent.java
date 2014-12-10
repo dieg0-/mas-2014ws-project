@@ -63,12 +63,14 @@ public class PickerAgent extends Agent {
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
+		printer.print("Try");
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
 		// Behaviors for the pickerAgent.
 		this.addBehaviour(new GetNewOrder());
 		this.addBehaviour(new UpdatePickerStatus());
+		this.addBehaviour(new OrderUpdate());
 	}
 	
 	/**
@@ -230,6 +232,12 @@ public class PickerAgent extends Agent {
 						//that completion has been reached. Command the robot to return
 						//shelf to its original position.
 						Thread.sleep(5000);
+						
+						//ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
+						//reply.setOntology("Completed Order");
+						//reply.addReceiver();
+						//send(reply);
+						
 					}
 				}
 			} catch (FIPAException fe) {
@@ -267,8 +275,8 @@ public class PickerAgent extends Agent {
 				System.err.println("Thread could not be put to sleep.");
 			}
 			// Asking for a new Order, given that the previous one was "completed".
-			myAgent.addBehaviour(new GetNewOrder());
-			myAgent.addBehaviour(new UpdatePickerStatus());
+//			myAgent.addBehaviour(new GetNewOrder());
+//			myAgent.addBehaviour(new UpdatePickerStatus());
 			return true;
 		}
 	}
@@ -403,6 +411,14 @@ public class PickerAgent extends Agent {
 					informMsg.setContent("REREGISTER");
 					myAgent.send(informMsg);
 					
+					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
+					ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+					notify.setOntology("Check Part List");
+					notify.addReceiver(msg.getSender());
+					send(notify);
+					
+					
+					
 					addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf));
 					
 					/////////////////////////////////////////////////////////////////////////////////////////////
@@ -482,4 +498,38 @@ public class PickerAgent extends Agent {
 
 	}
 
+	
+	
+	
+	private class OrderUpdate extends CyclicBehaviour{
+		public void action(){
+			MessageTemplate orderMT = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+					MessageTemplate.MatchOntology("Final Shelf"));
+			
+			MessageTemplate shelfMT = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.INFORM), 
+					MessageTemplate.MatchOntology("Shelf on place"));
+			
+			//What happens when they don't arrive at the same time?
+			//MessageTemplate completeMT = MessageTemplate.and(orderMT, shelfMT);
+			
+			//ACLMessage completeMsg = myAgent.receive(completeMT);
+			ACLMessage orderMsg = myAgent.receive(orderMT);
+			ACLMessage shelfMsg = myAgent.receive(shelfMT);
+			ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
+			reply.setOntology("Completed Order");
+			
+			if(orderMsg != null && shelfMsg !=null){
+				System.out.println(myAgent.getLocalName()+": Requesting new order.");
+				///System.out.println(orderMsg.getSender());
+				//TODO This needs to be synced with the shelf leaving!
+				reply.addReceiver(orderMsg.getSender());
+				send(reply);
+				addBehaviour(new GetNewOrder());	
+			}else{
+				block();
+			}			
+		}
+	}
 }
