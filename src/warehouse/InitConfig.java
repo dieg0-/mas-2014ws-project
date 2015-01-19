@@ -9,11 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import warehouse.dummies.Orders;
-import warehouse.dummies.Robots;
-import warehouse.dummies.Warehouse;
-import warehouse.dummies.Order;
-import warehouse.dummies.Shelves;
+import warehouse.dummies.*;
 
 public class InitConfig {
 	
@@ -117,9 +113,7 @@ public class InitConfig {
 		Orders orders = this.warehouse.getOrders();
 		ArrayList<Order> ol = orders.getOrderList();
 		ArrayList<Object[]> orderArgs = new ArrayList<Object[]>();
-		
 		//System.out.println(ol.toString());
-	
 		for(Order o:ol){
 			Object[] args = new Object[ol.size()];
 			args[0]=o.getPartList();
@@ -127,7 +121,35 @@ public class InitConfig {
 			orderArgs.add(args);
 		}		
 		return orderArgs;
-		
+	}
+
+	ArrayList<Object[]> getShelfArgs(){
+
+		Shelves shelves = this.warehouse.getShelves();
+		ArrayList<Shelf> sl = shelves.getShelfList();
+		ArrayList<Object[]> shelfArgs = new ArrayList<Object[]>();
+		//System.out.println(ol.toString());
+		for(Shelf s:sl){
+			Object[] args = new Object[sl.size()];
+			args[0]=s.getPartList();
+			args[1]=s.getUID();
+			shelfArgs.add(args);
+		}
+		return shelfArgs;
+	}
+
+	ArrayList<Object[]> getRobotArgs(){
+
+		Robots robots = this.warehouse.getRobots();
+		ArrayList<Robot> rl = robots.getRobotList();
+		ArrayList<Object[]> robotArgs = new ArrayList<Object[]>();
+		//System.out.println(ol.toString());
+		for(Robot r:rl){
+			Object[] args = new Object[rl.size()];
+			args[0]= r.getUID();
+			robotArgs.add(args);
+		}
+		return robotArgs;
 	}
 	
 	
