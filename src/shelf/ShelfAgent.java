@@ -209,6 +209,7 @@ public class ShelfAgent extends Agent {
 							inventory.put(piece, 0);
 						}
 					}
+					System.out.println(myAgent.getName() + ": Only " + inventory.get(piece) + " " + piece + "s left.");
 				}
 			}						
 		});
@@ -297,7 +298,7 @@ public class ShelfAgent extends Agent {
 								notify.addReceiver(orderID);
 								notify.setContentObject(inventory);
 								send(notify);
-								addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
+								//addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
 							}
 						}else{
 							addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
@@ -374,7 +375,7 @@ public class ShelfAgent extends Agent {
 						updateRequestedInventory(this.order);
 						terminationFlag = true;
 						registerService();
-					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+					/**}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
 						try {
 							String sName = informMessage.getLanguage();
 							AID orderID = new AID(sName, AID.ISGUID);
@@ -386,7 +387,7 @@ public class ShelfAgent extends Agent {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						
+						**/
 					}
 				}else{
 					//System.out.println("NULL BLAH!");
