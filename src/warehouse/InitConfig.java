@@ -15,13 +15,13 @@ public class InitConfig {
 	
 	Warehouse warehouse;
 	
-	void createXML(){
+	void createXML(int orders, int robots, int shelves, int pickers){
 		Warehouse wh = new Warehouse();
 		
 		//Creating Orders
-		Orders x = new Orders(10);
-		Robots y = new Robots(3);
-		Shelves z = new Shelves(10);
+		Orders x = new Orders(orders);
+		Robots y = new Robots(robots);
+		Shelves z = new Shelves(shelves);
 		wh.setOrders(x);
 		wh.setRobots(y);
 		wh.setShelves(z);
@@ -33,7 +33,7 @@ public class InitConfig {
 			File XMLfile = new File("conf/warehouse/kiva5.config.xml");
 			jaxbMarshaller.marshal(wh, XMLfile);
 			//jaxbMarshaller.marshal(wh, System.out);
-			System.out.println("Configuration created");
+			//System.out.println("Configuration created");
 
 		}catch(JAXBException e){
 			e.printStackTrace();
@@ -53,12 +53,12 @@ public class InitConfig {
 			   Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
 			   // specify the location and name of xml file to be read
-			   File XMLfile = new File("conf/warehouse/kiva4.config.xml");
+			   File XMLfile = new File("conf/warehouse/kiva5.config.xml");
 
 			   // this will create Java object - warehouse from the XML file
 			   this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
 			   
-			   System.out.println("Configuration read succesfuly.");
+			   //System.out.println("Configuration read succesfuly.");
 			   
 			  } catch (JAXBException e) {
 			   // some exception occured

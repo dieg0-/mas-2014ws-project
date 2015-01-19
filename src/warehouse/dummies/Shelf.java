@@ -26,28 +26,28 @@ public class Shelf {
     public Shelf(String uid){
         this.uid = uid;
         productList = new ArrayList<Product>();
-
+        int max = 100;
         Random rnd = new Random();
-        int a = rnd.nextInt(1000);
+        int a = rnd.nextInt(max);
 
         partList = new HashMap<String,Integer>();
         partList.put("motor", a*2);
-        partList.put("base", 1);
+        partList.put("base", max);
         partList.put("arms", a);
         partList.put("wires", a*4);
         partList.put("esc", a*2);
-        partList.put("nazam", 1);
-        partList.put("rx", 1);
-        partList.put("gcu", 1);
-        partList.put("pmu", 1);
-        partList.put("iosd", 1);
+        partList.put("nazam", max);
+        partList.put("rx", max);
+        partList.put("gcu", max);
+        partList.put("pmu", max);
+        partList.put("iosd", max);
         partList.put("cables", a*4);
-        partList.put("landinggear", 1);
-        partList.put("imu", 1);
-        partList.put("globalmount", 1);
-        partList.put("vtx", 1);
-        partList.put("gimbal", 1);
-        partList.put("cover", 1);
+        partList.put("landinggear", max);
+        partList.put("imu", max);
+        partList.put("globalmount", max);
+        partList.put("vtx", max);
+        partList.put("gimbal", max);
+        partList.put("cover", max);
         partList.put("blade", a+1);
 
 
