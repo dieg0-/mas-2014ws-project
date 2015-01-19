@@ -310,7 +310,7 @@ public class PickerAgent extends Agent {
 		
 		private static final long serialVersionUID = 1L;
 		private int repliesCnt = 0;
-		private AID closestShelf;
+		//private AID closestShelf;
 		private AID richestShelf;
 		//private double currentMinDistance = 10000;
 		private double currentMaxAvailablePieces = 0;
@@ -318,6 +318,9 @@ public class PickerAgent extends Agent {
 		private AID orderAgent;
 		@SuppressWarnings("unchecked")
 		public void action() {
+			currentMaxAvailablePieces = 0;
+			richestShelf = null;
+			currentBestPose = new Pose();
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchOntology("requestParts"));
@@ -418,7 +421,7 @@ public class PickerAgent extends Agent {
 					}
 					
 					System.out.println(myAgent.getLocalName() + ": Selected Richest Shelf: " + richestShelf);
-					System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
+					//System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
 					
 					ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
 					for (int i = 0; i < viableAgents.size(); i++) {
