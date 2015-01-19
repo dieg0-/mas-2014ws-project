@@ -318,6 +318,7 @@ public class PickerAgent extends Agent {
 		private AID orderAgent;
 		@SuppressWarnings("unchecked")
 		public void action() {
+			repliesCnt = 0;
 			currentMaxAvailablePieces = 0;
 			richestShelf = null;
 			currentBestPose = new Pose();
@@ -403,7 +404,8 @@ public class PickerAgent extends Agent {
 								if(iAvailablePieces >= currentMaxAvailablePieces){
 									currentMaxAvailablePieces = iAvailablePieces;
 									richestShelf = reply.getSender();
-									currentBestPose = shelfPose;
+									currentBestPose = new Pose(35.0, 35.0);
+									//currentBestPose = shelfPose;
 								}
 								/**
 								if(distance <= currentMinDistance){
@@ -451,7 +453,8 @@ public class PickerAgent extends Agent {
 					
 					
 					//addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf, orderAgent));
-					addBehaviour(new GetRobotAgents(myAgent, currentBestPose, richestShelf, orderAgent));
+					if(richestShelf != null)
+						addBehaviour(new GetRobotAgents(myAgent, currentBestPose, richestShelf, orderAgent));
 
 					/////////////////////////////////////////////////////////////////////////////////////////////
 				} catch (FIPAException e1) {
