@@ -94,16 +94,18 @@ public class WarehouseAgent extends Agent {
 				System.out.println(assignedOrder);
 				pendingOrders.remove(assignedOrder);
 				assignedOrders.add(assignedOrder);
-				System.out.println(myAgent.getLocalName()+": There is a total of "+pendingOrders.size()+" pending orders and "+assignedOrders.size()+" assigned orders.");
+				System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");
 			} else	if (completedMsg != null) {
 				String order = completedMsg.getSender().getLocalName();
 				System.out.println(myAgent.getLocalName() + ": "
 						+ order + " is completed.");
 				assignedOrders.remove(order);
 				completedOrders.add(order);
-				System.out.println(myAgent.getLocalName()+": "+completedOrders.size()+" total orders completed.");
-				// TODO Update hash-tables for each list type
-				// TODO Add templates for each type of update
+				if (pendingOrders.size()==0 && assignedOrders.size()==0){
+					System.out.println(myAgent.getLocalName()+": All orders succesfully completed.");
+				}else{
+					System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");				// TODO Update hash-tables for each list type
+				}
 			} else {
 				block();
 			}
