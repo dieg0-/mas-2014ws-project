@@ -47,7 +47,7 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getLocalName() + ": Started.");
 		//Load config file
 		config = new InitConfig();
-		config.createXML();
+		//config.createXML();
 		config.readXML();
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   

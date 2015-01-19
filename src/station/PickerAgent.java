@@ -98,17 +98,18 @@ public class PickerAgent extends Agent {
 		protected AID closestRobot;
 		protected AID closestShelf;
 		protected Pose target;
-		
+		protected AID orderAgent;
 		/**
 		 * Override constructor of a SimpleBehaviour.
 		 * @param a				this agent.
 		 * @param targetS		location of the target shelf as an instance of {@link Pose}.
 		 * @param closestShelf	ID of the shelf selected.
 		 */
-		public GetRobotAgents(Agent a, Pose targetS, AID targetID) {
+		public GetRobotAgents(Agent a, Pose targetS, AID targetID, AID order) {
 			super(a);
 			this.target = targetS;
 			this.closestShelf = targetID;
+			this.orderAgent=order;
 		}
 		
 		/**
@@ -233,10 +234,10 @@ public class PickerAgent extends Agent {
 						//shelf to its original position.
 						Thread.sleep(5000);
 						
-						//ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
-						//reply.setOntology("Completed Order");
-						//reply.addReceiver();
-						//send(reply);
+						ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
+						reply.setOntology("Completed Order");
+						reply.addReceiver(orderAgent);
+						send(reply);
 						
 					}
 				}
@@ -305,7 +306,7 @@ public class PickerAgent extends Agent {
 		private AID closestShelf;
 		private double currentMinDistance = 10000;
 		private Pose currentBestPose = new Pose();
-		
+		private AID orderAgent;
 		@SuppressWarnings("unchecked")
 		public void action() {
 			MessageTemplate mt = MessageTemplate.and(
@@ -313,6 +314,7 @@ public class PickerAgent extends Agent {
 					MessageTemplate.MatchOntology("requestParts"));
 			ACLMessage msg = myAgent.receive(mt);
 			if(msg != null){
+				this.orderAgent = msg.getSender();
 				System.out.println(myAgent.getLocalName()
 						+ ": Received order. Status: busy.");
 				
@@ -419,7 +421,7 @@ public class PickerAgent extends Agent {
 					
 					
 					
-					addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf));
+					addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf, orderAgent));
 					
 					/////////////////////////////////////////////////////////////////////////////////////////////
 				} catch (FIPAException e1) {
