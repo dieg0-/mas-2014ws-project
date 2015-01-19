@@ -56,7 +56,8 @@ public class ShelfAgent extends Agent {
 	
 	protected void setup(){
 		position = new Pose();
-		position.randomInit(true);
+		position.randomInit(false);
+		System.out.println(getLocalName()+": started at ("+position.parsePose()+").");
 		//inventory = new HashMap<String, Integer>();
 		Object[] args = this.getArguments();
 		inventory = (HashMap<String,Integer>)args[0];

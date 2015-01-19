@@ -21,7 +21,7 @@ public class InitConfig {
 		//Creating Orders
 		Orders x = new Orders(10);
 		Robots y = new Robots(3);
-		Shelves z = new Shelves(10);
+		Shelves z = new Shelves(5);
 		wh.setOrders(x);
 		wh.setRobots(y);
 		wh.setShelves(z);
