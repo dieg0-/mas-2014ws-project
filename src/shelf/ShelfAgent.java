@@ -254,8 +254,8 @@ public class ShelfAgent extends Agent {
 								updateWholeInventory(mappy);
 								registerService();
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-								AID orderID = new AID();
-								orderID = (AID) informMessage.getContentObject();
+								String sName = informMessage.getLanguage();
+								AID orderID = new AID(sName, AID.ISGUID);
 								ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
 								notify.setOntology("Check Part List");
 								notify.addReceiver(orderID);
@@ -338,16 +338,14 @@ public class ShelfAgent extends Agent {
 						terminationFlag = true;
 						registerService();
 					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-						AID orderID = new AID();
 						try {
-							orderID = (AID) informMessage.getContentObject();
-							ACLMessage notify = new ACLMessage(ACLMessage.REQUEST);
+							String sName = informMessage.getLanguage();
+							AID orderID = new AID(sName, AID.ISGUID);
+							ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
 							notify.setOntology("Check Part List");
 							notify.addReceiver(orderID);
 							notify.setContentObject(inventory);
 							send(notify);
-						} catch (UnreadableException e) {
-							e.printStackTrace();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

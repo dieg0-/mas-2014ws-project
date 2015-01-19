@@ -304,7 +304,9 @@ public class PickerAgent extends Agent {
 		private static final long serialVersionUID = 1L;
 		private int repliesCnt = 0;
 		private AID closestShelf;
+		private AID richestShelf;
 		private double currentMinDistance = 10000;
+		private double currentMaxAvailablePieces = 0;
 		private Pose currentBestPose = new Pose();
 		private AID orderAgent;
 		@SuppressWarnings("unchecked")
@@ -386,10 +388,14 @@ public class PickerAgent extends Agent {
 								// This is an offer 
 								double shelfPosition[] = (double[]) reply.getContentObject();
 								int iAvailablePieces = Integer.valueOf(reply.getLanguage());
-								System.out.println("Pieces: " + iAvailablePieces);
 								Pose shelfPose = new Pose();
 								shelfPose = shelfPose.arrayToPose(shelfPosition);
 								double distance = shelfPose.distance(position);
+								if(iAvailablePieces >= currentMaxAvailablePieces){
+									currentMaxAvailablePieces = iAvailablePieces;
+									richestShelf = reply.getSender();
+								}
+								
 								if(distance <= currentMinDistance){
 									currentMinDistance = distance;
 									closestShelf = reply.getSender();
@@ -403,11 +409,14 @@ public class PickerAgent extends Agent {
 							block();
 						}
 					}
+					
+					System.out.println(myAgent.getLocalName() + ": Selected Richest Shelf: " + richestShelf);
 					System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
 					
 					ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
 					for (int i = 0; i < viableAgents.size(); i++) {
-						if(viableAgents.get(i) != closestShelf){
+						//if(viableAgents.get(i) != closestShelf){
+						if(viableAgents.get(i) != richestShelf){
 							informMsg.addReceiver(viableAgents.get(i));
 						}
 					}
@@ -416,8 +425,10 @@ public class PickerAgent extends Agent {
 					myAgent.send(informMsg);
 					
 					ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
-					selectMsg.setContentObject(msg.getSender());
+					String theId = msg.getSender().getName();
+					selectMsg.setLanguage(theId);
 					selectMsg.setContent("YOU-ARE-THE-ONE");
+					selectMsg.addReceiver(richestShelf);
 					myAgent.send(selectMsg);
 					
 					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
