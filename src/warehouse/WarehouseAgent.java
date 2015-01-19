@@ -47,7 +47,8 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getLocalName() + ": Started.");
 		//Load config file
 		config = new InitConfig();
-		//config.createXML();
+		config.createXML();
+		System.out.println(getLocalName()+": Configuration created succesfuly.");
 		config.readXML();
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   
@@ -60,10 +61,9 @@ public class WarehouseAgent extends Agent {
 		addBehaviour(new CreateOrder());
 		addBehaviour(new updateOrderLists());
 		addBehaviour(new initialRobots());
+		addBehaviour(new initialShelves());
 		System.out.println(getLocalName()+": Loaded behaviours");
 		//System.out.println(getLocalName()+": Initial orders loaded: "+pendingOrders.size());
-		
-		
 	}
 
 	// Put agent clean-up operations here
@@ -206,7 +206,7 @@ public class WarehouseAgent extends Agent {
 							args);
 					a.start();
 				}
-				System.out.println(pendingOrders.toString());
+				//System.out.println(pendingOrders.toString());
 			}catch (Exception e) {
 				System.out.println("There is something wrong");
 				e.printStackTrace();
@@ -218,6 +218,7 @@ public class WarehouseAgent extends Agent {
 		public void action(){
 			AgentContainer c = getContainerController();
 			ArrayList<Object[]> robots = config.getRobotArgs();
+			System.out.println(myAgent.getLocalName()+": Initial robots loaded: "+robots.size());
 			try {
 				for(Object[] r:robots){
 					String robotNum = (String)r[0];
@@ -226,6 +227,28 @@ public class WarehouseAgent extends Agent {
 					AgentController a = c.createNewAgent("Robot "+
 									robotNum, "station.RobotAgent",
 							args);
+					a.start();
+				}
+			}catch (Exception e) {
+				System.out.println("There is something wrong");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class initialShelves extends OneShotBehaviour{
+		public void action(){
+			AgentContainer c = getContainerController();
+			ArrayList<Object[]> shelves = config.getShelfArgs();
+			System.out.println(myAgent.getLocalName()+": Initial shelves loaded: "+shelves.size());
+			try {
+				for(Object[] s:shelves){
+					String shelfNum = (String)s[1];
+					Object[] args = new Object[2];
+					args[0] = s[0];
+					args[1] = s[1];
+					AgentController a = c.createNewAgent("Shelf "+
+									shelfNum, "shelf.ShelfAgent", args);
 					a.start();
 				}
 			}catch (Exception e) {

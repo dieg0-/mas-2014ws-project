@@ -52,19 +52,22 @@ public class ShelfAgent extends Agent {
 	protected Pose position;
 	
 	protected DFAgentDescription dfd;
+	protected String uid;
 	
 	protected void setup(){
 		position = new Pose();
 		position.randomInit(true);
-		inventory = new HashMap<String, Integer>();
+		//inventory = new HashMap<String, Integer>();
 		Object[] args = this.getArguments();
-		String inventoryType;
-		if (args != null && args.length > 0) {
-			inventoryType = (String) args[0];
-		}else {
-			inventoryType = "DEFAULT";
-		}
-		initInventory(inventoryType);
+		inventory = (HashMap<String,Integer>)args[0];
+		uid = (String) args[1];
+		//String inventoryType;
+		//if (args != null && args.length > 0) {
+			//inventoryType = (String) args[0];
+		//}else {
+			//inventoryType = "DEFAULT";
+		//}
+		//initInventory(inventoryType);
 		//this.busy = false;
 
 		this.dfd = new DFAgentDescription();
