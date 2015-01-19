@@ -53,11 +53,12 @@ public class RobotAgent extends Agent {
 		Object [] args = getArguments();
 		uid = (String) args[0];
 		// PRINTOUTS: Initialization Messages
-		System.out.println("\n--ROBOT------------------");
-		System.out.println("Agent: " + getLocalName());
+		//System.out.println("\n--ROBOT------------------");
+
 		// Random initialization of the position of the robot.
 		this.position = new Pose();
-		this.position.randomInit(true);
+		this.position.randomInit(false);
+		System.out.println(getLocalName()+": started at ("+position.parsePose()+").");
 		// TODO: review is this flag is used/useful or not.
 		this.busy = false;
 		// Agent Description.
@@ -87,7 +88,7 @@ public class RobotAgent extends Agent {
 			System.err.println("Agent will be deleted.");
 			doDelete();
 		}
-		System.out.println("-------------------------\n");
+		//System.out.println("-------------------------\n");
 	}
 	
 	/**
