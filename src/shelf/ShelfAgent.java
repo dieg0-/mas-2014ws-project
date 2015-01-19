@@ -291,6 +291,7 @@ public class ShelfAgent extends Agent {
 								updateRequestedInventory(mappy);
 								registerService();
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+								System.out.println("Recibí mensajito que quiere Argen");
 								String sName = informMessage.getLanguage();
 								AID orderID = new AID(sName, AID.ISGUID);
 								ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
@@ -375,7 +376,8 @@ public class ShelfAgent extends Agent {
 						updateRequestedInventory(this.order);
 						terminationFlag = true;
 						registerService();
-					/**}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+						System.out.println("Recibí mensajito que quiere Argen");
 						try {
 							String sName = informMessage.getLanguage();
 							AID orderID = new AID(sName, AID.ISGUID);
@@ -387,7 +389,7 @@ public class ShelfAgent extends Agent {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						**/
+						
 					}
 				}else{
 					//System.out.println("NULL BLAH!");
