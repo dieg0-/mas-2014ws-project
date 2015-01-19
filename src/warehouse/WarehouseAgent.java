@@ -59,6 +59,7 @@ public class WarehouseAgent extends Agent {
 		addBehaviour(new initialOrders());
 		addBehaviour(new CreateOrder());
 		addBehaviour(new updateOrderLists());
+		addBehaviour(new initialRobots());
 		System.out.println(getLocalName()+": Loaded behaviours");
 		//System.out.println(getLocalName()+": Initial orders loaded: "+pendingOrders.size());
 		
@@ -187,11 +188,7 @@ public class WarehouseAgent extends Agent {
 	 * Loads initial orders stored in the xml configuration file.
 	 */
 	private class initialOrders extends OneShotBehaviour{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
-
 		public void action(){
 			AgentContainer c = getContainerController();
 			ArrayList<Object[]> orders = config.getOrderArgs();
@@ -214,6 +211,27 @@ public class WarehouseAgent extends Agent {
 				System.out.println("There is something wrong");
 				e.printStackTrace();
 			}			
+		}
+	}
+
+	private class initialRobots extends OneShotBehaviour{
+		public void action(){
+			AgentContainer c = getContainerController();
+			ArrayList<Object[]> robots = config.getRobotArgs();
+			try {
+				for(Object[] r:robots){
+					String robotNum = (String)r[0];
+					Object[] args = new Object[1];
+					args[0] = r[0];
+					AgentController a = c.createNewAgent("Robot "+
+									robotNum, "station.RobotAgent",
+							args);
+					a.start();
+				}
+			}catch (Exception e) {
+				System.out.println("There is something wrong");
+				e.printStackTrace();
+			}
 		}
 	}
 	
