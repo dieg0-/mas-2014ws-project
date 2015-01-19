@@ -522,7 +522,7 @@ public class PickerAgent extends Agent {
 			ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
 			reply.setOntology("Completed Order");
 			
-			if(orderMsg != null && shelfMsg !=null){
+			if(orderMsg != null){
 				System.out.println(myAgent.getLocalName()+": Requesting new order.");
 				///System.out.println(orderMsg.getSender());
 				//TODO This needs to be synced with the shelf leaving!
