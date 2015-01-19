@@ -14,7 +14,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>12</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -26,7 +26,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>6</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -38,11 +38,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>6</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>12</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -50,7 +50,7 @@
                 </product>
                 <product>
                     <name>blade</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>globalmount</name>
@@ -91,7 +91,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>16</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -103,7 +103,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -115,11 +115,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>16</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -127,7 +127,7 @@
                 </product>
                 <product>
                     <name>blade</name>
-                    <quantity>5</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>globalmount</name>
@@ -139,7 +139,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -168,7 +168,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>12</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -180,7 +180,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>6</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -192,11 +192,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>6</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>12</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -204,7 +204,7 @@
                 </product>
                 <product>
                     <name>blade</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>globalmount</name>
@@ -245,7 +245,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>16</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -257,7 +257,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -269,11 +269,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>16</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -281,7 +281,7 @@
                 </product>
                 <product>
                     <name>blade</name>
-                    <quantity>5</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>globalmount</name>
@@ -293,7 +293,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -322,7 +322,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -334,7 +334,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -346,11 +346,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -370,7 +370,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>2</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -399,7 +399,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -411,7 +411,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -423,11 +423,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -447,7 +447,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>2</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -476,7 +476,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>12</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -488,7 +488,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>6</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -500,11 +500,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>6</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>12</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -512,7 +512,7 @@
                 </product>
                 <product>
                     <name>blade</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>globalmount</name>
@@ -553,7 +553,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -565,7 +565,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -577,11 +577,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -601,7 +601,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>2</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -630,7 +630,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -642,7 +642,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -654,11 +654,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -678,7 +678,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>2</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -707,7 +707,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -719,7 +719,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -731,11 +731,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>4</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>8</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -755,7 +755,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>2</quantity>
+                    <quantity>3</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -794,7 +794,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>8</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -806,7 +806,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>4</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -818,11 +818,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>4</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>8</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -830,7 +830,7 @@
                 </product>
                 <product>
                     <name>blade</name>
-                    <quantity>3</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>globalmount</name>
@@ -842,7 +842,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>2</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>nazam</name>
@@ -871,7 +871,7 @@
                 </product>
                 <product>
                     <name>wires</name>
-                    <quantity>0</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>landinggear</name>
@@ -883,7 +883,7 @@
                 </product>
                 <product>
                     <name>esc</name>
-                    <quantity>0</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>gcu</name>
@@ -895,11 +895,11 @@
                 </product>
                 <product>
                     <name>motor</name>
-                    <quantity>0</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>cables</name>
-                    <quantity>0</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>base</name>
@@ -907,7 +907,7 @@
                 </product>
                 <product>
                     <name>blade</name>
-                    <quantity>1</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>globalmount</name>
@@ -919,7 +919,7 @@
                 </product>
                 <product>
                     <name>arms</name>
-                    <quantity>0</quantity>
+                    <quantity>10</quantity>
                 </product>
                 <product>
                     <name>nazam</name>

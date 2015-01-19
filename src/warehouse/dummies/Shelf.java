@@ -31,24 +31,24 @@ public class Shelf {
         int a = rnd.nextInt(max);
 
         partList = new HashMap<String,Integer>();
-        partList.put("motor", a*2);
+        partList.put("motor", max);
         partList.put("base", max);
-        partList.put("arms", a);
-        partList.put("wires", a*4);
-        partList.put("esc", a*2);
+        partList.put("arms", max);
+        partList.put("wires", max);
+        partList.put("esc", max);
         partList.put("nazam", max);
         partList.put("rx", max);
         partList.put("gcu", max);
         partList.put("pmu", max);
         partList.put("iosd", max);
-        partList.put("cables", a*4);
+        partList.put("cables", max);
         partList.put("landinggear", max);
         partList.put("imu", max);
         partList.put("globalmount", max);
         partList.put("vtx", max);
         partList.put("gimbal", max);
         partList.put("cover", max);
-        partList.put("blade", a+1);
+        partList.put("blade", max);
 
 
         for (Map.Entry<String, Integer> entry : partList.entrySet()) {
