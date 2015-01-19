@@ -23,6 +23,7 @@ import java.util.Set;
 import utilities.Pose;
 
 //import jade.core.AID;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -144,6 +145,21 @@ public class ShelfAgent extends Agent {
 	}
 	
 	@SuppressWarnings("rawtypes")
+	public int checkAvailabilityPercentage(HashMap<String, Integer> order){
+		int availablePieces = 0;
+		Set orderSet = order.entrySet();
+		Iterator iter = orderSet.iterator();
+		while(iter.hasNext()){
+			@SuppressWarnings("unchecked")
+			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+			if(checkPieceInInventory(lookup.getKey(), lookup.getValue()))
+				availablePieces++;
+		}
+		
+		return availablePieces;
+	}
+	
+	@SuppressWarnings("rawtypes")
 	public void updateWholeInventory(final HashMap<String, Integer> order){
 		addBehaviour(new OneShotBehaviour() {
 			/**
@@ -183,13 +199,10 @@ public class ShelfAgent extends Agent {
 			}
 	        in.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//System.out.println(inventory.toString());
@@ -219,17 +232,21 @@ public class ShelfAgent extends Agent {
 				try {
 					mappy = (HashMap<String, Integer>)message.getContentObject();
 					ACLMessage reply = message.createReply();
-					if(checkWholeInventory(mappy)){
+					reply.setPerformative(ACLMessage.CFP);
+					int availablePieces = checkAvailabilityPercentage(mappy);
+					//if(checkWholeInventory(mappy)){
+					if(availablePieces > 0){
+						String sAvailablePieces = String.valueOf(availablePieces);
 						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");			
 						reply.setPerformative(ACLMessage.PROPOSE);
-						reply.setContent("Enough pieces available");
+						//reply.setContent("Enough pieces available");
+						reply.setLanguage(sAvailablePieces);
 						double myPosition[] = position.poseToArray();
 						reply.setContentObject(myPosition);
 						myAgent.send(reply);
 						try {
 							Thread.sleep(10000);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
@@ -240,6 +257,15 @@ public class ShelfAgent extends Agent {
 							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
 								updateWholeInventory(mappy);
 								registerService();
+							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+								AID orderID = new AID();
+								orderID = (AID) informMessage.getContentObject();
+								ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+								notify.setOntology("Check Part List");
+								notify.addReceiver(orderID);
+								notify.setContentObject(inventory);
+								send(notify);
+								addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
 							}
 						}else{
 							addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
@@ -253,10 +279,8 @@ public class ShelfAgent extends Agent {
 						myAgent.send(reply);
 					}
 				} catch (UnreadableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -317,6 +341,21 @@ public class ShelfAgent extends Agent {
 						updateWholeInventory(this.order);
 						terminationFlag = true;
 						registerService();
+					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+						AID orderID = new AID();
+						try {
+							orderID = (AID) informMessage.getContentObject();
+							ACLMessage notify = new ACLMessage(ACLMessage.REQUEST);
+							notify.setOntology("Check Part List");
+							notify.addReceiver(orderID);
+							notify.setContentObject(inventory);
+							send(notify);
+						} catch (UnreadableException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
 					}
 				}else{
 					//System.out.println("NULL BLAH!");
@@ -337,7 +376,6 @@ public class ShelfAgent extends Agent {
 
 		@Override
 		public boolean done() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 		

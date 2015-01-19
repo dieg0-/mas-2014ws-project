@@ -385,6 +385,8 @@ public class PickerAgent extends Agent {
 								viableAgents.add(reply.getSender());
 								// This is an offer 
 								double shelfPosition[] = (double[]) reply.getContentObject();
+								int iAvailablePieces = Integer.valueOf(reply.getLanguage());
+								System.out.println("Pieces: " + iAvailablePieces);
 								Pose shelfPose = new Pose();
 								shelfPose = shelfPose.arrayToPose(shelfPosition);
 								double distance = shelfPose.distance(position);
@@ -412,6 +414,11 @@ public class PickerAgent extends Agent {
 					//informMsg.setConversationId("command-register");
 					informMsg.setContent("REREGISTER");
 					myAgent.send(informMsg);
+					
+					ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
+					selectMsg.setContentObject(msg.getSender());
+					selectMsg.setContent("YOU-ARE-THE-ONE");
+					myAgent.send(selectMsg);
 					
 					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
 					ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
