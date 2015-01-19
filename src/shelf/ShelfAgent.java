@@ -185,6 +185,35 @@ public class ShelfAgent extends Agent {
 		});
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public void updateRequestedInventory(final HashMap<String, Integer> order){
+		addBehaviour(new OneShotBehaviour() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;	
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void action() {
+				Set orderSet = order.entrySet();
+				Iterator iter = orderSet.iterator();
+				while(iter.hasNext()){
+					Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+					String piece = lookup.getKey();
+					int amount = lookup.getValue();
+					if(inventory.containsKey(piece)){
+						if(inventory.get(piece) >= amount){
+							inventory.put(piece, inventory.get(piece) - amount);
+						}else{
+							inventory.put(piece, 0);
+						}
+					}
+				}
+			}						
+		});
+	}
+	
 	public void initInventory(String inventoryType){
 		BufferedReader in;
 		try {
@@ -257,7 +286,8 @@ public class ShelfAgent extends Agent {
 							if(informMessage.getContent().matches("REREGISTER")){
 								registerService();
 							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
-								updateWholeInventory(mappy);
+								//updateWholeInventory(mappy);
+								updateRequestedInventory(mappy);
 								registerService();
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
 								String sName = informMessage.getLanguage();
@@ -340,7 +370,8 @@ public class ShelfAgent extends Agent {
 						terminationFlag = true;
 						registerService();
 					}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
-						updateWholeInventory(this.order);
+						//updateWholeInventory(this.order);
+						updateRequestedInventory(this.order);
 						terminationFlag = true;
 						registerService();
 					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
