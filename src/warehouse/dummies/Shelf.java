@@ -26,7 +26,7 @@ public class Shelf {
     public Shelf(String uid){
         this.uid = uid;
         productList = new ArrayList<Product>();
-        int max = 100;
+        int max = 10;
         Random rnd = new Random();
         int a = rnd.nextInt(max);
 
