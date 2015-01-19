@@ -47,8 +47,11 @@ public class RobotAgent extends Agent {
 	protected Pose shelf_position;
 	protected DFAgentDescription dfd;
 	private boolean busy;
+	protected String uid;
 	
 	protected void setup() {
+		Object [] args = getArguments();
+		uid = (String) args[0];
 		// PRINTOUTS: Initialization Messages
 		System.out.println("\n--ROBOT------------------");
 		System.out.println("Agent: " + getLocalName());
