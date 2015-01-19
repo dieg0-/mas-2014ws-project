@@ -55,6 +55,8 @@ public class ShelfAgent extends Agent {
 	protected DFAgentDescription dfd;
 	protected String uid;
 	
+	
+	@SuppressWarnings("unchecked")
 	protected void setup(){
 		position = new Pose();
 		position.randomInit(false);
