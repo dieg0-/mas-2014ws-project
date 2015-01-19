@@ -9,15 +9,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-
-
-
-
 import warehouse.dummies.Orders;
 import warehouse.dummies.Robots;
-//import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import warehouse.dummies.Warehouse;
 import warehouse.dummies.Order;
+import warehouse.dummies.Shelves;
 
 public class InitConfig {
 	
@@ -29,14 +25,16 @@ public class InitConfig {
 		//Creating Orders
 		Orders x = new Orders(10);
 		Robots y = new Robots(3);
+		Shelves z = new Shelves(10);
 		wh.setOrders(x);
 		wh.setRobots(y);
+		wh.setShelves(z);
 		
 		try{
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			File XMLfile = new File("conf/warehouse/kiva4.config.xml");
+			File XMLfile = new File("conf/warehouse/kiva5.config.xml");
 			jaxbMarshaller.marshal(wh, XMLfile);
 			//jaxbMarshaller.marshal(wh, System.out);
 			System.out.println("Configuration created");
