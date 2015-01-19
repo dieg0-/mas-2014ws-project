@@ -172,7 +172,7 @@ public class OrderAgent extends Agent {
 						  compMsg.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
 						  send(compMsg);
 					}else{
-						System.out.println("Need a new shelf");
+						System.out.println(myAgent.getLocalName()+": Need a new shelf");
 						ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 						order.setOntology("requestParts");
 						try{
