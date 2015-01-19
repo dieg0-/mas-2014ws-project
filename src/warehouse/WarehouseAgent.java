@@ -1,7 +1,7 @@
 /**
 COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
 Project: KivaSolutions
-@author: Argentina Ortega Sainz, Nicol‡s Laverde Alfonso & Diego Enrique Ramos Avila
+@author: Argentina Ortega Sainz, Nicolï¿½s Laverde Alfonso & Diego Enrique Ramos Avila
 @version: 1.0 
 @since 09.11.2014 
 HBRS - Multiagent Systems
@@ -47,7 +47,7 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getLocalName() + ": Started.");
 		//Load config file
 		config = new InitConfig();
-		//config.createXML();
+		config.createXML();
 		config.readXML();
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   

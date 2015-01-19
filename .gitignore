@@ -1,3 +1,4 @@
+#Project
 /bin/
 *.class
 *.classpath
@@ -5,3 +6,7 @@
 
 /MTPs-Main-Container.txt
 /APDescription.txt
+
+#IDE
+*.idea
+*.iml
