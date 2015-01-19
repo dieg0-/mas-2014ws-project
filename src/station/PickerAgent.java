@@ -321,8 +321,7 @@ public class PickerAgent extends Agent {
 				/////////////// Just a test until received message is fixed ////////////////
 				//HashMap<String, Integer> mappy = initMap();
 				HashMap<String, Integer> mappy = new HashMap<String, Integer>();
-				////////////////////////////////////////////////////////////////////////////
-				
+				//////////////////////////////////////////////////////////////////////
 				
 				try {
 					mappy = (HashMap<String, Integer>)msg.getContentObject();
