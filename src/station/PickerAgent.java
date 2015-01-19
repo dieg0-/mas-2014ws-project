@@ -239,6 +239,13 @@ public class PickerAgent extends Agent {
 						//reply.addReceiver(orderAgent);
 						//send(reply);
 						
+						ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
+						String theId = orderAgent.getName();
+						selectMsg.setLanguage(theId);
+						selectMsg.setContent("YOU-ARE-THE-ONE");
+						selectMsg.addReceiver(closestShelf);
+						myAgent.send(selectMsg);
+						
 					}
 				}
 			} catch (FIPAException fe) {
@@ -424,13 +431,14 @@ public class PickerAgent extends Agent {
 					informMsg.setContent("REREGISTER");
 					myAgent.send(informMsg);
 					
+					/**
 					ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
 					String theId = msg.getSender().getName();
 					selectMsg.setLanguage(theId);
 					selectMsg.setContent("YOU-ARE-THE-ONE");
 					selectMsg.addReceiver(richestShelf);
 					myAgent.send(selectMsg);
-					
+					*/
 					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
 					//ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
 					//notify.setOntology("Check Part List");
