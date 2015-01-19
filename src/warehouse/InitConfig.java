@@ -15,13 +15,13 @@ public class InitConfig {
 	
 	Warehouse warehouse;
 	
-	void createXML(){
+	void createXML(int orders, int robots, int shelves, int pickers){
 		Warehouse wh = new Warehouse();
 		
 		//Creating Orders
-		Orders x = new Orders(10);
-		Robots y = new Robots(3);
-		Shelves z = new Shelves(5);
+		Orders x = new Orders(orders);
+		Robots y = new Robots(robots);
+		Shelves z = new Shelves(shelves);
 		wh.setOrders(x);
 		wh.setRobots(y);
 		wh.setShelves(z);
