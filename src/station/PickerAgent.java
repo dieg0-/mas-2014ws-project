@@ -385,6 +385,8 @@ public class PickerAgent extends Agent {
 								viableAgents.add(reply.getSender());
 								// This is an offer 
 								double shelfPosition[] = (double[]) reply.getContentObject();
+								int iAvailablePieces = Integer.valueOf(reply.getLanguage());
+								System.out.println("Pieces: " + iAvailablePieces);
 								Pose shelfPose = new Pose();
 								shelfPose = shelfPose.arrayToPose(shelfPosition);
 								double distance = shelfPose.distance(position);

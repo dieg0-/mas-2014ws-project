@@ -140,6 +140,21 @@ public class ShelfAgent extends Agent {
 	}
 	
 	@SuppressWarnings("rawtypes")
+	public int checkAvailabilityPercentage(HashMap<String, Integer> order){
+		int availablePieces = 0;
+		Set orderSet = order.entrySet();
+		Iterator iter = orderSet.iterator();
+		while(iter.hasNext()){
+			@SuppressWarnings("unchecked")
+			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+			if(checkPieceInInventory(lookup.getKey(), lookup.getValue()))
+				availablePieces++;
+		}
+		
+		return availablePieces;
+	}
+	
+	@SuppressWarnings("rawtypes")
 	public void updateWholeInventory(final HashMap<String, Integer> order){
 		addBehaviour(new OneShotBehaviour() {
 			/**
@@ -215,10 +230,15 @@ public class ShelfAgent extends Agent {
 				try {
 					mappy = (HashMap<String, Integer>)message.getContentObject();
 					ACLMessage reply = message.createReply();
-					if(checkWholeInventory(mappy)){
+					reply.setPerformative(ACLMessage.CFP);
+					int availablePieces = checkAvailabilityPercentage(mappy);
+					//if(checkWholeInventory(mappy)){
+					if(availablePieces > 0){
+						String sAvailablePieces = String.valueOf(availablePieces);
 						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");			
 						reply.setPerformative(ACLMessage.PROPOSE);
-						reply.setContent("Enough pieces available");
+						//reply.setContent("Enough pieces available");
+						reply.setLanguage(sAvailablePieces);
 						double myPosition[] = position.poseToArray();
 						reply.setContentObject(myPosition);
 						myAgent.send(reply);
