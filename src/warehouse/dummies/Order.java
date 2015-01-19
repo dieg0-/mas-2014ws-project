@@ -26,27 +26,28 @@ public class Order {
 			productList = new ArrayList<Product>();
 			
 			Random rnd = new Random();
-			int a = rnd.nextInt(4)+1;
+			//int a = rnd.nextInt(4)+1;
+			int a = 3;
 			
 			partList = new HashMap <String,Integer>();
-			partList.put("motor", a*2);
+			partList.put("motor", a);
 			partList.put("base", 1);
 			partList.put("arms", a);
-			partList.put("wires", a*4);
-			partList.put("esc", a*2);
+			partList.put("wires", a);
+			partList.put("esc", a);
 			partList.put("nazam", 1);
 			partList.put("rx", 1);
 			partList.put("gcu", 1);
 			partList.put("pmu", 1);
 			partList.put("iosd", 1);
-			partList.put("cables", a*4);
+			partList.put("cables", a);
 			partList.put("landinggear", 1);
 			partList.put("imu", 1);
 			partList.put("globalmount", 1);
 			partList.put("vtx", 1);
 			partList.put("gimbal", 1);
 			partList.put("cover", 1);
-			partList.put("blade", a+1);
+			partList.put("blade", a);
 			
 			
 			for (Map.Entry<String, Integer> entry : partList.entrySet()) { 
