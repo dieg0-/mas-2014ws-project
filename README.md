@@ -10,7 +10,7 @@ Please make sure you read this file before running the project.
 1. Make sure the JADE environment variables are correctly set. This would of course imply that JAVA is also running correctly.
   - EG. Your .bashrc file  should containg something similar to:
     - export JADE_LIB=/home/JohnyCash/JADE/jade/lib
-    - export CLASSPATH=”.:${JADE_LIB}/jade.jar:{JADE_LIB}/commons-codec/commons-codec-1.3.jar:{JADE_LIB}/jadeExamples.jar:/home/JohnyCash/JADE/jade/classes”
+    - export CLASSPATH='.:${JADE_LIB}/jade.jar:{JADE_LIB}/commons-codec/commons-codec-1.3.jar:{JADE_LIB}/jadeExamples.jar:/home/JohnyCash/JADE/jade/classes'
 
   NOTE: If this is the case, you should be able to open a terminal in any location and correctly run:
    java jade.Boot -gui
