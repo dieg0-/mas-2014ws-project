@@ -91,7 +91,7 @@ public class WarehouseAgent extends Agent {
 			
 			if (assignMsg !=null){
 				String assignedOrder = assignMsg.getSender().getLocalName();
-				System.out.println(assignedOrder);
+				//System.out.println(assignedOrder);
 				pendingOrders.remove(assignedOrder);
 				assignedOrders.add(assignedOrder);
 				System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");
@@ -216,6 +216,7 @@ public class WarehouseAgent extends Agent {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private class initialRobots extends OneShotBehaviour{
 		public void action(){
 			AgentContainer c = getContainerController();
@@ -238,6 +239,7 @@ public class WarehouseAgent extends Agent {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private class initialShelves extends OneShotBehaviour{
 		public void action(){
 			AgentContainer c = getContainerController();
