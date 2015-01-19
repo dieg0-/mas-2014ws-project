@@ -23,6 +23,7 @@ import java.util.Set;
 import utilities.Pose;
 
 //import jade.core.AID;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -194,13 +195,10 @@ public class ShelfAgent extends Agent {
 			}
 	        in.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//System.out.println(inventory.toString());
@@ -245,7 +243,6 @@ public class ShelfAgent extends Agent {
 						try {
 							Thread.sleep(10000);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
@@ -257,7 +254,14 @@ public class ShelfAgent extends Agent {
 								updateWholeInventory(mappy);
 								registerService();
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-								
+								AID orderID = new AID();
+								orderID = (AID) informMessage.getContentObject();
+								ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+								notify.setOntology("Check Part List");
+								notify.addReceiver(orderID);
+								notify.setContentObject(inventory);
+								send(notify);
+								addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
 							}
 						}else{
 							addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
@@ -271,10 +275,8 @@ public class ShelfAgent extends Agent {
 						myAgent.send(reply);
 					}
 				} catch (UnreadableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -336,6 +338,19 @@ public class ShelfAgent extends Agent {
 						terminationFlag = true;
 						registerService();
 					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+						AID orderID = new AID();
+						try {
+							orderID = (AID) informMessage.getContentObject();
+							ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+							notify.setOntology("Check Part List");
+							notify.addReceiver(orderID);
+							notify.setContentObject(inventory);
+							send(notify);
+						} catch (UnreadableException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						
 					}
 				}else{
@@ -357,7 +372,6 @@ public class ShelfAgent extends Agent {
 
 		@Override
 		public boolean done() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 		
