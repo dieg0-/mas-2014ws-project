@@ -305,7 +305,7 @@ public class PickerAgent extends Agent {
 		private int repliesCnt = 0;
 		private AID closestShelf;
 		private AID richestShelf;
-		private double currentMinDistance = 10000;
+		//private double currentMinDistance = 10000;
 		private double currentMaxAvailablePieces = 0;
 		private Pose currentBestPose = new Pose();
 		private AID orderAgent;
@@ -389,17 +389,18 @@ public class PickerAgent extends Agent {
 								int iAvailablePieces = Integer.valueOf(reply.getLanguage());
 								Pose shelfPose = new Pose();
 								shelfPose = shelfPose.arrayToPose(shelfPosition);
-								double distance = shelfPose.distance(position);
+								//double distance = shelfPose.distance(position);
 								if(iAvailablePieces >= currentMaxAvailablePieces){
 									currentMaxAvailablePieces = iAvailablePieces;
 									richestShelf = reply.getSender();
+									currentBestPose = shelfPose;
 								}
-								
+								/**
 								if(distance <= currentMinDistance){
 									currentMinDistance = distance;
 									closestShelf = reply.getSender();
 									currentBestPose = shelfPose;
-								}
+								}**/
 							}
 							repliesCnt++;
 						
@@ -438,8 +439,9 @@ public class PickerAgent extends Agent {
 					
 					
 					
-					addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf, orderAgent));
-					
+					//addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf, orderAgent));
+					addBehaviour(new GetRobotAgents(myAgent, currentBestPose, richestShelf, orderAgent));
+
 					/////////////////////////////////////////////////////////////////////////////////////////////
 				} catch (FIPAException e1) {
 					// TODO Auto-generated catch block
@@ -528,6 +530,7 @@ public class PickerAgent extends Agent {
 			
 			//MessageTemplate shelfMT = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM), MessageTemplate.MatchOntology("Shelf on place"));
 			
+
 			//What happens when they don't arrive at the same time?
 			//MessageTemplate completeMT = MessageTemplate.and(orderMT, shelfMT);
 			
