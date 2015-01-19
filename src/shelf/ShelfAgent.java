@@ -256,6 +256,8 @@ public class ShelfAgent extends Agent {
 							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
 								updateWholeInventory(mappy);
 								registerService();
+							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+								
 							}
 						}else{
 							addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
@@ -333,6 +335,8 @@ public class ShelfAgent extends Agent {
 						updateWholeInventory(this.order);
 						terminationFlag = true;
 						registerService();
+					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
+						
 					}
 				}else{
 					//System.out.println("NULL BLAH!");

@@ -415,6 +415,11 @@ public class PickerAgent extends Agent {
 					informMsg.setContent("REREGISTER");
 					myAgent.send(informMsg);
 					
+					ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
+					selectMsg.setContentObject(msg.getSender());
+					selectMsg.setContent("YOU-ARE-THE-ONE");
+					myAgent.send(selectMsg);
+					
 					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
 					ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
 					notify.setOntology("Check Part List");
