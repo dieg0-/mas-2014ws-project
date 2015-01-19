@@ -51,7 +51,7 @@ import warehouse.OrderAgent;
 public class PickerAgent extends Agent {
 	
 	private AID[] activeAgent;
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private PrinterUtil printer;
 	protected Pose position;
 	protected boolean busy;
@@ -332,7 +332,7 @@ public class PickerAgent extends Agent {
 				}
 				
 				
-				
+		
 				DFAgentDescription template = new DFAgentDescription();
 				ServiceDescription sd = new ServiceDescription();
 				// Search for agents who offer pieces (offer-pieces service).
