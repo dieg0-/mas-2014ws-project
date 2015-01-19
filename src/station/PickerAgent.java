@@ -234,10 +234,10 @@ public class PickerAgent extends Agent {
 						//shelf to its original position.
 						Thread.sleep(5000);
 						
-						ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
-						reply.setOntology("Completed Order");
-						reply.addReceiver(orderAgent);
-						send(reply);
+						//ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
+						//reply.setOntology("Completed Order");
+						//reply.addReceiver(orderAgent);
+						//send(reply);
 						
 					}
 				}
@@ -431,10 +431,10 @@ public class PickerAgent extends Agent {
 					myAgent.send(selectMsg);
 					
 					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
-					ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
-					notify.setOntology("Check Part List");
-					notify.addReceiver(msg.getSender());
-					send(notify);
+					//ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+					//notify.setOntology("Check Part List");
+					//notify.addReceiver(msg.getSender());
+					//send(notify);
 					
 					
 					
@@ -526,16 +526,14 @@ public class PickerAgent extends Agent {
 					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
 					MessageTemplate.MatchOntology("Final Shelf"));
 			
-			MessageTemplate shelfMT = MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.INFORM), 
-					MessageTemplate.MatchOntology("Shelf on place"));
+			//MessageTemplate shelfMT = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM), MessageTemplate.MatchOntology("Shelf on place"));
 			
 			//What happens when they don't arrive at the same time?
 			//MessageTemplate completeMT = MessageTemplate.and(orderMT, shelfMT);
 			
 			//ACLMessage completeMsg = myAgent.receive(completeMT);
 			ACLMessage orderMsg = myAgent.receive(orderMT);
-			ACLMessage shelfMsg = myAgent.receive(shelfMT);
+			//ACLMessage shelfMsg = myAgent.receive(shelfMT);
 			ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
 			reply.setOntology("Completed Order");
 			

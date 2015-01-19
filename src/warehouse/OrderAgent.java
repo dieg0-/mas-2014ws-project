@@ -151,6 +151,7 @@ public class OrderAgent extends Agent {
 				try {
 					@SuppressWarnings("unchecked")
 					HashMap <String,Integer> available = (HashMap<String,Integer>) partsMsg.getContentObject();
+					System.out.println(myAgent.getLocalName()+"Checking part list...");
 					for (Map.Entry<String, Integer> entry : missingParts.entrySet()) { 
 						String part = entry.getKey();
 						if(available.containsKey(part)){
