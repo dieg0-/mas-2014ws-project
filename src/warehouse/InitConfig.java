@@ -53,13 +53,16 @@ public class InitConfig {
 	 * 
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
-	void createXML(String xml, int orders, int robots, int shelves, int pickers, int maxOrder, int maxStock, boolean rand) {
+	void createXML(String xml, int orders, int robots, int shelves, int pickers, int maxOrder, int maxStock, boolean randOrder, boolean randStock) {
 		Warehouse wh = new Warehouse();
 
 		// Creating Orders
 		if (orders > 0) {
 			this.orders = orders;
-			Orders x = new Orders(orders);
+			if (maxOrder<=0){
+				maxOrder = 4;
+			}
+			Orders x = new Orders(orders,maxOrder,randOrder);
 			wh.setOrders(x);
 		}
 		if (robots > 0) {
@@ -69,7 +72,10 @@ public class InitConfig {
 		}
 		if (shelves > 0) {
 			this.shelves = shelves;
-			Shelves z = new Shelves(shelves,10,rand);
+			if (maxStock>=0){
+				maxStock=100;
+			}
+			Shelves z = new Shelves(shelves,maxStock,randStock);
 			wh.setShelves(z);
 		}
 		if (pickers > 0) {
@@ -162,7 +168,7 @@ public class InitConfig {
 			Orders orders = this.warehouse.getOrders();
 			ArrayList<Order> ol = orders.getOrderList();
 			for (Order o : ol) {
-				Object[] args = new Object[ol.size()];
+				Object[] args = new Object[2];
 				args[0] = o.getPartList();
 				args[1] = o.getUID();
 				orderArgs.add(args);
@@ -187,7 +193,7 @@ public class InitConfig {
 			Shelves shelves = this.warehouse.getShelves();
 			ArrayList<Shelf> sl = shelves.getShelfList();
 			for (Shelf s : sl) {
-				Object[] args = new Object[sl.size()];
+				Object[] args = new Object[2];
 				args[0] = s.getPartList();
 				args[1] = s.getUID();
 				shelfArgs.add(args);
@@ -211,7 +217,7 @@ public class InitConfig {
 			Robots robots = this.warehouse.getRobots();
 			ArrayList<Robot> rl = robots.getRobotList();
 			for (Robot r : rl) {
-				Object[] args = new Object[rl.size()];
+				Object[] args = new Object[1];
 				args[0] = r.getUID();
 				robotArgs.add(args);
 			}
@@ -235,7 +241,7 @@ public class InitConfig {
 			Pickers pickers = this.warehouse.getPickers();
 			ArrayList<Picker> rl = pickers.getPickerList();
 			for (Picker r : rl) {
-				Object[] args = new Object[rl.size()];
+				Object[] args = new Object[1];
 				args[0] = r.getUID();
 				pickerArgs.add(args);
 			}

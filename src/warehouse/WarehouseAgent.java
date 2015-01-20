@@ -64,7 +64,7 @@ public class WarehouseAgent extends Agent {
 		/* Create and read an XML file with the given agents (file, orders, shelfs, robots, pickers).
 		 * 
 		 */
-		config.createXML("kiva3.config.xml",10,2,2,1,4,10,false);
+		config.createXML("kiva.config.xml",100,10,3,2,7,30,true,true);
 		System.out.println(getLocalName()+": Configuration created succesfuly.");
 		//config.readXML("kiva5.config.xml");
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
