@@ -60,8 +60,11 @@ public class PickerAgent extends Agent {
 
 	protected void setup() {
 		Object [] args = getArguments();
+		if (args.length==1){
 		uid = (String) args[0];
-		
+		}else{
+			uid = "";
+		}
 		this.printer = new PrinterUtil(5);
 		busy = false;
 		// PRINTOUTS: Initialization Messages.
