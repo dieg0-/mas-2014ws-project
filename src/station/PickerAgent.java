@@ -56,8 +56,12 @@ public class PickerAgent extends Agent {
 	private PrinterUtil printer;
 	protected Pose position;
 	protected boolean busy;
+	protected String uid;
 
 	protected void setup() {
+		Object [] args = getArguments();
+		uid = (String) args[0];
+		
 		this.printer = new PrinterUtil(5);
 		busy = false;
 		// PRINTOUTS: Initialization Messages.

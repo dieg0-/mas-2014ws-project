@@ -23,12 +23,9 @@ public class Shelf {
 
 	}
 
-	public Shelf(String uid) {
+	public Shelf(String uid, int max, boolean rand) {
 		this.uid = uid;
 		productList = new ArrayList<Product>();
-		int max = 10;
-		Random rnd = new Random();
-		int a = rnd.nextInt(max);
 
 		partList = new HashMap<String, Integer>();
 		partList.put("motor", max);
@@ -51,13 +48,17 @@ public class Shelf {
 		partList.put("blade", max);
 
 		for (Map.Entry<String, Integer> entry : partList.entrySet()) {
-			// System.out.println("Key = " + entry.getKey() + ", Value = " +
-			// entry.getValue());
+			int a;
+			if (rand == true) {
+				Random rnd = new Random();
+				a = rnd.nextInt(max);
+			} else {
+				a = 0;
+			}
+			partList.put(entry.getKey(), max-a);
 			Product m = new Product(entry.getKey(), entry.getValue());
 			productList.add(m);
 		}
-
-		// System.out.println(productList.size());
 	}
 
 	public String getUID() {
@@ -84,8 +85,6 @@ public class Shelf {
 		for (Product p : productList) {
 			partList.put(p.getName(), p.getQuantity());
 		}
-		// System.out.println("Product list:"+productList.size());
-		// System.out.println("Part list: "+partList.size());
 		return this.partList;
 	}
 
@@ -99,10 +98,8 @@ public class Shelf {
 		String result = "";
 		for (Product p : productList) {
 			result = result.concat(p.toString() + "\n");
-			// System.out.println(result);
 		}
 		result = result.concat("-------------");
-		// System.out.println(result);
 		return result;
 	}
 }

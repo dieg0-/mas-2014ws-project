@@ -61,12 +61,12 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getLocalName() + ": Started.");
 		// Load configuration file.
 		config = new InitConfig();
-		/* Create an XML file with the given agents (orders, shelfs, robots, pickers).
-		 * Comment to load the previous XML file.
+		/* Create and read an XML file with the given agents (file, orders, shelfs, robots, pickers).
+		 * 
 		 */
-		//config.createXML(10,2,2,0);
-		//System.out.println(getLocalName()+": Configuration created succesfuly.");
-		config.readXML();
+		config.createXML("kiva3.config.xml",10,2,2,1,4,10,false);
+		System.out.println(getLocalName()+": Configuration created succesfuly.");
+		//config.readXML("kiva5.config.xml");
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   
 		pendingOrders = new ArrayList<String>();		
@@ -78,6 +78,7 @@ public class WarehouseAgent extends Agent {
 		addBehaviour(new updateOrderLists());
 		addBehaviour(new initialRobots());
 		addBehaviour(new initialShelves());
+		addBehaviour(new initialPickers());
 		//System.out.println(getLocalName()+": Loaded behaviours");
 	}
 
@@ -316,8 +317,7 @@ public class WarehouseAgent extends Agent {
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	@SuppressWarnings("serial")
-	private class initialShelves extends OneShotBehaviour{
-		
+	private class initialShelves extends OneShotBehaviour{		
 		public void action(){
 			AgentContainer c = getContainerController();
 			ArrayList<Object[]> shelves = config.getShelfArgs();
@@ -330,6 +330,40 @@ public class WarehouseAgent extends Agent {
 					args[1] = s[1];
 					AgentController a = c.createNewAgent("Shelf "+
 									shelfNum, "shelf.ShelfAgent", args);
+					a.start();
+				}
+			}catch (Exception e) {
+				System.out.println("There is something wrong");
+				e.printStackTrace();
+			}
+		}
+	}
+	/**
+	 * <!--INITIAL PICKERS BEHAVIOUR-->
+	 * Behavior which handles the creation of {@link PickerAgent}. It reads the
+	 * parameters of the XML configuration file, initializes each agent with them and
+	 * launches them in the system.
+	 * <p>
+	 * <b>Outcome:</b>
+	 * <ul>
+	 * 	<li> launch shelf agents in the system.
+	 * </ul>
+	 * </p>
+	 * @author [DNA] Diego, Nicolas, Argentina
+	 */
+	@SuppressWarnings("serial")
+	private class initialPickers extends OneShotBehaviour{		
+		public void action(){
+			AgentContainer c = getContainerController();
+			ArrayList<Object[]> pickers = config.getPickerArgs();
+			System.out.println(myAgent.getLocalName()+": Initial pickers loaded: "+pickers.size());
+			try {
+				for(Object[] p:pickers){
+					String pickerNum = (String)p[0];
+					Object[] args = new Object[1];
+					args[0] = p[0];
+					AgentController a = c.createNewAgent("Picker "+
+									pickerNum, "station.PickerAgent", args);
 					a.start();
 				}
 			}catch (Exception e) {
