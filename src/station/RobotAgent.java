@@ -1,9 +1,9 @@
 /**
-COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
+COPYRIGHT NOTICE (C) 2015. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 5.4.n.
-@since 09.12.2014 
+@version: 6.5.
+@since 20.01.2015 
 HBRS - Multiagent Systems
 All Rights Reserved.  
 **/
@@ -37,6 +37,7 @@ import java.io.IOException;
  *  <li> <i>shelf_position:</i> an instance of the class {@link Pose} with the shelf position. </li>
  * 	<li> <i>busy:</i> flag to reflect the status of the robot.
  * 	<li> <i>dfd:</i> agent description with the services offered.
+ *  <li> <i>uid:</i> argument needed for automatic creation of robot agents.
  * </ul>
  * @author [DNA] Diego, Nicolas, Argentina
  */
@@ -52,13 +53,10 @@ public class RobotAgent extends Agent {
 	protected void setup() {
 		Object [] args = getArguments();
 		uid = (String) args[0];
-		// PRINTOUTS: Initialization Messages
-		//System.out.println("\n--ROBOT------------------");
-
 		// Random initialization of the position of the robot.
 		this.position = new Pose();
 		this.position.randomInit(false);
-		System.out.println(getLocalName()+": started at ("+position.parsePose()+").");
+		System.out.println(getLocalName() + ": started at (" + position.parsePose() + ").");
 		this.busy = false;
 		// Agent Description.
 		this.dfd = new DFAgentDescription();

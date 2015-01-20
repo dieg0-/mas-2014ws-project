@@ -1,9 +1,9 @@
 /**
-COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
+COPYRIGHT NOTICE (C) 2015. All Rights Reserved.   
 Project: KivaSolutions
 @author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 5.4.n.
-@since 09.12.2014 
+@version: 6.5.
+@since 20.01.2015 
 HBRS - Multiagent Systems
 All Rights Reserved.  
  **/
@@ -51,7 +51,6 @@ import warehouse.OrderAgent;
 public class PickerAgent extends Agent {
 	
 	private AID[] activeAgent;
-	//@SuppressWarnings("unused")
 	private PrinterUtil printer;
 	protected Pose position;
 	protected boolean busy;
@@ -87,6 +86,7 @@ public class PickerAgent extends Agent {
 	 *  <li> <i>currentMinDistance:</i> shorter distance from the picker to the robots found.</li>
 	 *  <li> <i>closestRobot:</i> ID of the robot which happens to be closest.</li>
 	 *  <li> <i>closetsShelf:</i> ID of the shelf which happens to be closest.</li>
+	 *  <li> <i>orderAgent:</i> ID of the order which happens to be assigned to the picker.</li>
 	 * 	<li> <i>target:</i> an instance of {@link Pose} with the chosen shelf position.</li>
 	 * </ul>
 	 * @author [DNA] Diego, Nicolas, Argentina
@@ -97,13 +97,14 @@ public class PickerAgent extends Agent {
 		protected double currentMinDistance = Double.MAX_VALUE;
 		protected AID closestRobot;
 		protected AID closestShelf;
-		protected Pose target;
 		protected AID orderAgent;
+		protected Pose target;
 		/**
 		 * Override constructor of a SimpleBehaviour.
 		 * @param a				this agent.
 		 * @param targetS		location of the target shelf as an instance of {@link Pose}.
 		 * @param closestShelf	ID of the shelf selected.
+		 * @param orderAgent	ID of the order assigned.
 		 */
 		public GetRobotAgents(Agent a, Pose targetS, AID targetID, AID order) {
 			super(a);
@@ -233,7 +234,7 @@ public class PickerAgent extends Agent {
 						here = true;
 						Thread.sleep(5000);
 						// Informing the shelf that it has been chosen. The shelf then
-						// will communicate to the order about its part inventory.
+						// will communicate to the order about its parts inventory.
 						ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
 						String theId = orderAgent.getName();
 						selectMsg.setLanguage(theId);
