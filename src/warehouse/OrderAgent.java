@@ -35,9 +35,6 @@ import jade.lang.acl.UnreadableException;
 
 public class OrderAgent extends Agent {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	HashMap <String,Integer> partList;
 	HashMap <String,Integer> missingParts;
@@ -73,8 +70,6 @@ public class OrderAgent extends Agent {
         }
 		
 		System.out.println(getLocalName() + ": Started.");
-		//System.out.println("Order "+getLocalName() + ": Requesting the following parts:");
-		//printPartList(partList);
 		
 		//Behaviours
 			addBehaviour(new orderStatus());
@@ -93,8 +88,7 @@ public class OrderAgent extends Agent {
 			String piece = lookup.getKey();
 			int amount = lookup.getValue();
 			newHM.put(piece, amount);
-		}
-		
+		}		
 		return newHM;
 	}
 	
@@ -111,21 +105,15 @@ public class OrderAgent extends Agent {
 		System.out.println("___________________");		
 	}
 	
-	// Put agent clean-up operations here
 	protected void takeDown() {
-		// Printout a dismissal message		
 		System.out.println(getAID().getLocalName()+ ": Order finished.");
 		doDelete();
 	}
 
 	private class CompletedOrder extends OneShotBehaviour{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		public void action(){
-			//if (completed == true){
 			System.out.println(myAgent.getLocalName()+": Order completed...");
 			  ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 			  compMsg.setOntology("Completed Order");
@@ -133,17 +121,10 @@ public class OrderAgent extends Agent {
 			  compMsg.addReceiver(new AID("WarehouseManager",AID.ISLOCALNAME));
 			  send(compMsg);
 			  doDelete();
-			//}else{
-				//block();
-			//}
-			
 		}
 	}
 	
 	private class MissingPieces extends CyclicBehaviour{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		public void action(){
@@ -153,19 +134,6 @@ public class OrderAgent extends Agent {
 					MessageTemplate.MatchOntology("Check Part List"));
 			ACLMessage partsMsg = myAgent.receive(partsMT);
 			
-			/**MessageTemplate checkMT = MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-					MessageTemplate.MatchOntology("Check Part List"));
-			ACLMessage temp = myAgent.receive(checkMT);
-			
-			if (temp !=null){
-				//
-				System.out.println(myAgent.getLocalName()+": Updating missing pieces...");
-				  ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
-				  compMsg.setOntology("Final shelf");
-				  compMsg.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
-				  send(compMsg);
-			}*/
 			if (partsMsg !=null){
 				try {
 					@SuppressWarnings("unchecked")
@@ -173,7 +141,6 @@ public class OrderAgent extends Agent {
 					System.out.println(myAgent.getLocalName()+": Checking part list...");
 					
 					Iterator<Entry<String, Integer>> i = missingParts.entrySet().iterator();
-					//Iterator i = set.iterator();
 					System.out.println("___________________");
 					ArrayList<String> partsToRemove = new ArrayList<String>();
 					while(i.hasNext()) {
@@ -198,30 +165,15 @@ public class OrderAgent extends Agent {
 					}
 					
 					
-					/**for (Map.Entry<String, Integer> entry : missingParts.entrySet()) { 
-						String part = entry.getKey();
-						System.out.println("Available: "+available.get(part)+". Required: "+entry.getValue());
-
-						if(available.containsKey(part)){
-							if(entry.getValue()>available.get(part)){
-								entry.setValue(entry.getValue()-available.get(part));
-							}else if(entry.getValue()<available.get(part)){
-								missingParts.remove(part);
-							}else if (entry.getValue()==available.get(part)){
-								missingParts.remove(part);
-							}
-						}	
-					}*/
-					System.out.println(myAgent.getLocalName()+": Missing pieces: "+missingParts.size());
 					
 					if (missingParts.isEmpty()){
-						//System.out.println(myAgent.getLocalName()+": Order completed...");
-						  ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
+						System.out.println(myAgent.getLocalName()+": Received all products. No additional shelf neede.");
+						ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 						  compMsg.setOntology("Final shelf");
 						  compMsg.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
 						  send(compMsg);
 					}else{
-						System.out.println(myAgent.getLocalName()+": Need a new shelf. Missing parts:");
+						System.out.println(myAgent.getLocalName()+": Missing pieces: "+missingParts.size()+". Need a new shelf. Missing parts:");
 						printPartList(missingParts);
 						ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 						order.setOntology("requestParts");
@@ -233,7 +185,6 @@ public class OrderAgent extends Agent {
 						send(order);
 					}					
 				} catch (UnreadableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}				
 			}else{
@@ -243,9 +194,6 @@ public class OrderAgent extends Agent {
 	}
 	
 	private class requestParts extends OneShotBehaviour {
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 		AID picker;
 		public requestParts(AID a){
