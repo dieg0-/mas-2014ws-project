@@ -71,7 +71,7 @@ public class PickerAgent extends Agent {
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
-		//printer.print("Try");
+		printer.print("Try");
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
