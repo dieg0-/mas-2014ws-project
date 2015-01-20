@@ -139,9 +139,10 @@ public class PickerAgent extends Agent {
 			 * service.
 			 */
 			try {
+				//--------------------------------------------------------------------------------
+				// STEP 1. Searching process.
 				boolean found = false;
 				while (!found) {
-					// STEP 1. Searching process.
 					result = DFService.search(myAgent, template);
 					// PRINTOUTS: Agents found.
 					System.out.println("------------------------------------");
@@ -158,6 +159,7 @@ public class PickerAgent extends Agent {
 						found = true;
 					}
 				}
+				//---------------------------------------------------------------------------------
 				// STEP 2. Asking for the found agents' positions.
 				for (int i = 0; i < result.length; ++i) {
 					// Listing the agents ID's found.
@@ -174,7 +176,7 @@ public class PickerAgent extends Agent {
 				query.setOntology("localization");
 				query.setConversationId("select-robot");
 				myAgent.send(query);
-				
+				//---------------------------------------------------------------------------------
 				// STEP 3. Choosing the robot closest to the shelf.
 				MessageTemplate selectRobotTemplate = MessageTemplate.MatchConversationId("select-robot");
 				while(this.repliesCnt < activeAgent.length) {
@@ -206,7 +208,7 @@ public class PickerAgent extends Agent {
 				System.out.println("  > Fetch sent to the chosen agent.");
 				System.out.println("  > Waiting for finalization.");
 				System.out.println("------------------------------------");
-				
+				//--------------------------------------------------------------------------------
 				// STEP 4. Commanding the fetch action.
 				ACLMessage command = new ACLMessage(ACLMessage.CFP);
 				command.addReceiver(this.closestRobot);
@@ -216,7 +218,7 @@ public class PickerAgent extends Agent {
 				String content = String.format("%s,%s", position.parsePose(), this.target.parsePose());
 				command.setContent(content);
 				myAgent.send(command);
-				
+				//---------------------------------------------------------------------------------
 				//STEP 5. Waiting for the shelf to arrive.
 				boolean here = false;
 				MessageTemplate shelfHereTemplate = MessageTemplate.MatchConversationId("shelf-here");
@@ -229,23 +231,15 @@ public class PickerAgent extends Agent {
 						System.out.println("  > Proceeding with the order.");
 						System.out.println("------------------------------------\n");
 						here = true;
-						//TODO: handling the shelf inventory update, inform the order
-						//that completion has been reached. Command the robot to return
-						//shelf to its original position.
 						Thread.sleep(5000);
-						
-						//ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
-						//reply.setOntology("Completed Order");
-						//reply.addReceiver(orderAgent);
-						//send(reply);
-						
+						// Informing the shelf that it has been chosen. The shelf then
+						// will communicate to the order about its part inventory.
 						ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
 						String theId = orderAgent.getName();
 						selectMsg.setLanguage(theId);
 						selectMsg.setContent("YOU-ARE-THE-ONE");
 						selectMsg.addReceiver(closestShelf);
 						myAgent.send(selectMsg);
-						
 					}
 				}
 			} catch (FIPAException fe) {
@@ -275,16 +269,12 @@ public class PickerAgent extends Agent {
 				System.err.println("Error setting Shelf ID");
 			}
 			myAgent.send(command);
-			//TODO: invoke the behavior for doing the inventory update or something.
 			try {
 				// Print out purposes. Just a delay to avoid truncated print outs.
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				System.err.println("Thread could not be put to sleep.");
 			}
-			// Asking for a new Order, given that the previous one was "completed".
-//			myAgent.addBehaviour(new GetNewOrder());
-//			myAgent.addBehaviour(new UpdatePickerStatus());
 			return true;
 		}
 	}
@@ -404,8 +394,7 @@ public class PickerAgent extends Agent {
 								if(iAvailablePieces >= currentMaxAvailablePieces){
 									currentMaxAvailablePieces = iAvailablePieces;
 									richestShelf = reply.getSender();
-									currentBestPose = new Pose(35.0, 35.0);
-									//currentBestPose = shelfPose;
+									currentBestPose = shelfPose;
 								}
 								/**
 								if(distance <= currentMinDistance){
