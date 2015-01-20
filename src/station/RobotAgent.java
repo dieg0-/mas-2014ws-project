@@ -27,10 +27,11 @@ import java.io.IOException;
 
 /**
  * <!--ROBOT AGENT CLASS-->
- * <p>Robot agent offers a service of "fetch" type when the agent is free. The
+ * Robot agent offers a service of "fetch" type when the agent is free. The
  * task of this agent is to fetch a shelf commanded by the {@link PickerAgent}.
  * They do not communicate directly with the shelves; instead, the communication
- * is done indirectly through the picker.</p>
+ * is done indirectly through the picker.
+ * <p>
  * <b>Attributes:</b>
  * <ul>
  * 	<li> <i>position:</i> an instance of the class {@link Pose} with the robot position. </li>
@@ -39,6 +40,7 @@ import java.io.IOException;
  * 	<li> <i>dfd:</i> agent description with the services offered. </li>
  *  <li> <i>uid:</i> argument needed for automatic creation of robot agents. </li>
  * </ul>
+ * </p>
  * @author [DNA] Diego, Nicolas, Argentina
  */
 @SuppressWarnings("serial")
@@ -91,9 +93,10 @@ public class RobotAgent extends Agent {
 	
 	/**
 	 * <!--LOCALIZATION BEHAVIOUR-->
-	 * <p>Behavior which is executed one time if the message sent by the {@link PickerAgent}
+	 * Behavior which is executed one time if the message sent by the {@link PickerAgent}
 	 * has the ontology "localization". It will returns the current position
-	 * of the robot.</p>
+	 * of the robot.
+	 * <p>
 	 * <b>Attributes:</b>
 	 * <ul>
 	 * 	<li> <i>message:</i> the message sent to the robot from the picker.</li>
@@ -102,6 +105,7 @@ public class RobotAgent extends Agent {
 	 * <ul>
 	 * 	<li> position of the robot agent.
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class LocalizationBehaviour extends SimpleBehaviour {
@@ -181,10 +185,11 @@ public class RobotAgent extends Agent {
 	
 	/**
 	 * <!--FETCH BEHAVIOUR-->
-	 * <p>Behavior which simulates the action of fetch a given shelf. It puts
+	 * Behavior which simulates the action of fetch a given shelf. It puts
 	 * the thread of the agent into sleep for a given amount of time. The
 	 * time should simulate the distance the robot must travel in order to
-	 * reach the shelf and brought it back to the station.</p>
+	 * reach the shelf and brought it back to the station.
+	 * <p>
 	 * <b>Attributes:</b>
 	 * <ul>
 	 * 	<li> <i>timeout:</i> duration which the thread will be sleeping. </li>
@@ -196,6 +201,7 @@ public class RobotAgent extends Agent {
 	 * <ul>
 	 * 	<li> A message to the picker agent informing that the shelf is in the station. </li>
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class FetchBehaviour extends SimpleBehaviour {
@@ -279,11 +285,12 @@ public class RobotAgent extends Agent {
 	
 	/**
 	 * <!--RETURN BEHAVIOUR-->
-	 * <p>Behavior which simulates the action of return the current shelf which
+	 * Behavior which simulates the action of return the current shelf which
 	 * has been selected to fill an order. The duration is simulated again with
 	 * a thread sleep. Once the robot brings back the shelf, it informs the shelf
 	 * that is time to re-register to the yellow pages, indicating that the
-	 * shelf is back in the game.</p>
+	 * shelf is back in the game.
+	 * <p>
 	 * <b>Attributes:</b>
 	 * <ul>
 	 * 	<li> <i>timeout:</i> duration which the thread will be sleeping. </li>
@@ -293,6 +300,7 @@ public class RobotAgent extends Agent {
 	 * <ul>
 	 * 	<li> A message to the shelf agent informing that it needs to re-register. </li>
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class ReturnBehaviour extends SimpleBehaviour {
@@ -363,9 +371,9 @@ public class RobotAgent extends Agent {
 	
 	/**
 	 * <!--WAITING BEHAVIOUR-->
-	 * <p>Cyclic behavior which is constantly executed. It waits until
+	 * Cyclic behavior which is constantly executed. It waits until
 	 * a message form the {@link PickerAgent} is received to
-	 * execute the action() method.</p>
+	 * execute the action() method.
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private	class WaitForCommand extends CyclicBehaviour {
@@ -418,7 +426,7 @@ public class RobotAgent extends Agent {
 	
 	/**
 	 * <!--TAKEDOWN-->
-	 * <p>Safe delete of the agent.</p>
+	 * Safe delete of the agent.
 	 */
 	protected void takeDown() {
 		System.out.println(this.getLocalName() + " out of service.");

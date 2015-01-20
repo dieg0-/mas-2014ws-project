@@ -23,11 +23,12 @@ import shelf.ShelfAgent;
 
 /**
  * <!--WAREHOUSE AGENT CLASS-->
- * <p>Warehouse agent deals with the initialization and launching of the whole
+ * Warehouse agent deals with the initialization and launching of the whole
  * system. It creates XML configuration files, which are used to instantiate
  * the other agents. From the system point of view, it handles the order queue
  * and order queue status; i.e. how many orders has been completed, how many
- * are pending and how many are assigned.</p>
+ * are pending and how many are assigned.
+ * <p>
  * <b>Attributes:</b>
  * <ul>
  * 	<li> <i>pendingOrders:</i> a list .... </li>
@@ -36,6 +37,7 @@ import shelf.ShelfAgent;
  * 	<li> <i>currentOrder:</i> counter for ... </li>
  *  <li> <i>config:</i> an instance of the class {@link InitConfig} which ....
  * </ul>
+ * </p>
  * @author [DNA] Diego, Nicolas, Argentina
  */
 public class WarehouseAgent extends Agent {
@@ -81,7 +83,7 @@ public class WarehouseAgent extends Agent {
 
 	/**
 	 * <!--TAKEDOWN-->
-	 * <p>Safe delete of the agent.</p>
+	 * Safe delete of the agent.
 	 */
 	protected void takeDown() {
 		System.out.println(getAID().getLocalName() + ": Terminating.");
@@ -90,13 +92,15 @@ public class WarehouseAgent extends Agent {
 	
 	/**
 	 * <!--UPDATE ORDER LISTS BEHAVIOUR-->
-	 * <p>Behavior which updates the status of the order queue regarding of
+	 * Behavior which updates the status of the order queue regarding of
 	 * messages the {@link OrderAgent} sent. It just moves orders from one
-	 * list to another.</p>
+	 * list to another.
+	 * <p>
 	 * <b>Outcome:</b>
 	 * <ul>
 	 * 	<li> print out with the current status of the order queue.
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	@SuppressWarnings("serial")
@@ -137,13 +141,15 @@ public class WarehouseAgent extends Agent {
 
 	/**
 	 * <!--CREATE ORDER BEHAVIOUR-->
-	 * <p>Behavior which handles the creation of new {@link OrderAgent}. It creates
+	 * Behavior which handles the creation of new {@link OrderAgent}. It creates
 	 * an agent whit a random part request and adds it to the pending list. It will
-	 * allow to dynamically create orders once the initial ones are completed. </p>
+	 * allow to dynamically create orders once the initial ones are completed.
+	 * <p>
 	 * <b>Outcome:</b>
 	 * <ul>
 	 * 	<li> new agent order in the pending queue.
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	@SuppressWarnings("serial")
@@ -221,13 +227,15 @@ public class WarehouseAgent extends Agent {
 	
 	/**
 	 * <!--INITIAL ORDERS BEHAVIOUR-->
-	 * <p>Behavior which handles the creation of {@link OrderAgent}. It reads the
+	 * Behavior which handles the creation of {@link OrderAgent}. It reads the
 	 * parameters of the XML configuration file, initializes each agent with them and
-	 * launches them in the system.</p>
+	 * launches them in the system.
+	 * <p>
 	 * <b>Outcome:</b>
 	 * <ul>
 	 * 	<li> launch order agents in the system.
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class initialOrders extends OneShotBehaviour{
@@ -260,13 +268,15 @@ public class WarehouseAgent extends Agent {
 	
 	/**
 	 * <!--INITIAL ROBOTS BEHAVIOUR-->
-	 * <p>Behavior which handles the creation of {@link RobotAgent}. It reads the
+	 * Behavior which handles the creation of {@link RobotAgent}. It reads the
 	 * parameters of the XML configuration file, initializes each agent with them and
-	 * launches them in the system.</p>
+	 * launches them in the system.
+	 * <p>
 	 * <b>Outcome:</b>
 	 * <ul>
 	 * 	<li> launch robot agents in the system.
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	@SuppressWarnings("serial")
@@ -295,13 +305,15 @@ public class WarehouseAgent extends Agent {
 	
 	/**
 	 * <!--INITIAL SHELVES BEHAVIOUR-->
-	 * <p>Behavior which handles the creation of {@link ShelfAgent}. It reads the
+	 * Behavior which handles the creation of {@link ShelfAgent}. It reads the
 	 * parameters of the XML configuration file, initializes each agent with them and
-	 * launches them in the system.</p>
+	 * launches them in the system.
+	 * <p>
 	 * <b>Outcome:</b>
 	 * <ul>
 	 * 	<li> launch shelf agents in the system.
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	@SuppressWarnings("serial")
