@@ -22,7 +22,6 @@ import java.util.Set;
 
 import utilities.Pose;
 
-//import jade.core.AID;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -36,20 +35,12 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
-/**
- * 
- * @author Diego, Nicolas, Argentina
- *
- */
 public class ShelfAgent extends Agent {
 	
 	public static String shelfDir = "conf/shelves/shelf";
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, Integer> inventory;
-	//private boolean busy;
 	protected Pose position;
 	
 	protected DFAgentDescription dfd;
@@ -61,18 +52,10 @@ public class ShelfAgent extends Agent {
 		position = new Pose();
 		position.randomInit(false);
 		System.out.println(getLocalName()+": started at ("+position.parsePose()+").");
-		//inventory = new HashMap<String, Integer>();
 		Object[] args = this.getArguments();
 		inventory = (HashMap<String,Integer>)args[0];
 		uid = (String) args[1];
-		//String inventoryType;
-		//if (args != null && args.length > 0) {
-			//inventoryType = (String) args[0];
-		//}else {
-			//inventoryType = "DEFAULT";
-		//}
-		//initInventory(inventoryType);
-		//this.busy = false;
+
 
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
@@ -110,9 +93,7 @@ public class ShelfAgent extends Agent {
 	 */
 	public void updateInventory(final String piece, final int amount) {
 		addBehaviour(new OneShotBehaviour() {
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			public void action() {
@@ -126,7 +107,6 @@ public class ShelfAgent extends Agent {
 	public boolean checkPieceInInventory(String piece, int amount){
 		boolean answer = false;
 		if(this.inventory.containsKey(piece)){
-			//if(this.inventory.get(piece) >= amount)
 			if(this.inventory.get(piece) > 0)
 				answer = true;
 		}
@@ -168,8 +148,13 @@ public class ShelfAgent extends Agent {
 		while(iter.hasNext()){
 			@SuppressWarnings("unchecked")
 			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
-			if(checkPieceInInventory(lookup.getKey(), lookup.getValue()))
-				availablePieces++;
+			if(checkPieceInInventory(lookup.getKey(), lookup.getValue())){
+				if(lookup.getValue() > inventory.get(lookup.getKey())){
+					availablePieces = availablePieces + inventory.get(lookup.getKey());
+				}else{
+					availablePieces = availablePieces + lookup.getValue();
+				}
+			}
 		}
 		
 		return availablePieces;
@@ -178,9 +163,7 @@ public class ShelfAgent extends Agent {
 	@SuppressWarnings("rawtypes")
 	public void updateWholeInventory(final HashMap<String, Integer> order){
 		addBehaviour(new OneShotBehaviour() {
-			/**
-			 * 
-			 */
+			
 			private static final long serialVersionUID = 1L;	
 
 			@SuppressWarnings("unchecked")
@@ -202,9 +185,7 @@ public class ShelfAgent extends Agent {
 	@SuppressWarnings("rawtypes")
 	public void updateRequestedInventory(final HashMap<String, Integer> order){
 		addBehaviour(new OneShotBehaviour() {
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;	
 
 			@SuppressWarnings("unchecked")
@@ -251,7 +232,6 @@ public class ShelfAgent extends Agent {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//System.out.println(inventory.toString());
         
 	}
 	
@@ -278,9 +258,7 @@ public class ShelfAgent extends Agent {
 	 *
 	 */
 	private class OrderRequestServer extends CyclicBehaviour {
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 
 		@SuppressWarnings("unchecked")
@@ -296,12 +274,10 @@ public class ShelfAgent extends Agent {
 					ACLMessage reply = message.createReply();
 					reply.setPerformative(ACLMessage.CFP);
 					int availablePieces = checkAvailabilityPercentage(mappy);
-					//if(checkWholeInventory(mappy)){
 					if(availablePieces > 0){
 						String sAvailablePieces = String.valueOf(availablePieces);
 						System.out.println(myAgent.getLocalName() + ": Some pieces availabe. Sending proposal...");			
 						reply.setPerformative(ACLMessage.PROPOSE);
-						//reply.setContent("Enough pieces available");
 						reply.setLanguage(sAvailablePieces);
 						double myPosition[] = position.poseToArray();
 						reply.setContentObject(myPosition);
@@ -317,7 +293,6 @@ public class ShelfAgent extends Agent {
 							if(informMessage.getContent().matches("REREGISTER")){
 								registerService();
 							}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
-								//updateWholeInventory(mappy);
 								updateRequestedInventory(mappy);
 								registerService();
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
@@ -331,11 +306,9 @@ public class ShelfAgent extends Agent {
 								copyInventory = copyHM(inventory);
 								notify.setContentObject(copyInventory);
 								send(notify);
-								//addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
 							}
 						}else{
 							addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
-							//block();
 						}
 					}else{
 						registerService();
@@ -349,9 +322,7 @@ public class ShelfAgent extends Agent {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
-				//registerService();
-	
+					
 			}
 			else {
 				block();
@@ -364,7 +335,6 @@ public class ShelfAgent extends Agent {
 				System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
-				//fe.printStackTrace();
 			}
 		}
 		
@@ -375,16 +345,12 @@ public class ShelfAgent extends Agent {
 
 			}
 			catch (FIPAException fe) {
-				//fe.printStackTrace();
 			}
 		}
 	}  
 	
 	private class cyclicMessageWaiter extends SimpleBehaviour {
-		
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 		protected HashMap<String, Integer> order = new HashMap<String, Integer>();
 		
@@ -404,7 +370,6 @@ public class ShelfAgent extends Agent {
 						terminationFlag = true;
 						registerService();
 					}else if(informMessage.getContent().matches("UPDATE-REREGISTER-BE-HAPPY")){
-						//updateWholeInventory(this.order);
 						updateRequestedInventory(this.order);
 						terminationFlag = true;
 						registerService();
@@ -426,7 +391,6 @@ public class ShelfAgent extends Agent {
 						
 					}
 				}else{
-					//System.out.println("NULL BLAH!");
 					block();
 				}
 			}
@@ -438,7 +402,7 @@ public class ShelfAgent extends Agent {
 				System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
-				//fe.printStackTrace();
+
 			}
 		}
 
@@ -456,7 +420,6 @@ public class ShelfAgent extends Agent {
 
 		@Override
 		public void action() {
-			//System.out.println("Waiting!");
 			MessageTemplate template = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), MessageTemplate.MatchOntology("RESTOCK"));
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
