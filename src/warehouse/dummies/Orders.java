@@ -10,31 +10,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Orders {
 	ArrayList<Order> orderList;
 	int orders;
-	
-	public Orders(){
-		
+
+	public Orders() {
+
 	}
-	
-	public Orders(int n){
+
+	public Orders(int n) {
 		DecimalFormat uidFormat = new DecimalFormat("0000");
 		orderList = new ArrayList<Order>();
-		for (int i=0; i<n;i++){
-			Order o = new Order(uidFormat.format(i+1));
+		for (int i = 0; i < n; i++) {
+			Order o = new Order(uidFormat.format(i + 1));
 			orderList.add(o);
 		}
 	}
-	
-	
-	@XmlElement(name="order")
-	public ArrayList<Order>getOrderList(){
+
+	@XmlElement(name = "order")
+	public ArrayList<Order> getOrderList() {
 		return orderList;
 	}
-	
-	public void setOrderList(ArrayList<Order>ol){
+
+	public void setOrderList(ArrayList<Order> ol) {
 		this.orderList = ol;
 	}
-	
-	
-	
-	
+
 }
