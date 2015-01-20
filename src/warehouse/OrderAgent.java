@@ -55,7 +55,7 @@ public class OrderAgent extends Agent {
 		assigned = false;
 		
 		missingParts = new HashMap <String, Integer>();
-		missingParts.putAll(partList);
+		missingParts = copyHM(partList);
 		
 		this.dfd = new DFAgentDescription();
         this.dfd.setName(getAID()); 
@@ -81,8 +81,20 @@ public class OrderAgent extends Agent {
 			
 	}
 	
-	void copyParts(HashMap <String,Integer> list1, HashMap<String, Integer> list2){
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public HashMap<String, Integer> copyHM(HashMap<String, Integer> hm){
+		HashMap<String, Integer> newHM = new HashMap<String, Integer>();
 		
+		Set orderSet = hm.entrySet();
+		Iterator iter = orderSet.iterator();
+		while(iter.hasNext()){
+			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+			String piece = lookup.getKey();
+			int amount = lookup.getValue();
+			newHM.put(piece, amount);
+		}
+		
+		return newHM;
 	}
 	
 	
@@ -164,9 +176,10 @@ public class OrderAgent extends Agent {
 					//Iterator i = set.iterator();
 					System.out.println("___________________");
 					while(i.hasNext()) {
+						
 						Entry<String, Integer> me = (Entry<String, Integer>) i.next();
 						String part = me.getKey();
-						if(available.containsKey(part)){
+						/**if(available.containsKey(part)){
 							if(me.getValue()>available.get(part)){
 								int x = me.getValue() - available.get(part);
 								missingParts.put(part, x);
@@ -176,6 +189,8 @@ public class OrderAgent extends Agent {
 								missingParts.remove(part);
 							}
 						}
+						*/
+						
 					}
 					
 					/**for (Map.Entry<String, Integer> entry : missingParts.entrySet()) { 
