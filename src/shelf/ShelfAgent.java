@@ -125,7 +125,8 @@ public class ShelfAgent extends Agent {
 	public boolean checkPieceInInventory(String piece, int amount){
 		boolean answer = false;
 		if(this.inventory.containsKey(piece)){
-			if(this.inventory.get(piece) >= amount)
+			//if(this.inventory.get(piece) >= amount)
+			if(this.inventory.get(piece) > 0)
 				answer = true;
 		}
 		return answer;
