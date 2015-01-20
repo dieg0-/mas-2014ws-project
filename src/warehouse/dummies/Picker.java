@@ -4,25 +4,27 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(namespace = "warehouse.dummies.Robots")
+@XmlRootElement(namespace = "warehouse.dummies.Pickers")
 @XmlType(propOrder = { "UID" })
-public class Robot {
+public class Picker {
+	
 	String uid;
 
-	Robot() {
+	Picker() {
 
 	}
 
-	Robot(String uid) {
+	Picker(String uid) {
 		this.uid = uid;
 	}
-
-	public String getUID() {
+	
+	public String getUID(){
 		return this.uid;
 	}
-
-	@XmlElement(name = "uid")
-	public void setUID(String uid) {
+	
+	@XmlElement(name="uid")
+	public void setUID(String uid){
 		this.uid = uid;
 	}
+
 }
