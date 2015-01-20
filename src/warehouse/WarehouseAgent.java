@@ -16,8 +16,10 @@ import jade.wrapper.AgentController;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
 import java.text.DecimalFormat;
 import java.util.*;
+
 import station.RobotAgent;
 import shelf.ShelfAgent;
 
@@ -67,7 +69,7 @@ public class WarehouseAgent extends Agent {
 
 		//config.createXML("kiva2.config.xml",20,3,10,5,7,25,false,false);
 		System.out.println(getLocalName()+": Configuration created succesfuly.");
-		config.readXML("kiva2.config.xml");
+		//config.readXML("kiva2.config.xml");
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   
 		pendingOrders = new ArrayList<String>();		
@@ -79,6 +81,11 @@ public class WarehouseAgent extends Agent {
 		addBehaviour(new updateOrderLists());
 		addBehaviour(new initialRobots());
 		addBehaviour(new initialShelves());
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			//e.printStackTrace();
+		}
 		addBehaviour(new initialPickers());
 		//System.out.println(getLocalName()+": Loaded behaviours");
 	}
@@ -366,6 +373,7 @@ public class WarehouseAgent extends Agent {
 					AgentController a = c.createNewAgent("Picker "+
 									pickerNum, "station.PickerAgent", args);
 					a.start();
+					Thread.sleep(2500);
 				}
 			}catch (Exception e) {
 				System.out.println("There is something wrong");

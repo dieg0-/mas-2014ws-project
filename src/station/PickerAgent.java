@@ -156,7 +156,7 @@ public class PickerAgent extends Agent {
 					result = DFService.search(myAgent, template);
 					// PRINTOUTS: Agents found.
 					//System.out.println("------------------------------------");
-					System.out.print(myAgent.getLocalName() + "[searching robots]: ");
+					System.out.print(myAgent.getLocalName() + " [searching robots]: ");
 					//System.out.println("Active agents:");
 					activeAgent = new AID[result.length];
 					// If not agents are found, do wait 15 seconds and repeat.
@@ -384,7 +384,7 @@ public class PickerAgent extends Agent {
 							cfp.addReceiver(result[i].getName());
 						}
 	
-						System.out.print(myAgent.getLocalName() + " [requesting pieces]: ");
+						
 						cfp.setContentObject(mappy);
 						cfp.setConversationId("select-shelf");
 						
@@ -426,7 +426,7 @@ public class PickerAgent extends Agent {
 								block();
 							}
 						}
-						
+						System.out.print(myAgent.getLocalName() + " [requesting pieces]: ");
 						System.out.println(richestShelf.getLocalName() + " selected.\n");
 						//System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
 						
