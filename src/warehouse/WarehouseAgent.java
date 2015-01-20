@@ -69,7 +69,7 @@ public class WarehouseAgent extends Agent {
 
 		//config.createXML("kiva2.config.xml",20,3,10,5,7,25,false,false);
 		System.out.println(getLocalName()+": Configuration created succesfuly.");
-		//config.readXML("kiva2.config.xml");
+		//config.readXML("kiva4.config.xml");
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   
 		pendingOrders = new ArrayList<String>();		
