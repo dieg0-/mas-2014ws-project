@@ -56,7 +56,6 @@ public class InitConfig {
 		wh.setOrders(x);
 		wh.setRobots(y);
 		wh.setShelves(z);
-
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -64,9 +63,6 @@ public class InitConfig {
 					Boolean.TRUE);
 			File XMLfile = new File("conf/warehouse/kiva5.config.xml");
 			jaxbMarshaller.marshal(wh, XMLfile);
-			// jaxbMarshaller.marshal(wh, System.out);
-			// System.out.println("Configuration created");
-
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -83,7 +79,6 @@ public class InitConfig {
 	 */
 	void readXML() {
 		try {
-
 			// create JAXB context and initializing Marshaller
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
 
@@ -95,13 +90,10 @@ public class InitConfig {
 			// this will create Java object - warehouse from the XML file
 			this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
 
-			// System.out.println("Configuration read succesfuly.");
-
 		} catch (JAXBException e) {
 			// some exception occured
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -133,29 +125,19 @@ public class InitConfig {
 		}
 	}
 
-	void printOrders(ArrayList<Order> ol) {
-
-		for (Order o : ol) {
-			System.out.println(o.toString());
-		}
-
-	}
-
 	/**
 	 * Returns an array of Objects containing the arguments required to
-	 * construct all Order Agents found in the configuration file. Each element in
-	 * orderArgs ArrayList is composed of an Object[] args.
+	 * construct all Order Agents found in the configuration file. Each element
+	 * in orderArgs ArrayList is composed of an Object[] args.
 	 * 
 	 * @return an ArrayList containing the required arguments for each
 	 *         OrderAgent.The first argument contains a HashMap <String,Integer>
 	 *         with the part list the second contains the order uid.
 	 */
 	ArrayList<Object[]> getOrderArgs() {
-
 		Orders orders = this.warehouse.getOrders();
 		ArrayList<Order> ol = orders.getOrderList();
 		ArrayList<Object[]> orderArgs = new ArrayList<Object[]>();
-		// System.out.println(ol.toString());
 		for (Order o : ol) {
 			Object[] args = new Object[ol.size()];
 			args[0] = o.getPartList();
@@ -167,20 +149,18 @@ public class InitConfig {
 
 	/**
 	 * Returns an array of Objects containing the arguments required to
-	 * construct all Shelf Agents found in the configuration file. Each element in
-	 * shelfArgs ArrayList is composed of an Object[] args.
+	 * construct all Shelf Agents found in the configuration file. Each element
+	 * in shelfArgs ArrayList is composed of an Object[] args.
 	 * 
-	 * @return an ArrayList containing the required arguments for each
-	 *         Shelf Agent.The first argument contains a HashMap <String,Integer>
-	 *         with the inventory, the second contains the shelf uid.
+	 * @return an ArrayList containing the required arguments for each Shelf
+	 *         Agent.The first argument contains a HashMap <String,Integer> with
+	 *         the inventory, the second contains the shelf uid.
 	 */
-	
-	ArrayList<Object[]> getShelfArgs() {
 
+	ArrayList<Object[]> getShelfArgs() {
 		Shelves shelves = this.warehouse.getShelves();
 		ArrayList<Shelf> sl = shelves.getShelfList();
 		ArrayList<Object[]> shelfArgs = new ArrayList<Object[]>();
-		// System.out.println(ol.toString());
 		for (Shelf s : sl) {
 			Object[] args = new Object[sl.size()];
 			args[0] = s.getPartList();
@@ -189,22 +169,20 @@ public class InitConfig {
 		}
 		return shelfArgs;
 	}
-	
+
 	/**
 	 * Returns an array of Objects containing the arguments required to
-	 * construct all Robot Agents found in the configuration file. Each element in
-	 * robotArgs ArrayList is composed of an Object[] args.
+	 * construct all Robot Agents found in the configuration file. Each element
+	 * in robotArgs ArrayList is composed of an Object[] args.
 	 * 
-	 * @return an ArrayList containing the required arguments for each
-	 *         Robot Agent.The first argument contains the robot uid.
+	 * @return an ArrayList containing the required arguments for each Robot
+	 *         Agent.The first argument contains the robot uid.
 	 */
 
 	ArrayList<Object[]> getRobotArgs() {
-
 		Robots robots = this.warehouse.getRobots();
 		ArrayList<Robot> rl = robots.getRobotList();
 		ArrayList<Object[]> robotArgs = new ArrayList<Object[]>();
-		// System.out.println(ol.toString());
 		for (Robot r : rl) {
 			Object[] args = new Object[rl.size()];
 			args[0] = r.getUID();
