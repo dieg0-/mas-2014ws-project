@@ -61,10 +61,10 @@ public class WarehouseAgent extends Agent {
 		System.out.println(getLocalName() + ": Started.");
 		// Load configuration file.
 		config = new InitConfig();
-		/* Create an XML file with the given agents (orders, shelfs, robots, pickers).
-		 * Comment to load the previous XML file.
+		/* Create and read an XML file with the given agents (file, orders, shelfs, robots, pickers).
+		 * 
 		 */
-		config.createXML("kiva4.config.xml",10,2,2,0);
+		config.createXML("kiva3.config.xml",10,2,2,1);
 		System.out.println(getLocalName()+": Configuration created succesfuly.");
 		//config.readXML("kiva5.config.xml");
 		System.out.println(getLocalName()+": Configuration read succesfuly.");

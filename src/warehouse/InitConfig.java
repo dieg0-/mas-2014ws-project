@@ -53,7 +53,7 @@ public class InitConfig {
 	 * 
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
-	void createXML(String xml, int orders, int robots, int shelves, int pickers) {
+	void createXML(String xml, int orders, int robots, int shelves, int pickers, int maxOrder, int maxStock, boolean rand) {
 		Warehouse wh = new Warehouse();
 
 		// Creating Orders
@@ -69,7 +69,7 @@ public class InitConfig {
 		}
 		if (shelves > 0) {
 			this.shelves = shelves;
-			Shelves z = new Shelves(shelves);
+			Shelves z = new Shelves(shelves,10,rand);
 			wh.setShelves(z);
 		}
 		if (pickers > 0) {
