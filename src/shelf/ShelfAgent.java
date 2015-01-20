@@ -54,8 +54,14 @@ public class ShelfAgent extends Agent {
 		
 		/** The inventory is initialized via argument passing **/
 		Object[] args = this.getArguments();
-		inventory = (HashMap<String,Integer>)args[0];
-		uid = (String) args[1];
+		if(args.length >= 2){
+			inventory = (HashMap<String,Integer>)args[0];
+			uid = (String) args[1];
+		}else{
+			/** This enables to create Shelf Agents dynamically without arguments **/
+			inventory = new HashMap<String, Integer>();
+			initInventory("DEFAULT");
+		}
 
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
@@ -111,7 +117,6 @@ public class ShelfAgent extends Agent {
 			@SuppressWarnings("unchecked")
 			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
 			inventory.put(lookup.getKey(), lookup.getValue() + amount);
-			System.out.println(this.getName() + ": Only " + inventory.get(lookup.getKey()) + " " + lookup.getKey() + "s left.");
 		}
 	}
 	
@@ -166,7 +171,6 @@ public class ShelfAgent extends Agent {
 							inventory.put(piece, 0);
 						}
 					}
-					System.out.println(myAgent.getName() + ": Only " + inventory.get(piece) + " " + piece + "s left.");
 				}
 			}						
 		});
@@ -184,7 +188,6 @@ public class ShelfAgent extends Agent {
 				inventoryType = "Default";
 			in = new BufferedReader(new FileReader(shelfDir + inventoryType + ".txt"));
 			String line = "";
-			System.out.println(this.getLocalName() + ": Initializing inventory of type -- " + inventoryType + " --.");
 
 			while ((line = in.readLine()) != null) {
 			    String parts[] = line.split(",");
@@ -245,7 +248,7 @@ public class ShelfAgent extends Agent {
 					int availablePieces = checkAvailabilityPercentage(mappy);
 					if(availablePieces > 0){
 						String sAvailablePieces = String.valueOf(availablePieces);
-						System.out.println(myAgent.getLocalName() + ": Some pieces availabe. Sending proposal...");	
+						//System.out.println(myAgent.getLocalName() + ": Some pieces availabe. Sending proposal...");	
 						/** If the shelf has pieces to offer according to the request, send a proposal message **/
 						reply.setPerformative(ACLMessage.PROPOSE);
 						/** The amount of available pieces is stored in the language field **/
@@ -291,7 +294,7 @@ public class ShelfAgent extends Agent {
 						/** If the shelf has no pieces to offer according to the request, send a refusal message **/
 						reply.setPerformative(ACLMessage.REFUSE);
 						reply.setContent("Not enough pieces available");
-						System.out.println(myAgent.getLocalName() + ": Insufficient pieces");
+						System.out.println(myAgent.getLocalName() + ": 0 requested pieces available.");
 						myAgent.send(reply);
 					}
 				} catch (UnreadableException e) {
@@ -364,7 +367,7 @@ public class ShelfAgent extends Agent {
 						registerService();
 					/** If the shelf is select for usage, it sends its inventory to the corresponding Order Agent **/
 					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-						System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
+						//System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
 						try {
 							/** The Order's AID is stores in the language field **/
 							String sName = informMessage.getLanguage();
@@ -420,9 +423,8 @@ public class ShelfAgent extends Agent {
 			MessageTemplate template = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), MessageTemplate.MatchOntology("RESTOCK"));
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
-				System.out.println(myAgent.getLocalName() + ": Received external message!! =)");
+				//System.out.println(myAgent.getLocalName() + ": Received external message!!");
 				int amount = Integer.valueOf(message.getContent());
-				System.out.println(amount);
 				restock(amount);
 			}
 			block();
