@@ -54,7 +54,9 @@ public class RobotAgent extends Agent {
 	
 	protected void setup() {
 		Object [] args = getArguments();
-		uid = (String) args[0];
+		if (args.length > 0) {
+			uid = (String) args[0];
+		}
 		// Random initialization of the position of the robot.
 		this.position = new Pose();
 		this.position.randomInit(false);
@@ -180,7 +182,7 @@ public class RobotAgent extends Agent {
 				DFService.register(myAgent, dfd);
 			} catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName() + "[ERR]: Agent could not be registered.");
-				myAgent.doDelete();
+				//myAgent.doDelete();
 			}
 			return true;
 		}
@@ -372,7 +374,7 @@ public class RobotAgent extends Agent {
 			}
 			catch (Exception e) {
 				System.err.println(myAgent.getLocalName() + "[ERR]: Agent could not be registered.");
-				myAgent.doDelete();
+				//myAgent.doDelete();
 			}
 			return true;
 		}

@@ -294,7 +294,7 @@ public class ShelfAgent extends Agent {
 						/** If the shelf has no pieces to offer according to the request, send a refusal message **/
 						reply.setPerformative(ACLMessage.REFUSE);
 						reply.setContent("Not enough pieces available");
-						System.out.println(myAgent.getLocalName() + ": 0 requested pieces available.");
+						System.out.println(myAgent.getLocalName() + " [out of stock]: 0 requested pieces available.");
 						myAgent.send(reply);
 					}
 				} catch (UnreadableException e) {
