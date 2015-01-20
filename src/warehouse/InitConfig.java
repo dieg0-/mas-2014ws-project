@@ -31,9 +31,12 @@ public class InitConfig {
 	/**
 	 * <!--ORDER AGENT CLASS-->
 	 * <p>
-	 * Creates a configuration file used by the {@link WarehouseAgent}.
+	 * Creates and reads a configuration file used by the {@link WarehouseAgent}
+	 * .
 	 * </p>
 	 * 
+	 * @param xml
+	 *            : xml file to be written.
 	 * @param orders
 	 *            : Amount of orders to be generated.
 	 * @param robots
@@ -46,23 +49,34 @@ public class InitConfig {
 	 * 
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
-	void createXML(int orders, int robots, int shelves, int pickers) {
+	void createXML(String xml, int orders, int robots, int shelves, int pickers) {
 		Warehouse wh = new Warehouse();
 
 		// Creating Orders
-		Orders x = new Orders(orders);
-		Robots y = new Robots(robots);
-		Shelves z = new Shelves(shelves);
-		wh.setOrders(x);
-		wh.setRobots(y);
-		wh.setShelves(z);
+		if (orders > 0) {
+			Orders x = new Orders(orders);
+			wh.setOrders(x);
+		}
+		if (robots > 0) {
+			Robots y = new Robots(robots);
+			wh.setRobots(y);
+		}
+		if (shelves > 0) {
+			Shelves z = new Shelves(shelves);
+			wh.setShelves(z);
+		}
+		if (pickers > 0) {
+			Pickers w = new Pickers(pickers);
+			wh.setPickers(w);
+		}
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
 					Boolean.TRUE);
-			File XMLfile = new File("conf/warehouse/kiva5.config.xml");
+			File XMLfile = new File("conf/warehouse/" + xml);
 			jaxbMarshaller.marshal(wh, XMLfile);
+			readXML(xml);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -189,6 +203,18 @@ public class InitConfig {
 			robotArgs.add(args);
 		}
 		return robotArgs;
+	}
+
+	ArrayList<Object[]> getPickerArgs() {
+		Pickers pickers = this.warehouse.getPickers();
+		ArrayList<Picker> rl = pickers.getPickerList();
+		ArrayList<Object[]> pickerArgs = new ArrayList<Object[]>();
+		for (Picker r : rl) {
+			Object[] args = new Object[rl.size()];
+			args[0] = r.getUID();
+			pickerArgs.add(args);
+		}
+		return pickerArgs;
 	}
 
 }
