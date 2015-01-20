@@ -34,10 +34,11 @@ import warehouse.OrderAgent;
 
 /**
  * <!--PICKER AGENT CLASS-->
- * <p>Picker agent which is in charge of the dynamic between the {@link OrderAgent}, the
+ * Picker agent which is in charge of the dynamic between the {@link OrderAgent}, the
  * {@link RobotAgent} and the {@link ShelfAgent}. It picks an order, broadcasts the needed 
  * parts to the shelves and picks the robot nearest to a chosen shelf; it then commands 
- * the robot to fetch the shelf.</p>
+ * the robot to fetch the shelf.
+ * <p>
  * <b>Attributes:</b>
  * <ul>
  * 	<li> <i>activeAgent:</i> array of IDs which store found free RobotAgent. </li>
@@ -45,6 +46,7 @@ import warehouse.OrderAgent;
  *  <li> <i>position:</i> an instance of the class {@link Pose} with the picker position. </li>
  * 	<li> <i>busy:</i> status of the picker agent. </li>
  * </ul>
+ * </p>
  * @author [DNA] Diego, Nicolas, Argentina
  */
 @SuppressWarnings("serial")
@@ -74,12 +76,11 @@ public class PickerAgent extends Agent {
 	
 	/**
 	 * <!--GET ROBOT AGENTS BEHAVIOUR-->
-	 * <p>Behavior which is executed cyclicly every specified amount
-	 * of time given by the argument period. This agent will
-	 * query for {@link RobotAgent} which are registered to the DF, description
-	 * facilitator, and are offering the service of "fetch". Then,
+	 * This agent will query for {@link RobotAgent} which are registered to the DF, 
+	 * description facilitator, and are offering the service of "fetch". Then,
 	 * it will choose the robot nearest to a selected {@link ShelfAgent},
-	 * and send to it the coordinates of the target.</p>
+	 * and send to it the coordinates of the target.
+	 * <p>
 	 * <b>Attributes:</b>
 	 * <ul>
 	 * 	<li> <i>repliesCnt:</i> a counter to retrieve every reply from the robot agents.</li>
@@ -89,6 +90,7 @@ public class PickerAgent extends Agent {
 	 *  <li> <i>orderAgent:</i> ID of the order which happens to be assigned to the picker.</li>
 	 * 	<li> <i>target:</i> an instance of {@link Pose} with the chosen shelf position.</li>
 	 * </ul>
+	 * </p>
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 **/
 	private class GetRobotAgents extends SimpleBehaviour {

@@ -1,7 +1,7 @@
 /**
 COPYRIGHT NOTICE (C) 2015. All Rights Reserved.   
 Project: KivaSolutions
-@author: Argentina Ortega Sainz, Nicol‡s Laverde Alfonso & Diego Enrique Ramos Avila
+@author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
 @version: 6.0 
 @since 09.11.2014 
 HBRS - Multiagent Systems
@@ -216,7 +216,7 @@ public class OrderAgent extends Agent {
 					if (missingParts.isEmpty()) {
 						System.out
 								.println(myAgent.getLocalName()
-										+ ": Received all products. No additional shelf neede.");
+										+ ": Received all products. No additional shelf needed.");
 						ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 						compMsg.setOntology("Final shelf");
 						compMsg.addReceiver(new AID(assignedPicker,

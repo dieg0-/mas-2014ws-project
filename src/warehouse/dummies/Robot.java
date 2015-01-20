@@ -16,13 +16,13 @@ public class Robot {
 	Robot(String uid) {
 		this.uid = uid;
 	}
-	
-	public String getUID(){
+
+	public String getUID() {
 		return this.uid;
 	}
-	
-	@XmlElement(name="uid")
-	public void setUID(String uid){
+
+	@XmlElement(name = "uid")
+	public void setUID(String uid) {
 		this.uid = uid;
 	}
 }
