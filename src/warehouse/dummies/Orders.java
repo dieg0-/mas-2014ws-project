@@ -15,11 +15,11 @@ public class Orders {
 
 	}
 
-	public Orders(int n) {
+	public Orders(int n,int max, boolean rand) {
 		DecimalFormat uidFormat = new DecimalFormat("0000");
 		orderList = new ArrayList<Order>();
 		for (int i = 0; i < n; i++) {
-			Order o = new Order(uidFormat.format(i + 1));
+			Order o = new Order(uidFormat.format(i + 1), max, rand);
 			orderList.add(o);
 		}
 	}
