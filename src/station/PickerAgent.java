@@ -495,9 +495,10 @@ public class PickerAgent extends Agent {
 	 * one of them being assigned to him.
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
-	private class GetNewOrder extends OneShotBehaviour {//@TODO Make this behaviour cyclic
+	private class GetNewOrder extends OneShotBehaviour {
 
 		public void action() {
+			boolean doSearch = true;
 			// Update the list of robot agents.
 			DFAgentDescription template = new DFAgentDescription();
 			ServiceDescription sd = new ServiceDescription();
@@ -505,6 +506,7 @@ public class PickerAgent extends Agent {
 			sd.setType("order");
 			template.addServices(sd);
 			//System.out.println("------------------------------------");
+			while (doSearch) {
 			try {
 				// Searching process.
 				DFAgentDescription[] orders = DFService.search(myAgent,
@@ -515,7 +517,10 @@ public class PickerAgent extends Agent {
 				// Found Agents.
 				if (orders.length == 0) {
 					System.out.println(" no available orders.");
-				} else {
+					Thread.sleep(5000);
+				} 
+				else {
+					doSearch = false;
 					for (int i = 0; i < orders.length; ++i) {
 						// Listing the agents ID's found.
 						activeAgent[i] = orders[i].getName();
@@ -533,11 +538,12 @@ public class PickerAgent extends Agent {
 				
 				
 			} catch (FIPAException fe) {
-				System.err.println(myAgent.getLocalName()
-						+ ": Error sending the message.");
+				System.err.println(myAgent.getLocalName() + "[ERR]: Error sending the message.\n");
+			} catch (InterruptedException e) {
+				System.err.println(myAgent.getLocalName() + "[ERR]: interruption exception.\n");
+			}
 			}
 		}
-
 	}
 
 	
