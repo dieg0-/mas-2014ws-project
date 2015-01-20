@@ -58,7 +58,9 @@ public class RobotAgent extends Agent {
 		// Random initialization of the position of the robot.
 		this.position = new Pose();
 		this.position.randomInit(false);
+		
 		System.out.println(getLocalName() + ": started at (" + position.parsePose() + ").");
+		
 		this.busy = false;
 		// Agent Description.
 		this.dfd = new DFAgentDescription();
@@ -83,11 +85,10 @@ public class RobotAgent extends Agent {
 		 * registration has been made. 
 		 */
 		catch (FIPAException fe) {
-			System.err.println("\n[ERR] Agent could not be registered.");
-			System.err.println("Agent will be deleted.");
+			System.err.printf(getLocalName() + "[ERR]: Agent could not be registered.");
+			System.err.println("Agent will be deleted.\n");
 			doDelete();
 		}
-		//System.out.println("-------------------------\n");
 	}
 	
 	
@@ -140,8 +141,9 @@ public class RobotAgent extends Agent {
 				done();
 			}
 			// This agent position.
-			String current_pos = String.format("(%.2f, %.2f)", position.getX(), position.getY());
-			System.out.println("  > Location: " + current_pos);
+			//String current_pos = String.format("(%.2f, %.2f)", position.getX(), position.getY());
+			//System.out.println("  > Location: " + current_pos);
+			
 			// Generation the reply message to the picker which ask for it.
 			ACLMessage reply = this.message.createReply();
 			if(this.message != null) {
@@ -151,8 +153,10 @@ public class RobotAgent extends Agent {
 					// Sending the message to the picker agent.
 					reply.setContentObject(myPosition);
 					myAgent.send(reply);
-					System.out.println("  > I have sent my localization");
-					System.out.println("-------------------------\n");
+					
+					//System.out.println("  > I have sent my localization");
+					//System.out.println("-------------------------\n");
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -160,9 +164,9 @@ public class RobotAgent extends Agent {
 			// In case the message is null, do not reply with this agent position.
 			else {
 				reply.setPerformative(ACLMessage.REFUSE);
-				System.out.println(myAgent.getLocalName() + ": Error. Message invalid.");
+				System.out.println(myAgent.getLocalName() + "[ERR]: Message invalid.");
 				myAgent.send(reply);
-				System.out.println("-------------------------\n");
+				//System.out.println("-------------------------\n");
 			}
 		}
 		
@@ -175,13 +179,12 @@ public class RobotAgent extends Agent {
 			try {
 				DFService.register(myAgent, dfd);
 			} catch (FIPAException fe) {
-				System.err.println("\n[ERR] Agent could not be registered.");
+				System.err.println(myAgent.getLocalName() + "[ERR]: Agent could not be registered.");
 				myAgent.doDelete();
 			}
 			return true;
 		}
 	}
-	
 	
 	/**
 	 * <!--FETCH BEHAVIOUR-->
@@ -207,6 +210,7 @@ public class RobotAgent extends Agent {
 	private class FetchBehaviour extends SimpleBehaviour {
 		
 		private long timeout;
+		@SuppressWarnings("unused")
 		private String picker_position;
 		private String target;
 		protected ACLMessage message;
@@ -246,19 +250,21 @@ public class RobotAgent extends Agent {
 			// Change the state to "busy".
 			try {
 				DFService.deregister(myAgent);
+				
 				// PRINTOUTS: information of where the picker and the shelf are.
 				System.out.println(myAgent.getLocalName() + ": [fetching].");
-				System.out.println("  > Picker at: " + this.picker_position);
-				System.out.println("  > Target at: " + this.target);
-				System.out.println("--------------------------\n");
+				//System.out.println("  > Picker at: " + this.picker_position);
+				System.out.println("  > Target at: " + this.target + "\n");
+				//System.out.println("--------------------------\n");
+				
 				// Simulating the fetching process.
 				Thread.sleep(this.timeout*1000);
 			}
 			catch (FIPAException fe) {
-				System.err.println(myAgent.getLocalName() + ": couldn't unregister.");
+				System.err.println(myAgent.getLocalName() + "[ERR]: couldn't unregister.");
 			}
 			catch (Exception e) {
-				System.err.println(myAgent.getLocalName() + ": terminated abruptly.");
+				System.err.println(myAgent.getLocalName() + "[ERR]: terminated abruptly.");
 			}
 		}
 		
@@ -268,10 +274,11 @@ public class RobotAgent extends Agent {
 		 * the requested shelf is in the station.
 		 */
 		public boolean done() {
-			System.out.println("\n------------------------------------");
-			System.out.println(myAgent.getLocalName() + ": [report].");
-			System.out.println("  > Shelf has been fetched.");
-			System.out.println("------------------------------------\n");
+			//System.out.println("\n------------------------------------");
+			//System.out.println(myAgent.getLocalName() + ": [report].");
+			//System.out.println("  > Shelf has been fetched.");
+			//System.out.println("------------------------------------\n");
+			
 			ACLMessage reply = this.message.createReply();
 			reply.setPerformative(ACLMessage.PROPOSE);
 			ACLMessage notify = this.message.createReply();
@@ -329,11 +336,13 @@ public class RobotAgent extends Agent {
 			try {
 				// Getting the ID of the shelf.
 				AID shelfID = (AID)this.message.getContentObject();
+				
 				// PRINTOUTS: information of where the picker and the shelf are.
 				System.out.println(myAgent.getLocalName() + ": [returning].");
-				System.out.println("  > Shelf: " + shelfID.getLocalName());
-				System.out.println("  > Returned to: " + shelf_position.parsePose());
-				System.out.println("--------------------------\n");
+				System.out.println("  > Shelf: " + shelfID.getLocalName() + "\n");
+				//System.out.println("  > Returned to: " + shelf_position.parsePose());
+				//System.out.println("--------------------------\n");
+				
 				Thread.sleep(this.timeout*1000);
 				// Creates and sends the message to the shelf.
 				ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
@@ -341,7 +350,7 @@ public class RobotAgent extends Agent {
 				informMsg.setContent("UPDATE-REREGISTER-BE-HAPPY");
 				myAgent.send(informMsg);
 			} catch (InterruptedException e) {
-				System.err.println("Thread error. Could not put to sleep");
+				System.err.println(myAgent.getLocalName() + "[ERR]: Could not put to sleep");
 			} catch (UnreadableException e) {
 				
 			}
@@ -354,15 +363,15 @@ public class RobotAgent extends Agent {
 		 * the picker agent.
 		 */
 		public boolean done() {
-			System.out.println("\n------------------------------------");
-			System.out.println(myAgent.getLocalName() + ": [report].");
-			System.out.println("  > Shelf has been returned.");
-			System.out.println("------------------------------------\n");
+			//System.out.println("\n------------------------------------");
+			//System.out.println(myAgent.getLocalName() + ": [report].");
+			//System.out.println("  > Shelf has been returned.");
+			//System.out.println("------------------------------------\n");
 			try {
 				DFService.register(myAgent, dfd);
 			}
 			catch (Exception e) {
-				System.err.println("\n[ERR] Agent could not be registered.");
+				System.err.println(myAgent.getLocalName() + "[ERR]: Agent could not be registered.");
 				myAgent.doDelete();
 			}
 			return true;
@@ -396,15 +405,17 @@ public class RobotAgent extends Agent {
 			if (msg != null) {
 				String msg_content = msg.getContent();
 				String msg_command = msg.getOntology();
+				
 				// PRINTOUTS: Message received with the commanded action.
-				System.out.println("--------------------------");
-				System.out.print(myAgent.getLocalName() + ": ");
-				System.out.println("[message received].");
-				System.out.println("  > Command: " + msg_command);
+				//System.out.println("--------------------------");
+				//System.out.print(myAgent.getLocalName() + ": ");
+				//System.out.println("[message received].");
+				//System.out.println("  > Command: " + msg_command);
+				
 				// Inspection of the commanded action.
 				if (msg_command.matches("status")) {
 					System.out.println("  > Busy: " + busy);
-					System.out.println("--------------------------");
+					//System.out.println("--------------------------");
 				}
 				else if (msg_command.matches("localization")) {
 					myAgent.addBehaviour(new LocalizationBehaviour(myAgent, msg));
@@ -416,8 +427,8 @@ public class RobotAgent extends Agent {
 					myAgent.addBehaviour(new ReturnBehaviour(myAgent, 20, msg));
 				}
 				else {
-					System.out.println("  > No valid command.");
-					System.out.println("--------------------------\n");
+					//System.out.println("  > No valid command.");
+					//System.out.println("--------------------------\n");
 				}
 			}
 			block();

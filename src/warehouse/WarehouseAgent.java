@@ -78,7 +78,7 @@ public class WarehouseAgent extends Agent {
 		addBehaviour(new updateOrderLists());
 		addBehaviour(new initialRobots());
 		addBehaviour(new initialShelves());
-		System.out.println(getLocalName()+": Loaded behaviours");
+		//System.out.println(getLocalName()+": Loaded behaviours");
 	}
 
 	/**
@@ -121,18 +121,20 @@ public class WarehouseAgent extends Agent {
 				String assignedOrder = assignMsg.getSender().getLocalName();
 				pendingOrders.remove(assignedOrder);
 				assignedOrders.add(assignedOrder);
-				System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");
+				System.out.print(myAgent.getLocalName()+" [update order status]: "); 
+				System.out.println("Pending: " + pendingOrders.size() + ", Assigned: " + assignedOrders.size() + ", Completed: " + completedOrders.size() + ".\n");
 			} else	if (completedMsg != null) {
 				String order = completedMsg.getSender().getLocalName();
-				System.out.println(myAgent.getLocalName() + ": "
-						+ order + " is completed.");
+				System.out.print(myAgent.getLocalName()+" [report]: ");
+				System.out.println(order + " is completed.");
 				assignedOrders.remove(order);
 				completedOrders.add(order);
-				if (pendingOrders.size()==0 && assignedOrders.size()==0){
-					System.out.println(myAgent.getLocalName()+": All orders succesfully completed.");
-				}else{
-					System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");
-				}
+				if (pendingOrders.size()==0 && assignedOrders.size()==0) {
+					System.out.println(myAgent.getLocalName() + " [done]: All orders succesfully completed.\n");
+				} else {
+					System.out.print(myAgent.getLocalName()+" [update order status]: "); 
+					System.out.println("Pending: " + pendingOrders.size() + ", Assigned: " + assignedOrders.size() + ", Completed: " + completedOrders.size() + ".\n");
+					}
 			} else {
 				block();
 			}
@@ -174,18 +176,15 @@ public class WarehouseAgent extends Agent {
 				String ordNum = uidFormat.format(orderNum);
 				pendingOrders.add("Order "+ordNum);
 				args[1]=ordNum;
-				System.out.println(myAgent.getLocalName()
-						+ ": Received new order...");
+				System.out.println(myAgent.getLocalName() + ": Received new order...");
 
 				try {
-					System.out.println(myAgent.getLocalName()
-							+ ": Creating OrderAgent");
+					//System.out.println(myAgent.getLocalName() + ": Creating OrderAgent");
 					AgentController a = c.createNewAgent("Order "+
 							ordNum, "warehouse.OrderAgent",
 							args);
 					a.start();
-					System.out.println(myAgent.getLocalName()
-							+ ": Created new order succesfully");
+					System.out.println(myAgent.getLocalName() + ": Created new order succesfully");
 
 				} catch (Exception e) {
 					e.printStackTrace();
