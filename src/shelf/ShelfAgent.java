@@ -241,6 +241,22 @@ public class ShelfAgent extends Agent {
         
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public HashMap<String, Integer> copyHM(HashMap<String, Integer> hm){
+		HashMap<String, Integer> newHM = new HashMap<String, Integer>();
+		
+		Set orderSet = hm.entrySet();
+		Iterator iter = orderSet.iterator();
+		while(iter.hasNext()){
+			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+			String piece = lookup.getKey();
+			int amount = lookup.getValue();
+			newHM.put(piece, amount);
+		}
+		
+		return newHM;
+	}
+	
 	
 	/**
 	 * @description Verifies if the pieces requested are available.
@@ -269,7 +285,7 @@ public class ShelfAgent extends Agent {
 					//if(checkWholeInventory(mappy)){
 					if(availablePieces > 0){
 						String sAvailablePieces = String.valueOf(availablePieces);
-						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");			
+						System.out.println(myAgent.getLocalName() + ": Some pieces availabe. Sending proposal...");			
 						reply.setPerformative(ACLMessage.PROPOSE);
 						//reply.setContent("Enough pieces available");
 						reply.setLanguage(sAvailablePieces);
@@ -291,13 +307,15 @@ public class ShelfAgent extends Agent {
 								updateRequestedInventory(mappy);
 								registerService();
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-								System.out.println("Recibí mensajito que quiere Argen");
+								System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
 								String sName = informMessage.getLanguage();
 								AID orderID = new AID(sName, AID.ISGUID);
-								ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+								ACLMessage notify = new ACLMessage(ACLMessage.REQUEST);
 								notify.setOntology("Check Part List");
 								notify.addReceiver(orderID);
-								notify.setContentObject(inventory);
+								HashMap<String, Integer> copyInventory = new HashMap<String, Integer>();
+								copyInventory = copyHM(inventory);
+								notify.setContentObject(copyInventory);
 								send(notify);
 								//addBehaviour(new cyclicMessageWaiter(myAgent, mappy));
 							}
@@ -377,14 +395,16 @@ public class ShelfAgent extends Agent {
 						terminationFlag = true;
 						registerService();
 					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-						System.out.println("Recibí mensajito que quiere Argen");
+						System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
 						try {
 							String sName = informMessage.getLanguage();
 							AID orderID = new AID(sName, AID.ISGUID);
 							ACLMessage notify = new ACLMessage(ACLMessage.REQUEST);
 							notify.setOntology("Check Part List");
 							notify.addReceiver(orderID);
-							notify.setContentObject(inventory);
+							HashMap<String, Integer> copyInventory = new HashMap<String, Integer>();
+							copyInventory = copyHM(inventory);
+							notify.setContentObject(copyInventory);
 							send(notify);
 						} catch (IOException e) {
 							e.printStackTrace();
