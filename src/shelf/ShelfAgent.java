@@ -238,7 +238,7 @@ public class ShelfAgent extends Agent {
 			MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.CFP);
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
-				System.out.println(myAgent.getLocalName() +": Order request received");
+				//System.out.println(myAgent.getLocalName() +": Order request received");
 				deregisterService();
 				HashMap<String, Integer> mappy;
 				try {
@@ -273,7 +273,7 @@ public class ShelfAgent extends Agent {
 								registerService();
 							/** If the shelf is select for usage, it sends its inventory to the corresponding Order Agent **/
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-								System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
+								//System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
 								/** The Order's AID is stores in the language field **/
 								String sName = informMessage.getLanguage();
 								AID orderID = new AID(sName, AID.ISGUID);
@@ -312,7 +312,7 @@ public class ShelfAgent extends Agent {
 		public void registerService(){
 			try {
 				DFService.register(myAgent, dfd);
-				System.out.println(myAgent.getLocalName() + ": registering service.");
+				//System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
 			}
@@ -321,7 +321,7 @@ public class ShelfAgent extends Agent {
 		public void deregisterService(){
 			try {
 				DFService.deregister(myAgent);
-				System.out.println(myAgent.getLocalName() + ": deregistering service.");
+				//System.out.println(myAgent.getLocalName() + ": deregistering service.");
 
 			}
 			catch (FIPAException fe) {
@@ -393,7 +393,7 @@ public class ShelfAgent extends Agent {
 		public void registerService(){
 			try {
 				DFService.register(myAgent, dfd);
-				System.out.println(myAgent.getLocalName() + ": registering service.");
+				//System.out.println(myAgent.getLocalName() + ": registering service.");
 			}
 			catch (FIPAException fe) {
 
