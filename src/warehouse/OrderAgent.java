@@ -54,7 +54,8 @@ public class OrderAgent extends Agent {
 		completed = false;
 		assigned = false;
 		
-		missingParts = (HashMap<String, Integer>) partList.clone();
+		missingParts = new HashMap <String, Integer>();
+		missingParts.putAll(partList);
 		
 		this.dfd = new DFAgentDescription();
         this.dfd.setName(getAID()); 
@@ -79,6 +80,11 @@ public class OrderAgent extends Agent {
 			addBehaviour(new MissingPieces());
 			
 	}
+	
+	void copyParts(HashMap <String,Integer> list1, HashMap<String, Integer> list2){
+		
+	}
+	
 	
 	void printPartList(HashMap<String,Integer> mp){
 		Set<Entry<String, Integer>> set = mp.entrySet();
@@ -134,7 +140,7 @@ public class OrderAgent extends Agent {
 					MessageTemplate.MatchOntology("Check Part List"));
 			ACLMessage partsMsg = myAgent.receive(partsMT);
 			
-			MessageTemplate checkMT = MessageTemplate.and(
+			/**MessageTemplate checkMT = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
 					MessageTemplate.MatchOntology("Check Part List"));
 			ACLMessage temp = myAgent.receive(checkMT);
@@ -146,24 +152,46 @@ public class OrderAgent extends Agent {
 				  compMsg.setOntology("Final shelf");
 				  compMsg.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
 				  send(compMsg);
-			}
+			}*/
 			if (partsMsg !=null){
 				try {
 					@SuppressWarnings("unchecked")
 					HashMap <String,Integer> available = (HashMap<String,Integer>) partsMsg.getContentObject();
-					System.out.println(myAgent.getLocalName()+"Checking part list...");
-					for (Map.Entry<String, Integer> entry : missingParts.entrySet()) { 
+					System.out.println(myAgent.getLocalName()+": Checking part list...");
+					System.out.println(myAgent.getLocalName()+": Missing pieces: "+missingParts.size());
+					
+					Iterator<Entry<String, Integer>> i = missingParts.entrySet().iterator();
+					//Iterator i = set.iterator();
+					System.out.println("___________________");
+					while(i.hasNext()) {
+						Entry<String, Integer> me = (Entry<String, Integer>) i.next();
+						String part = me.getKey();
+						if(available.containsKey(part)){
+							if(me.getValue()>available.get(part)){
+								int x = me.getValue() - available.get(part);
+								missingParts.put(part, x);
+							}else if(me.getValue()<available.get(part)){
+								missingParts.remove(part);
+							}else if (me.getValue()==available.get(part)){
+								missingParts.remove(part);
+							}
+						}
+					}
+					
+					/**for (Map.Entry<String, Integer> entry : missingParts.entrySet()) { 
 						String part = entry.getKey();
+						System.out.println("Available: "+available.get(part)+". Required: "+entry.getValue());
+
 						if(available.containsKey(part)){
 							if(entry.getValue()>available.get(part)){
-								entry.setValue(entry.getValue()-available.get(part));								
+								entry.setValue(entry.getValue()-available.get(part));
 							}else if(entry.getValue()<available.get(part)){
 								missingParts.remove(part);
 							}else if (entry.getValue()==available.get(part)){
 								missingParts.remove(part);
 							}
 						}	
-					}
+					}*/
 					
 					if (missingParts.isEmpty()){
 						//System.out.println(myAgent.getLocalName()+": Order completed...");

@@ -381,7 +381,7 @@ public class ShelfAgent extends Agent {
 						try {
 							String sName = informMessage.getLanguage();
 							AID orderID = new AID(sName, AID.ISGUID);
-							ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+							ACLMessage notify = new ACLMessage(ACLMessage.REQUEST);
 							notify.setOntology("Check Part List");
 							notify.addReceiver(orderID);
 							notify.setContentObject(inventory);
