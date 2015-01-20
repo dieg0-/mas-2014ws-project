@@ -95,6 +95,7 @@ public class ShelfAgent extends Agent {
 		}
 		
 		addBehaviour(new OrderRequestServer());
+		addBehaviour(new waitForExternalMessages());
 	}
 	
 	protected void takeDown(){
@@ -133,6 +134,18 @@ public class ShelfAgent extends Agent {
 	}
 	
 	@SuppressWarnings("rawtypes")
+	public void restock(int amount){
+		Set orderSet = inventory.entrySet();
+		Iterator iter = orderSet.iterator();
+		while(iter.hasNext()){
+			@SuppressWarnings("unchecked")
+			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
+			inventory.put(lookup.getKey(), lookup.getValue() + amount);
+			System.out.println(this.getName() + ": Only " + inventory.get(lookup.getKey()) + " " + lookup.getKey() + "s left.");
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
 	public boolean checkWholeInventory(HashMap<String, Integer> order){
 		boolean answer = true;
 		Set orderSet = order.entrySet();
@@ -155,8 +168,13 @@ public class ShelfAgent extends Agent {
 		while(iter.hasNext()){
 			@SuppressWarnings("unchecked")
 			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
-			if(checkPieceInInventory(lookup.getKey(), lookup.getValue()))
-				availablePieces++;
+			if(checkPieceInInventory(lookup.getKey(), lookup.getValue())){
+				if(lookup.getValue() > inventory.get(lookup.getKey())){
+					availablePieces = availablePieces + inventory.get(lookup.getKey());
+				}else{
+					availablePieces = availablePieces + lookup.getValue();
+				}
+			}
 		}
 		
 		return availablePieces;
@@ -434,6 +452,26 @@ public class ShelfAgent extends Agent {
 			return true;
 		}
 		
+		
+	}
+	
+	public class waitForExternalMessages extends CyclicBehaviour{
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			//System.out.println("Waiting!");
+			MessageTemplate template = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), MessageTemplate.MatchOntology("RESTOCK"));
+			ACLMessage message = myAgent.receive(template);
+			if (message != null) {
+				System.out.println(myAgent.getLocalName() + ": Received external message!! =)");
+				int amount = Integer.valueOf(message.getContent());
+				System.out.println(amount);
+				restock(amount);
+			}
+			block();
+		}
 		
 	}
 

@@ -1,16 +1,14 @@
 /**
-COPYRIGHT NOTICE (C) 2014. All Rights Reserved.   
+COPYRIGHT NOTICE (C) 2015. All Rights Reserved.   
 Project: KivaSolutions
-@author: Argentina Ortega Sainz, Nicol�s Laverde Alfonso & Diego Enrique Ramos Avila
-@version: 1.0 
-@since 09.11.2014 
+@author: Argentina Ortega Sainz, Nicolas Laverde Alfonso & Diego Enrique Ramos Avila
+@version: 2.0 
+@since 20.01.2015 
 HBRS - Multiagent Systems
 All Rights Reserved.  
  **/
 
 package warehouse;
-
-//import order.OrderAgent;
 
 import jade.core.Agent;
 import jade.wrapper.AgentContainer;
@@ -18,18 +16,31 @@ import jade.wrapper.AgentController;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-
 import java.text.DecimalFormat;
 import java.util.*;
+import station.RobotAgent;
+import shelf.ShelfAgent;
 
-
+/**
+ * <!--WAREHOUSE AGENT CLASS-->
+ * <p>Warehouse agent deals with the initialization and launching of the whole
+ * system. It creates XML configuration files, which are used to instantiate
+ * the other agents. From the system point of view, it handles the order queue
+ * and order queue status; i.e. how many orders has been completed, how many
+ * are pending and how many are assigned.</p>
+ * <b>Attributes:</b>
+ * <ul>
+ * 	<li> <i>pendingOrders:</i> a list .... </li>
+ *  <li> <i>completedOrders:</i> a list .... </li>
+ * 	<li> <i>assignedOrders:</i> a list .... </li>
+ * 	<li> <i>currentOrder:</i> counter for ... </li>
+ *  <li> <i>config:</i> an instance of the class {@link InitConfig} which ....
+ * </ul>
+ * @author [DNA] Diego, Nicolas, Argentina
+ */
 public class WarehouseAgent extends Agent {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
-	// The order list maps the available lists to it's status (pending or
-	// finished)
 	private ArrayList<String> pendingOrders;
 	private ArrayList<String> completedOrders;
 	private ArrayList<String> assignedOrders;
@@ -37,45 +48,58 @@ public class WarehouseAgent extends Agent {
 	InitConfig config;
 
 	/** 
-	 * Agent initialization. 
-	 * <li>Creates and/or reads the xml condfiguration file. 
-	 * <li>Initializes the order list status
-	 * <li>Loads the initial behaviours
-	 * 
+	 * Agent initialization.
+	 * <ol> 
+	 * 	<li>Creates and/or reads a XML configuration file. </li> 
+	 * 	<li>Initializes the order list status. </li>
+	 * 	<li>Loads the initial behaviors. </li>
+	 * </ol>
 	 */
 	protected void setup() {
 		System.out.println(getLocalName() + ": Started.");
-		//Load config file
+		// Load configuration file.
 		config = new InitConfig();
-		config.createXML(10,2,2,0);
-		System.out.println(getLocalName()+": Configuration created succesfuly.");
+		/* Create an XML file with the given agents (orders, shelfs, robots, pickers).
+		 * Comment to load the previous XML file.
+		 */
+		//config.createXML(10,2,2,0);
+		//System.out.println(getLocalName()+": Configuration created succesfuly.");
 		config.readXML();
 		System.out.println(getLocalName()+": Configuration read succesfuly.");
 		   
 		pendingOrders = new ArrayList<String>();		
 		assignedOrders = new ArrayList<String>();		
 		completedOrders = new ArrayList<String>();		
-
-		// Add behaviours
+		// Add behaviors
 		addBehaviour(new initialOrders());
 		addBehaviour(new CreateOrder());
 		addBehaviour(new updateOrderLists());
 		addBehaviour(new initialRobots());
 		addBehaviour(new initialShelves());
 		System.out.println(getLocalName()+": Loaded behaviours");
-		//System.out.println(getLocalName()+": Initial orders loaded: "+pendingOrders.size());
 	}
 
-	// Put agent clean-up operations here
+	/**
+	 * <!--TAKEDOWN-->
+	 * <p>Safe delete of the agent.</p>
+	 */
 	protected void takeDown() {
-		// Printout a dismissal message
 		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
 	
-	@SuppressWarnings("serial")
+	
 	/**
-	 * Cyclic behavior that updates order's list status.
+	 * <!--UPDATE ORDER LISTS BEHAVIOUR-->
+	 * <p>Behavior which updates the status of the order queue regarding of
+	 * messages the {@link OrderAgent} sent. It just moves orders from one
+	 * list to another.</p>
+	 * <b>Outcome:</b>
+	 * <ul>
+	 * 	<li> print out with the current status of the order queue.
+	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
+	@SuppressWarnings("serial")
 	public class updateOrderLists extends CyclicBehaviour {
 
 		public void action() {
@@ -91,7 +115,6 @@ public class WarehouseAgent extends Agent {
 			
 			if (assignMsg !=null){
 				String assignedOrder = assignMsg.getSender().getLocalName();
-				//System.out.println(assignedOrder);
 				pendingOrders.remove(assignedOrder);
 				assignedOrders.add(assignedOrder);
 				System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");
@@ -104,7 +127,7 @@ public class WarehouseAgent extends Agent {
 				if (pendingOrders.size()==0 && assignedOrders.size()==0){
 					System.out.println(myAgent.getLocalName()+": All orders succesfully completed.");
 				}else{
-					System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");				// TODO Update hash-tables for each list type
+					System.out.println(myAgent.getLocalName()+": Updating order status. Pending: "+pendingOrders.size()+". Assigned: "+assignedOrders.size()+". Completed: "+completedOrders.size()+".");
 				}
 			} else {
 				block();
@@ -112,12 +135,23 @@ public class WarehouseAgent extends Agent {
 		}
 	}
 
-	
 	/**
-	 * Cyclic behaviour that creates random orders on the fly. 
+	 * <!--CREATE ORDER BEHAVIOUR-->
+	 * <p>Behavior which handles the creation of new {@link OrderAgent}. It creates
+	 * an agent whit a random part request and adds it to the pending list. It will
+	 * allow to dynamically create orders once the initial ones are completed. </p>
+	 * <b>Outcome:</b>
+	 * <ul>
+	 * 	<li> new agent order in the pending queue.
+	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	@SuppressWarnings("serial")
 	private class CreateOrder extends CyclicBehaviour {
+		/**
+		 * Main process of the behavior. Creates a new part request as a hashmap,
+		 * creates a new order base on such hashmap and adds it to the queue.
+		 */
 		public void action() {
 			AgentContainer c = getContainerController();
 			Object[] args = new Object[2];
@@ -129,8 +163,7 @@ public class WarehouseAgent extends Agent {
 					MessageTemplate.MatchOntology("newOrder"));
 
 			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) { // Message received. Process it String order =
-				
+			if (msg != null) {
 				int orderNum = Integer.parseInt(msg.getContent());
 				String ordNum = uidFormat.format(orderNum);
 				pendingOrders.add("Order "+ordNum);
@@ -144,7 +177,6 @@ public class WarehouseAgent extends Agent {
 					AgentController a = c.createNewAgent("Order "+
 							ordNum, "warehouse.OrderAgent",
 							args);
-					// System.out.println("Attempting to start OrderAgent");
 					a.start();
 					System.out.println(myAgent.getLocalName()
 							+ ": Created new order succesfully");
@@ -160,7 +192,7 @@ public class WarehouseAgent extends Agent {
 		
 		/**
 		 * Creates a part list with random quantities.
-		 * @return partList	HashMap<String,Integer> part list created randomly.
+		 * @return partList	a hashmap with part request created randomly.
 		 */
 		HashMap<String,Integer> readOrder(){
 			Random rnd = new Random();
@@ -186,18 +218,29 @@ public class WarehouseAgent extends Agent {
 			return partList;
 		}
 	}
+	
 	/**
-	 * Loads initial orders stored in the xml configuration file.
+	 * <!--INITIAL ORDERS BEHAVIOUR-->
+	 * <p>Behavior which handles the creation of {@link OrderAgent}. It reads the
+	 * parameters of the XML configuration file, initializes each agent with them and
+	 * launches them in the system.</p>
+	 * <b>Outcome:</b>
+	 * <ul>
+	 * 	<li> launch order agents in the system.
+	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
 	private class initialOrders extends OneShotBehaviour{
+		
 		private static final long serialVersionUID = 1L;
+		
 		public void action(){
 			AgentContainer c = getContainerController();
 			ArrayList<Object[]> orders = config.getOrderArgs();
 			System.out.println(myAgent.getLocalName()+": Initial orders loaded: "+orders.size());
 			currentOrder=orders.size();
 			try {
-				for(Object[] o:orders){
+				for(Object[] o:orders) {
 					String orderNum = (String)o[1];
 					Object[] args = new Object[2];
 					args[0] = o[0];
@@ -208,16 +251,27 @@ public class WarehouseAgent extends Agent {
 							args);
 					a.start();
 				}
-				//System.out.println(pendingOrders.toString());
-			}catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("There is something wrong");
 				e.printStackTrace();
 			}			
 		}
 	}
-
+	
+	/**
+	 * <!--INITIAL ROBOTS BEHAVIOUR-->
+	 * <p>Behavior which handles the creation of {@link RobotAgent}. It reads the
+	 * parameters of the XML configuration file, initializes each agent with them and
+	 * launches them in the system.</p>
+	 * <b>Outcome:</b>
+	 * <ul>
+	 * 	<li> launch robot agents in the system.
+	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
+	 */
 	@SuppressWarnings("serial")
 	private class initialRobots extends OneShotBehaviour{
+		
 		public void action(){
 			AgentContainer c = getContainerController();
 			ArrayList<Object[]> robots = config.getRobotArgs();
@@ -238,9 +292,21 @@ public class WarehouseAgent extends Agent {
 			}
 		}
 	}
-
+	
+	/**
+	 * <!--INITIAL SHELVES BEHAVIOUR-->
+	 * <p>Behavior which handles the creation of {@link ShelfAgent}. It reads the
+	 * parameters of the XML configuration file, initializes each agent with them and
+	 * launches them in the system.</p>
+	 * <b>Outcome:</b>
+	 * <ul>
+	 * 	<li> launch shelf agents in the system.
+	 * </ul>
+	 * @author [DNA] Diego, Nicolas, Argentina
+	 */
 	@SuppressWarnings("serial")
 	private class initialShelves extends OneShotBehaviour{
+		
 		public void action(){
 			AgentContainer c = getContainerController();
 			ArrayList<Object[]> shelves = config.getShelfArgs();

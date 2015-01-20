@@ -33,11 +33,11 @@ import java.io.IOException;
  * is done indirectly through the picker.</p>
  * <b>Attributes:</b>
  * <ul>
- * 	<li> <i>position:</i> an instance of the class {@link Pose} with the robot position.
+ * 	<li> <i>position:</i> an instance of the class {@link Pose} with the robot position. </li>
  *  <li> <i>shelf_position:</i> an instance of the class {@link Pose} with the shelf position. </li>
- * 	<li> <i>busy:</i> flag to reflect the status of the robot.
- * 	<li> <i>dfd:</i> agent description with the services offered.
- *  <li> <i>uid:</i> argument needed for automatic creation of robot agents.
+ * 	<li> <i>busy:</i> flag to reflect the status of the robot. </li>
+ * 	<li> <i>dfd:</i> agent description with the services offered. </li>
+ *  <li> <i>uid:</i> argument needed for automatic creation of robot agents. </li>
  * </ul>
  * @author [DNA] Diego, Nicolas, Argentina
  */
@@ -87,6 +87,7 @@ public class RobotAgent extends Agent {
 		}
 		//System.out.println("-------------------------\n");
 	}
+	
 	
 	/**
 	 * <!--LOCALIZATION BEHAVIOUR-->
