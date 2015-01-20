@@ -345,131 +345,131 @@ public class PickerAgent extends Agent {
 				
 				//////////////////////// MAGIC WHILE
 				while(doSearchAgents){
-				// Searching process.
-				DFAgentDescription[] result = null;
-				try {
-					boolean found = false;
-					while (!found) {
-						result = DFService.search(myAgent, template);
-						if(result.length == 0){
-							//System.out.println(myAgent.getLocalName() + ": no free shelves found");
-						}else{
-							found = true;
-						}
-					}
-					
-					System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
-					System.out.println(myAgent.getLocalName() + ": Found the following active agents:");
-					activeAgent = new AID[result.length];
-					// Found Agents.
-					for (int i = 0; i < result.length; ++i) {
-						// Listing the agents ID's found.
-						activeAgent[i] = result[i].getName();
-						//System.out.println(activeAgent[i].getName());
-					}
-					System.out.println("------------------------------------\n");
-					/* Sending Messages to the found agents. */
-					ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-					for (int i = 0; i < result.length; ++i) {
-						cfp.addReceiver(result[i].getName());
-					}
-
-					System.out.println(myAgent.getLocalName() + ": Requesting pieces");
-					cfp.setContentObject(mappy);
-					cfp.setConversationId("select-shelf");
-					
-					myAgent.send(cfp);
-
-					//////////////////////////////////////////////////////////////////////////////////////////////
-					MessageTemplate selectShelfTemplate = MessageTemplate.MatchConversationId("select-shelf");
-					ArrayList<AID> viableAgents = new ArrayList<AID>();
-					while(repliesCnt < activeAgent.length){
-						ACLMessage reply = myAgent.receive(selectShelfTemplate);
-						if (reply != null) {
-							
-							// Reply received
-							if (reply.getPerformative() == ACLMessage.PROPOSE) {
-								doSearchAgents = false;
-								viableAgents.add(reply.getSender());
-								// This is an offer 
-								double shelfPosition[] = (double[]) reply.getContentObject();
-								int iAvailablePieces = Integer.valueOf(reply.getLanguage());
-								Pose shelfPose = new Pose();
-								shelfPose = shelfPose.arrayToPose(shelfPosition);
-								//double distance = shelfPose.distance(position);
-								if(iAvailablePieces >= currentMaxAvailablePieces){
-									currentMaxAvailablePieces = iAvailablePieces;
-									richestShelf = reply.getSender();
-									currentBestPose = shelfPose;
-								}
-								/**
-								if(distance <= currentMinDistance){
-									currentMinDistance = distance;
-									closestShelf = reply.getSender();
-									currentBestPose = shelfPose;
-								}**/
+					// Searching process.
+					DFAgentDescription[] result = null;
+					try {
+						boolean found = false;
+						while (!found) {
+							result = DFService.search(myAgent, template);
+							if(result.length == 0){
+								//System.out.println(myAgent.getLocalName() + ": no free shelves found");
+							}else{
+								found = true;
 							}
-							repliesCnt++;
+						}
 						
+						System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
+						System.out.println(myAgent.getLocalName() + ": Found the following active agents:");
+						activeAgent = new AID[result.length];
+						// Found Agents.
+						for (int i = 0; i < result.length; ++i) {
+							// Listing the agents ID's found.
+							activeAgent[i] = result[i].getName();
+							//System.out.println(activeAgent[i].getName());
 						}
-						else {
-							block();
+						System.out.println("------------------------------------\n");
+						/* Sending Messages to the found agents. */
+						ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+						for (int i = 0; i < result.length; ++i) {
+							cfp.addReceiver(result[i].getName());
 						}
+	
+						System.out.println(myAgent.getLocalName() + ": Requesting pieces");
+						cfp.setContentObject(mappy);
+						cfp.setConversationId("select-shelf");
+						
+						myAgent.send(cfp);
+	
+						//////////////////////////////////////////////////////////////////////////////////////////////
+						MessageTemplate selectShelfTemplate = MessageTemplate.MatchConversationId("select-shelf");
+						ArrayList<AID> viableAgents = new ArrayList<AID>();
+						while(repliesCnt < activeAgent.length){
+							ACLMessage reply = myAgent.receive(selectShelfTemplate);
+							if (reply != null) {
+								
+								// Reply received
+								if (reply.getPerformative() == ACLMessage.PROPOSE) {
+									doSearchAgents = false;
+									viableAgents.add(reply.getSender());
+									// This is an offer 
+									double shelfPosition[] = (double[]) reply.getContentObject();
+									int iAvailablePieces = Integer.valueOf(reply.getLanguage());
+									Pose shelfPose = new Pose();
+									shelfPose = shelfPose.arrayToPose(shelfPosition);
+									//double distance = shelfPose.distance(position);
+									if(iAvailablePieces >= currentMaxAvailablePieces){
+										currentMaxAvailablePieces = iAvailablePieces;
+										richestShelf = reply.getSender();
+										currentBestPose = shelfPose;
+									}
+									/**
+									if(distance <= currentMinDistance){
+										currentMinDistance = distance;
+										closestShelf = reply.getSender();
+										currentBestPose = shelfPose;
+									}**/
+								}
+								repliesCnt++;
+							
+							}
+							else {
+								block();
+							}
+						}
+						
+						System.out.println(myAgent.getLocalName() + ": Selected Richest Shelf: " + richestShelf);
+						//System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
+						
+						ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
+						for (int i = 0; i < viableAgents.size(); i++) {
+							//if(viableAgents.get(i) != closestShelf){
+							if(viableAgents.get(i) != richestShelf){
+								informMsg.addReceiver(viableAgents.get(i));
+							}
+						}
+						//informMsg.setConversationId("command-register");
+						informMsg.setContent("REREGISTER");
+						myAgent.send(informMsg);
+						
+						/**
+						ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
+						String theId = msg.getSender().getName();
+						selectMsg.setLanguage(theId);
+						selectMsg.setContent("YOU-ARE-THE-ONE");
+						selectMsg.addReceiver(richestShelf);
+						myAgent.send(selectMsg);
+						*/
+						//TODO [Diego] Temporary until we send the Order the Hashmap to compare
+						//ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+						//notify.setOntology("Check Part List");
+						//notify.addReceiver(msg.getSender());
+						//send(notify);
+						
+						
+						
+						//addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf, orderAgent));
+						if(richestShelf != null)
+							addBehaviour(new GetRobotAgents(myAgent, currentBestPose, richestShelf, orderAgent));
+	
+						/////////////////////////////////////////////////////////////////////////////////////////////
+					} catch (FIPAException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (UnreadableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
+					
+					
+					busy = true;
+					try {
+						Thread.sleep(10000);
+					}catch(Exception e){
+						
 					}
-					
-					System.out.println(myAgent.getLocalName() + ": Selected Richest Shelf: " + richestShelf);
-					//System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
-					
-					ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
-					for (int i = 0; i < viableAgents.size(); i++) {
-						//if(viableAgents.get(i) != closestShelf){
-						if(viableAgents.get(i) != richestShelf){
-							informMsg.addReceiver(viableAgents.get(i));
-						}
-					}
-					//informMsg.setConversationId("command-register");
-					informMsg.setContent("REREGISTER");
-					myAgent.send(informMsg);
-					
-					/**
-					ACLMessage selectMsg = new ACLMessage(ACLMessage.INFORM);
-					String theId = msg.getSender().getName();
-					selectMsg.setLanguage(theId);
-					selectMsg.setContent("YOU-ARE-THE-ONE");
-					selectMsg.addReceiver(richestShelf);
-					myAgent.send(selectMsg);
-					*/
-					//TODO [Diego] Temporary until we send the Order the Hashmap to compare
-					//ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
-					//notify.setOntology("Check Part List");
-					//notify.addReceiver(msg.getSender());
-					//send(notify);
-					
-					
-					
-					//addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf, orderAgent));
-					if(richestShelf != null)
-						addBehaviour(new GetRobotAgents(myAgent, currentBestPose, richestShelf, orderAgent));
-
-					/////////////////////////////////////////////////////////////////////////////////////////////
-				} catch (FIPAException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (UnreadableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				
-				
-				busy = true;
-				try {
-					Thread.sleep(10000);
-				}catch(Exception e){
-					
-				}
 				//////////////////////////////// END MAGIC WHILE
 				}
 			}else{
