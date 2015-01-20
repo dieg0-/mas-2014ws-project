@@ -340,8 +340,8 @@ public class WarehouseAgent extends Agent {
 		}
 	}
 	/**
-	 * <!--INITIAL SHELVES BEHAVIOUR-->
-	 * Behavior which handles the creation of {@link ShelfAgent}. It reads the
+	 * <!--INITIAL PICKERS BEHAVIOUR-->
+	 * Behavior which handles the creation of {@link PickerAgent}. It reads the
 	 * parameters of the XML configuration file, initializes each agent with them and
 	 * launches them in the system.
 	 * <p>
