@@ -269,7 +269,7 @@ public class ShelfAgent extends Agent {
 					//if(checkWholeInventory(mappy)){
 					if(availablePieces > 0){
 						String sAvailablePieces = String.valueOf(availablePieces);
-						System.out.println(myAgent.getLocalName() + ": All pieces are available. Sending position...");			
+						System.out.println(myAgent.getLocalName() + ": Some pieces availabe. Sending proposal...");			
 						reply.setPerformative(ACLMessage.PROPOSE);
 						//reply.setContent("Enough pieces available");
 						reply.setLanguage(sAvailablePieces);
@@ -291,10 +291,10 @@ public class ShelfAgent extends Agent {
 								updateRequestedInventory(mappy);
 								registerService();
 							}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-								System.out.println("Recibí mensajito que quiere Argen");
+								System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
 								String sName = informMessage.getLanguage();
 								AID orderID = new AID(sName, AID.ISGUID);
-								ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+								ACLMessage notify = new ACLMessage(ACLMessage.REQUEST);
 								notify.setOntology("Check Part List");
 								notify.addReceiver(orderID);
 								notify.setContentObject(inventory);
@@ -377,11 +377,11 @@ public class ShelfAgent extends Agent {
 						terminationFlag = true;
 						registerService();
 					}else if(informMessage.getContent().matches("YOU-ARE-THE-ONE")){
-						System.out.println("Recibí mensajito que quiere Argen");
+						System.out.println(myAgent.getLocalName() + ": I've been selected. Preparing to provide service..");
 						try {
 							String sName = informMessage.getLanguage();
 							AID orderID = new AID(sName, AID.ISGUID);
-							ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
+							ACLMessage notify = new ACLMessage(ACLMessage.REQUEST);
 							notify.setOntology("Check Part List");
 							notify.addReceiver(orderID);
 							notify.setContentObject(inventory);
