@@ -123,7 +123,7 @@ public class WarehouseAgent extends Agent {
 				pendingOrders.remove(assignedOrder);
 				assignedOrders.add(assignedOrder);
 				System.out.print(myAgent.getLocalName()+" [update order status]: "); 
-				System.out.println("Pending: " + pendingOrders.size() + ", Assigned: " + assignedOrders.size() + ", Completed: " + completedOrders.size() + ".\n");
+				System.out.println("pending = " + pendingOrders.size() + ", assigned = " + assignedOrders.size() + ", completed = " + completedOrders.size() + ".\n");
 			} else	if (completedMsg != null) {
 				String order = completedMsg.getSender().getLocalName();
 				System.out.print(myAgent.getLocalName()+" [report]: ");
@@ -134,7 +134,7 @@ public class WarehouseAgent extends Agent {
 					System.out.println(myAgent.getLocalName() + " [done]: All orders succesfully completed.\n");
 				} else {
 					System.out.print(myAgent.getLocalName()+" [update order status]: "); 
-					System.out.println("Pending: " + pendingOrders.size() + ", Assigned: " + assignedOrders.size() + ", Completed: " + completedOrders.size() + ".\n");
+					System.out.println("pending = " + pendingOrders.size() + ", assigned = " + assignedOrders.size() + ", completed = " + completedOrders.size() + ".\n");
 					}
 			} else {
 				block();

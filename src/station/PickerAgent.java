@@ -68,7 +68,7 @@ public class PickerAgent extends Agent {
 		System.out.println("\n--PICKER-------------");
 		System.out.println("Agent: " + this.getAID().getLocalName());
 		System.out.println("Picker Launched!");
-		printer.print("Try");
+		//printer.print("Try");
 		this.position = new Pose();
 		this.position.randomInit(true);
 		System.out.println("---------------------\n");
@@ -152,17 +152,18 @@ public class PickerAgent extends Agent {
 				while (!found) {
 					result = DFService.search(myAgent, template);
 					// PRINTOUTS: Agents found.
-					System.out.println("------------------------------------");
-					System.out.println(myAgent.getLocalName() + ": [searching agents].");
-					System.out.println("Active agents:");
+					//System.out.println("------------------------------------");
+					System.out.print(myAgent.getLocalName() + "[searching robots]: ");
+					//System.out.println("Active agents:");
 					activeAgent = new AID[result.length];
 					// If not agents are found, do wait 15 seconds and repeat.
 					if (result.length == 0) {
-						System.out.println("  > No free agents.");
-						System.out.println("------------------------------------\n");
+						System.out.println("no free agents.\n");
+						//System.out.println("------------------------------------\n");
 						Thread.sleep(15000);
 					}
 					else {
+						System.out.println(result.length + " robots found.\n");
 						found = true;
 					}
 				}
@@ -171,10 +172,10 @@ public class PickerAgent extends Agent {
 				for (int i = 0; i < result.length; ++i) {
 					// Listing the agents ID's found.
 					activeAgent[i] = result[i].getName();
-					System.out.println("  > " + activeAgent[i].getName());
+					//System.out.println("  > " + activeAgent[i].getName());
 				}
-				System.out.println("Robot picking will take place.");
-				System.out.println("------------------------------------\n");
+				//System.out.println("Robot picking will take place.");
+				//System.out.println("------------------------------------\n");
 				ACLMessage query = new ACLMessage(ACLMessage.CFP);
 				for (int i = 0; i < result.length; ++i) {
 					query.addReceiver(result[i].getName());
@@ -209,12 +210,12 @@ public class PickerAgent extends Agent {
 				}
 				//PRINTOUTS: Informing which agent was the closest one.
 				Thread.sleep(1000);
-				System.out.println("------------------------------------");
-				System.out.println(myAgent.getLocalName() + ": [commanding to fetch].");
-				System.out.println("  > Closest robot found: " + this.closestRobot.getLocalName());
-				System.out.println("  > Fetch sent to the chosen agent.");
-				System.out.println("  > Waiting for finalization.");
-				System.out.println("------------------------------------");
+				//System.out.println("------------------------------------");
+				System.out.print(myAgent.getLocalName() + " [commanding to fetch]: ");
+				System.out.println(this.closestRobot.getLocalName() + " selected.\n");
+				//System.out.println("  > Fetch sent to the chosen agent.");
+				//System.out.println("  > Waiting for finalization.");
+				//System.out.println("------------------------------------");
 				//--------------------------------------------------------------------------------
 				// STEP 4. Commanding the fetch action.
 				ACLMessage command = new ACLMessage(ACLMessage.CFP);
@@ -232,11 +233,10 @@ public class PickerAgent extends Agent {
 				while (!here) {
 					ACLMessage confimation = myAgent.receive(shelfHereTemplate);
 					if (confimation != null) {
-						System.out.println("------------------------------------");
-						System.out.println(myAgent.getLocalName() + ": [status].");
-						System.out.println("  > Shelf here");
-						System.out.println("  > Proceeding with the order.");
-						System.out.println("------------------------------------\n");
+						//System.out.println("------------------------------------");
+						System.out.print(myAgent.getLocalName() + " [status]: ");
+						System.out.println("shelf here, proceeding with order.\n");
+						//System.out.println("------------------------------------\n");
 						here = true;
 						Thread.sleep(5000);
 						// Informing the shelf that it has been chosen. The shelf then
@@ -328,8 +328,7 @@ public class PickerAgent extends Agent {
 			
 			if(msg != null){
 				this.orderAgent = msg.getSender();
-				System.out.println(myAgent.getLocalName()
-						+ ": Received order. Status: busy.");
+				//System.out.println(myAgent.getLocalName()	+ ": Received order. Status: busy.");
 				
 				/////////////// Just a test until received message is fixed ////////////////
 				//HashMap<String, Integer> mappy = initMap();
@@ -365,23 +364,24 @@ public class PickerAgent extends Agent {
 							}
 						}
 						
-						System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
-						System.out.println(myAgent.getLocalName() + ": Found the following active agents:");
+						//System.out.println("\n\n-SEARCHING FOR AGENTS---------------");
+						System.out.print(myAgent.getLocalName() + " [searching shelves]: ");
 						activeAgent = new AID[result.length];
+						System.out.println(result.length + " shelves found.\n");
 						// Found Agents.
 						for (int i = 0; i < result.length; ++i) {
 							// Listing the agents ID's found.
 							activeAgent[i] = result[i].getName();
-							System.out.println(activeAgent[i].getName());
+							//System.out.println("  > " + activeAgent[i].getName());
 						}
-						System.out.println("------------------------------------\n");
+						//System.out.println("------------------------------------\n");
 						/* Sending Messages to the found agents. */
 						ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 						for (int i = 0; i < result.length; ++i) {
 							cfp.addReceiver(result[i].getName());
 						}
 	
-						System.out.println(myAgent.getLocalName() + ": Requesting pieces");
+						System.out.print(myAgent.getLocalName() + " [requesting pieces]: ");
 						cfp.setContentObject(mappy);
 						cfp.setConversationId("select-shelf");
 						
@@ -424,7 +424,7 @@ public class PickerAgent extends Agent {
 							}
 						}
 						
-						System.out.println(myAgent.getLocalName() + ": Selected Richest Shelf: " + richestShelf);
+						System.out.println(richestShelf.getLocalName() + " selected.\n");
 						//System.out.println(myAgent.getLocalName() + ": Selected Closest Shelf: " + closestShelf);
 						
 						ACLMessage informMsg = new ACLMessage(ACLMessage.INFORM);
@@ -501,31 +501,31 @@ public class PickerAgent extends Agent {
 			// Search for agents who offer a fetch service.
 			sd.setType("order");
 			template.addServices(sd);
-			System.out.println("------------------------------------");
+			//System.out.println("------------------------------------");
 			try {
 				// Searching process.
 				DFAgentDescription[] orders = DFService.search(myAgent,
 						template);
-				System.out.println(myAgent.getLocalName()
-						+ " [searching orders].");
-				System.out.println("Found the following orders:");
+				System.out.print(myAgent.getLocalName() 	+ " [searching orders]: ");
+				//System.out.println("Found the following orders:");
 				activeAgent = new AID[orders.length];
 				// Found Agents.
 				if (orders.length == 0) {
-					System.out.println("  > No available orders.");
+					System.out.println(" no available orders.");
 				} else {
 					for (int i = 0; i < orders.length; ++i) {
 						// Listing the agents ID's found.
 						activeAgent[i] = orders[i].getName();
-						System.out.println("  > " + activeAgent[i].getName());
+						//System.out.println("  > " + activeAgent[i].getName());
 					}
-					System.out.println("------------------------------------\n");
+					//System.out.println("------------------------------------\n");
+					System.out.println(orders.length + " orders found.\n");
 					//Requesting order assignment
 					ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
 					assign.addReceiver(orders[orders.length -1].getName());
 					assign.setOntology("assignment");
 					myAgent.send(assign);
-					System.out.println(getLocalName()+": Requested "+orders[orders.length-1].getName().getLocalName()+".");
+					System.out.println(getLocalName()+" [request]: " + orders[orders.length-1].getName().getLocalName()+".\n");
 				}
 				
 				
@@ -559,9 +559,8 @@ public class PickerAgent extends Agent {
 			reply.setOntology("Completed Order");
 			
 			if(orderMsg != null){
-				System.out.println(myAgent.getLocalName()+": Requesting new order.");
+				//System.out.println(myAgent.getLocalName()+": Requesting new order.");
 				///System.out.println(orderMsg.getSender());
-				//TODO This needs to be synced with the shelf leaving!
 				reply.addReceiver(orderMsg.getSender());
 				send(reply);
 				addBehaviour(new GetNewOrder());	
