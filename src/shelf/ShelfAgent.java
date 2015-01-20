@@ -41,21 +41,20 @@ public class ShelfAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, Integer> inventory;
-	protected Pose position;
 	
+	protected Pose position;	
 	protected DFAgentDescription dfd;
 	protected String uid;
-	
-	
+		
 	@SuppressWarnings("unchecked")
 	protected void setup(){
 		position = new Pose();
 		position.randomInit(false);
 		System.out.println(getLocalName()+": started at ("+position.parsePose()+").");
+		
 		Object[] args = this.getArguments();
 		inventory = (HashMap<String,Integer>)args[0];
 		uid = (String) args[1];
-
 
 		this.dfd = new DFAgentDescription();
 		this.dfd.setName(getAID());
@@ -227,7 +226,7 @@ public class ShelfAgent extends Agent {
 	        in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
