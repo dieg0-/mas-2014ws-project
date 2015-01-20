@@ -59,7 +59,6 @@ public class RobotAgent extends Agent {
 		this.position = new Pose();
 		this.position.randomInit(false);
 		System.out.println(getLocalName()+": started at ("+position.parsePose()+").");
-		// TODO: review is this flag is used/useful or not.
 		this.busy = false;
 		// Agent Description.
 		this.dfd = new DFAgentDescription();
