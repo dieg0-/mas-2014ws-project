@@ -312,10 +312,13 @@ public class PickerAgent extends Agent {
 			currentMaxAvailablePieces = 0;
 			richestShelf = null;
 			currentBestPose = new Pose();
+			boolean doSearchAgents = true;
+			
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchOntology("requestParts"));
 			ACLMessage msg = myAgent.receive(mt);
+			
 			if(msg != null){
 				this.orderAgent = msg.getSender();
 				System.out.println(myAgent.getLocalName()
@@ -331,15 +334,16 @@ public class PickerAgent extends Agent {
 				} catch (UnreadableException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
-				}
-				
-				
+				}				
 		
 				DFAgentDescription template = new DFAgentDescription();
 				ServiceDescription sd = new ServiceDescription();
 				// Search for agents who offer pieces (offer-pieces service).
 				sd.setType("offer-pieces");
 				template.addServices(sd);
+				
+				//////////////////////// MAGIC WHILE
+				while(doSearchAgents){
 				// Searching process.
 				DFAgentDescription[] result = null;
 				try {
@@ -384,6 +388,7 @@ public class PickerAgent extends Agent {
 							
 							// Reply received
 							if (reply.getPerformative() == ACLMessage.PROPOSE) {
+								doSearchAgents = false;
 								viableAgents.add(reply.getSender());
 								// This is an offer 
 								double shelfPosition[] = (double[]) reply.getContentObject();
@@ -463,6 +468,8 @@ public class PickerAgent extends Agent {
 					Thread.sleep(10000);
 				}catch(Exception e){
 					
+				}
+				//////////////////////////////// END MAGIC WHILE
 				}
 			}else{
 				block();
