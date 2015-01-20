@@ -168,8 +168,13 @@ public class ShelfAgent extends Agent {
 		while(iter.hasNext()){
 			@SuppressWarnings("unchecked")
 			Map.Entry<String, Integer> lookup = (Map.Entry<String, Integer>)iter.next();
-			if(checkPieceInInventory(lookup.getKey(), lookup.getValue()))
-				availablePieces++;
+			if(checkPieceInInventory(lookup.getKey(), lookup.getValue())){
+				if(lookup.getValue() > inventory.get(lookup.getKey())){
+					availablePieces = availablePieces + inventory.get(lookup.getKey());
+				}else{
+					availablePieces = availablePieces + lookup.getValue();
+				}
+			}
 		}
 		
 		return availablePieces;
