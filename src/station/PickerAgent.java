@@ -345,6 +345,7 @@ public class PickerAgent extends Agent {
 				
 				//////////////////////// MAGIC WHILE
 				while(doSearchAgents){
+					repliesCnt = 0;
 					// Searching process.
 					DFAgentDescription[] result = null;
 					try {
@@ -365,7 +366,7 @@ public class PickerAgent extends Agent {
 						for (int i = 0; i < result.length; ++i) {
 							// Listing the agents ID's found.
 							activeAgent[i] = result[i].getName();
-							//System.out.println(activeAgent[i].getName());
+							System.out.println(activeAgent[i].getName());
 						}
 						System.out.println("------------------------------------\n");
 						/* Sending Messages to the found agents. */
