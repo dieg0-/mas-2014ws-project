@@ -93,7 +93,7 @@ public class OrderAgent extends Agent {
 			fe.printStackTrace();
 		}
 
-		System.out.println(getLocalName() + ": Started.");
+		//System.out.println(getLocalName() + ": Started.");
 
 		// Behaviours
 		addBehaviour(new orderStatus());
@@ -130,7 +130,7 @@ public class OrderAgent extends Agent {
 	}
 
 	protected void takeDown() {
-		System.out.println(getAID().getLocalName() + ": Order finished.");
+		//System.out.println(getAID().getLocalName() + ": Order finished.");
 		doDelete();
 	}
 
@@ -147,7 +147,7 @@ public class OrderAgent extends Agent {
 		private static final long serialVersionUID = 1L;
 
 		public void action() {
-			System.out.println(myAgent.getLocalName() + ": Order completed...");
+			System.out.println(myAgent.getLocalName() + " [status]: completed.\n");
 			ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 			compMsg.setOntology("Completed Order");
 			compMsg.setContent("Completed");
@@ -185,12 +185,11 @@ public class OrderAgent extends Agent {
 					@SuppressWarnings("unchecked")
 					HashMap<String, Integer> available = (HashMap<String, Integer>) partsMsg
 							.getContentObject();
-					System.out.println(myAgent.getLocalName()
-							+ ": Checking part list...");
+					//System.out.println(myAgent.getLocalName() + ": Checking part list...");
 
 					Iterator<Entry<String, Integer>> i = missingParts
 							.entrySet().iterator();
-					System.out.println("___________________");
+					//System.out.println("___________________");
 					ArrayList<String> partsToRemove = new ArrayList<String>();
 					while (i.hasNext()) {
 						Entry<String, Integer> me = (Entry<String, Integer>) i
@@ -216,7 +215,7 @@ public class OrderAgent extends Agent {
 					if (missingParts.isEmpty()) {
 						System.out
 								.println(myAgent.getLocalName()
-										+ ": Received all products. No additional shelf needed.");
+										+ " [parts status]: fulfill, no additional shelf needed.\n");
 						ACLMessage compMsg = new ACLMessage(ACLMessage.CONFIRM);
 						compMsg.setOntology("Final shelf");
 						compMsg.addReceiver(new AID(assignedPicker,
@@ -224,9 +223,9 @@ public class OrderAgent extends Agent {
 						send(compMsg);
 					} else {
 						System.out.println(myAgent.getLocalName()
-								+ ": Missing pieces: " + missingParts.size()
-								+ ". Need a new shelf. Missing parts:");
-						printPartList(missingParts);
+								+ " [parts status]: " + missingParts.size()
+								+ " parts missing; need a new shelf.\n");
+						//printPartList(missingParts);
 						ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 						order.setOntology("requestParts");
 						try {
@@ -265,8 +264,7 @@ public class OrderAgent extends Agent {
 		}
 
 		public void action() {
-			System.out.println(getAID().getLocalName()
-					+ ": Requesting parts...");
+			//System.out.println(getAID().getLocalName() + ": Requesting parts...");
 			ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 			order.setOntology("requestParts");
 			try {
@@ -311,8 +309,8 @@ public class OrderAgent extends Agent {
 				ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
 				reply.setOntology("assignment");
 				assignedPicker = assignMsg.getSender().getLocalName();
-				System.out.println(getLocalName() + " assigned to "
-						+ assignMsg.getSender().getLocalName() + ".");
+				System.out.println(getLocalName() + " [confirm]: assigned to "
+						+ assignMsg.getSender().getLocalName() + ".\n");
 				assigned = true;
 				addBehaviour(new requestParts(assignMsg.getSender()));
 				try {
