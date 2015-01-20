@@ -157,6 +157,26 @@ public class InitConfig {
 
 			// this will create Java object - warehouse from the XML file
 			this.warehouse = (Warehouse) jaxbUnmarshaller.unmarshal(XMLfile);
+			try{
+				this.orders = warehouse.getOrders().getOrderList().size();
+			}catch(Exception e){
+				this.orders = 0;
+			}
+			try{
+				this.robots = warehouse.getRobots().getRobotList().size();
+			}catch(Exception e){
+				this.robots = 0;
+			}
+			try{
+				this.shelves = warehouse.getShelves().getShelfList().size();
+			}catch(Exception e){
+				this.shelves = 0;
+			}
+			try{
+				this.pickers = warehouse.getPickers().getPickerList().size();
+			}catch(Exception e){
+				this.pickers = 0;
+			}
 
 		} catch (JAXBException e) {
 			// some exception occured
@@ -174,7 +194,7 @@ public class InitConfig {
 	 *         with the part list the second contains the order uid.
 	 */
 	ArrayList<Object[]> getOrderArgs() {
-		ArrayList<Object[]> orderArgs = new ArrayList<Object[]>();
+		ArrayList<Object[]> orderArgs = new ArrayList<Object[]>();		
 		if (this.orders > 0) {
 			Orders orders = this.warehouse.getOrders();
 			ArrayList<Order> ol = orders.getOrderList();
