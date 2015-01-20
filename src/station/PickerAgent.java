@@ -499,6 +499,7 @@ public class PickerAgent extends Agent {
 
 		public void action() {
 			boolean doSearch = true;
+			boolean first = true;
 			// Update the list of robot agents.
 			DFAgentDescription template = new DFAgentDescription();
 			ServiceDescription sd = new ServiceDescription();
@@ -507,41 +508,45 @@ public class PickerAgent extends Agent {
 			template.addServices(sd);
 			//System.out.println("------------------------------------");
 			while (doSearch) {
-			try {
-				// Searching process.
-				DFAgentDescription[] orders = DFService.search(myAgent,
-						template);
-				System.out.print(myAgent.getLocalName() 	+ " [searching orders]: ");
-				//System.out.println("Found the following orders:");
-				activeAgent = new AID[orders.length];
-				// Found Agents.
-				if (orders.length == 0) {
-					System.out.println(" no available orders.");
-					Thread.sleep(5000);
-				} 
-				else {
-					doSearch = false;
-					for (int i = 0; i < orders.length; ++i) {
-						// Listing the agents ID's found.
-						activeAgent[i] = orders[i].getName();
-						//System.out.println("  > " + activeAgent[i].getName());
+				try {
+					// Searching process.
+					DFAgentDescription[] orders = DFService.search(myAgent,
+							template);
+					//System.out.println("Found the following orders:");
+					activeAgent = new AID[orders.length];
+					// Found Agents.
+					if (orders.length == 0) {
+						if (first) {
+							System.out.print(myAgent.getLocalName() 	+ " [searching orders]: ");
+							System.out.println(" no available orders.");
+							first = false;
+						}
+						Thread.sleep(5000);
+					} 
+					else {
+						doSearch = false;
+						System.out.print(myAgent.getLocalName() 	+ " [searching orders]: ");
+						for (int i = 0; i < orders.length; ++i) {
+							// Listing the agents ID's found.
+							activeAgent[i] = orders[i].getName();
+							//System.out.println("  > " + activeAgent[i].getName());
+						}
+						//System.out.println("------------------------------------\n");
+						System.out.println(orders.length + " orders found.\n");
+						//Requesting order assignment
+						ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
+						assign.addReceiver(orders[orders.length -1].getName());
+						assign.setOntology("assignment");
+						myAgent.send(assign);
+						System.out.println(getLocalName()+" [request]: " + orders[orders.length-1].getName().getLocalName()+".\n");
 					}
-					//System.out.println("------------------------------------\n");
-					System.out.println(orders.length + " orders found.\n");
-					//Requesting order assignment
-					ACLMessage assign = new ACLMessage(ACLMessage.REQUEST);
-					assign.addReceiver(orders[orders.length -1].getName());
-					assign.setOntology("assignment");
-					myAgent.send(assign);
-					System.out.println(getLocalName()+" [request]: " + orders[orders.length-1].getName().getLocalName()+".\n");
+
+
+				} catch (FIPAException fe) {
+					System.err.println(myAgent.getLocalName() + "[ERR]: Error sending the message.\n");
+				} catch (InterruptedException e) {
+					System.err.println(myAgent.getLocalName() + "[ERR]: interruption exception.\n");
 				}
-				
-				
-			} catch (FIPAException fe) {
-				System.err.println(myAgent.getLocalName() + "[ERR]: Error sending the message.\n");
-			} catch (InterruptedException e) {
-				System.err.println(myAgent.getLocalName() + "[ERR]: interruption exception.\n");
-			}
 			}
 		}
 	}

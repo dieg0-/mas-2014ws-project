@@ -87,7 +87,7 @@ public class RobotAgent extends Agent {
 		 * registration has been made. 
 		 */
 		catch (FIPAException fe) {
-			System.err.printf(getLocalName() + "[ERR]: Agent could not be registered.");
+			System.err.printf(getLocalName() + " [ERR]: Agent could not be registered.");
 			System.err.println("Agent will be deleted.\n");
 			doDelete();
 		}
@@ -166,7 +166,7 @@ public class RobotAgent extends Agent {
 			// In case the message is null, do not reply with this agent position.
 			else {
 				reply.setPerformative(ACLMessage.REFUSE);
-				System.out.println(myAgent.getLocalName() + "[ERR]: Message invalid.");
+				System.out.println(myAgent.getLocalName() + " [ERR]: Message invalid.");
 				myAgent.send(reply);
 				//System.out.println("-------------------------\n");
 			}
@@ -181,7 +181,7 @@ public class RobotAgent extends Agent {
 			try {
 				DFService.register(myAgent, dfd);
 			} catch (FIPAException fe) {
-				System.err.println(myAgent.getLocalName() + "[ERR]: Agent could not be registered.");
+				System.err.println(myAgent.getLocalName() + " [ERR]: Agent already registered.");
 				//myAgent.doDelete();
 			}
 			return true;
@@ -263,10 +263,10 @@ public class RobotAgent extends Agent {
 				Thread.sleep(this.timeout*1000);
 			}
 			catch (FIPAException fe) {
-				System.err.println(myAgent.getLocalName() + "[ERR]: couldn't unregister.");
+				System.err.println(myAgent.getLocalName() + " [ERR]: couldn't unregister.");
 			}
 			catch (Exception e) {
-				System.err.println(myAgent.getLocalName() + "[ERR]: terminated abruptly.");
+				System.err.println(myAgent.getLocalName() + " [ERR]: terminated abruptly.");
 			}
 		}
 		
@@ -352,7 +352,7 @@ public class RobotAgent extends Agent {
 				informMsg.setContent("UPDATE-REREGISTER-BE-HAPPY");
 				myAgent.send(informMsg);
 			} catch (InterruptedException e) {
-				System.err.println(myAgent.getLocalName() + "[ERR]: Could not put to sleep");
+				System.err.println(myAgent.getLocalName() + " [ERR]: Could not put to sleep");
 			} catch (UnreadableException e) {
 				
 			}
@@ -373,7 +373,7 @@ public class RobotAgent extends Agent {
 				DFService.register(myAgent, dfd);
 			}
 			catch (Exception e) {
-				System.err.println(myAgent.getLocalName() + "[ERR]: Agent could not be registered.");
+				System.err.println(myAgent.getLocalName() + " [ERR]: Agent already registered.");
 				//myAgent.doDelete();
 			}
 			return true;

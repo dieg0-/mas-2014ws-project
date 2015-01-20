@@ -130,7 +130,7 @@ public class OrderAgent extends Agent {
 	}
 
 	protected void takeDown() {
-		System.out.println(getAID().getLocalName() + ": Order finished.");
+		//System.out.println(getAID().getLocalName() + ": Order finished.");
 		doDelete();
 	}
 
