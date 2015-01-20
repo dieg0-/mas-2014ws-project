@@ -13,6 +13,7 @@ All Rights Reserved.
 package warehouse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -170,28 +171,32 @@ public class OrderAgent extends Agent {
 					@SuppressWarnings("unchecked")
 					HashMap <String,Integer> available = (HashMap<String,Integer>) partsMsg.getContentObject();
 					System.out.println(myAgent.getLocalName()+": Checking part list...");
-					System.out.println(myAgent.getLocalName()+": Missing pieces: "+missingParts.size());
 					
 					Iterator<Entry<String, Integer>> i = missingParts.entrySet().iterator();
 					//Iterator i = set.iterator();
 					System.out.println("___________________");
+					ArrayList<String> partsToRemove = new ArrayList<String>();
 					while(i.hasNext()) {
 						
 						Entry<String, Integer> me = (Entry<String, Integer>) i.next();
 						String part = me.getKey();
-						/**if(available.containsKey(part)){
+						if(available.containsKey(part)){
 							if(me.getValue()>available.get(part)){
 								int x = me.getValue() - available.get(part);
 								missingParts.put(part, x);
-							}else if(me.getValue()<available.get(part)){
-								missingParts.remove(part);
-							}else if (me.getValue()==available.get(part)){
-								missingParts.remove(part);
+							}else if(me.getValue()<=available.get(part)){
+								partsToRemove.add(part);
+								missingParts.put(part,0);
 							}
-						}
-						*/
-						
+						}						
 					}
+					
+					for (int k = 0; k<partsToRemove.size();k++){
+						if (missingParts.containsKey(partsToRemove.get(k))){
+							missingParts.remove(partsToRemove.get(k));
+						}
+					}
+					
 					
 					/**for (Map.Entry<String, Integer> entry : missingParts.entrySet()) { 
 						String part = entry.getKey();
@@ -207,6 +212,7 @@ public class OrderAgent extends Agent {
 							}
 						}	
 					}*/
+					System.out.println(myAgent.getLocalName()+": Missing pieces: "+missingParts.size());
 					
 					if (missingParts.isEmpty()){
 						//System.out.println(myAgent.getLocalName()+": Order completed...");
@@ -215,7 +221,8 @@ public class OrderAgent extends Agent {
 						  compMsg.addReceiver(new AID(assignedPicker,AID.ISLOCALNAME));
 						  send(compMsg);
 					}else{
-						System.out.println(myAgent.getLocalName()+": Need a new shelf");
+						System.out.println(myAgent.getLocalName()+": Need a new shelf. Missing parts:");
+						printPartList(missingParts);
 						ACLMessage order = new ACLMessage(ACLMessage.REQUEST);
 						order.setOntology("requestParts");
 						try{
