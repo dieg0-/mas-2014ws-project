@@ -81,6 +81,7 @@ public class ShelfAgent extends Agent {
 		
 		addBehaviour(new OrderRequestServer());
 		addBehaviour(new waitForExternalMessages());
+		
 	}
 	
 	/**
@@ -423,8 +424,8 @@ public class ShelfAgent extends Agent {
 			MessageTemplate template = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), MessageTemplate.MatchOntology("RESTOCK"));
 			ACLMessage message = myAgent.receive(template);
 			if (message != null) {
-				//System.out.println(myAgent.getLocalName() + ": Received external message!!");
 				int amount = Integer.valueOf(message.getContent());
+				System.out.println(myAgent.getLocalName() + ": Inventory has been restocked (" + amount + ").");
 				restock(amount);
 			}
 			block();

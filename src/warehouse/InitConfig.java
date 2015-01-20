@@ -27,13 +27,20 @@ import warehouse.dummies.*;
 public class InitConfig {
 
 	Warehouse warehouse;
+	int orders;
+	int robots;
+	int shelves;
+	int pickers;
 
 	/**
 	 * <!--ORDER AGENT CLASS-->
 	 * <p>
-	 * Creates a configuration file used by the {@link WarehouseAgent}.
+	 * Creates and reads a configuration file used by the {@link WarehouseAgent}
+	 * .
 	 * </p>
 	 * 
+	 * @param xml
+	 *            : xml file to be written.
 	 * @param orders
 	 *            : Amount of orders to be generated.
 	 * @param robots
@@ -46,23 +53,38 @@ public class InitConfig {
 	 * 
 	 * @author [DNA] Diego, Nicolas, Argentina
 	 */
-	void createXML(int orders, int robots, int shelves, int pickers) {
+	void createXML(String xml, int orders, int robots, int shelves, int pickers, int maxOrder, int maxStock, boolean rand) {
 		Warehouse wh = new Warehouse();
 
 		// Creating Orders
-		Orders x = new Orders(orders);
-		Robots y = new Robots(robots);
-		Shelves z = new Shelves(shelves);
-		wh.setOrders(x);
-		wh.setRobots(y);
-		wh.setShelves(z);
+		if (orders > 0) {
+			this.orders = orders;
+			Orders x = new Orders(orders);
+			wh.setOrders(x);
+		}
+		if (robots > 0) {
+			this.robots = robots;
+			Robots y = new Robots(robots);
+			wh.setRobots(y);
+		}
+		if (shelves > 0) {
+			this.shelves = shelves;
+			Shelves z = new Shelves(shelves,10,rand);
+			wh.setShelves(z);
+		}
+		if (pickers > 0) {
+			this.pickers = pickers;
+			Pickers w = new Pickers(pickers);
+			wh.setPickers(w);
+		}
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Warehouse.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
 					Boolean.TRUE);
-			File XMLfile = new File("conf/warehouse/kiva5.config.xml");
+			File XMLfile = new File("conf/warehouse/" + xml);
 			jaxbMarshaller.marshal(wh, XMLfile);
+			readXML(xml);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -135,14 +157,16 @@ public class InitConfig {
 	 *         with the part list the second contains the order uid.
 	 */
 	ArrayList<Object[]> getOrderArgs() {
-		Orders orders = this.warehouse.getOrders();
-		ArrayList<Order> ol = orders.getOrderList();
 		ArrayList<Object[]> orderArgs = new ArrayList<Object[]>();
-		for (Order o : ol) {
-			Object[] args = new Object[ol.size()];
-			args[0] = o.getPartList();
-			args[1] = o.getUID();
-			orderArgs.add(args);
+		if (this.orders > 0) {
+			Orders orders = this.warehouse.getOrders();
+			ArrayList<Order> ol = orders.getOrderList();
+			for (Order o : ol) {
+				Object[] args = new Object[ol.size()];
+				args[0] = o.getPartList();
+				args[1] = o.getUID();
+				orderArgs.add(args);
+			}
 		}
 		return orderArgs;
 	}
@@ -158,14 +182,16 @@ public class InitConfig {
 	 */
 
 	ArrayList<Object[]> getShelfArgs() {
-		Shelves shelves = this.warehouse.getShelves();
-		ArrayList<Shelf> sl = shelves.getShelfList();
 		ArrayList<Object[]> shelfArgs = new ArrayList<Object[]>();
-		for (Shelf s : sl) {
-			Object[] args = new Object[sl.size()];
-			args[0] = s.getPartList();
-			args[1] = s.getUID();
-			shelfArgs.add(args);
+		if (this.shelves > 0) {
+			Shelves shelves = this.warehouse.getShelves();
+			ArrayList<Shelf> sl = shelves.getShelfList();
+			for (Shelf s : sl) {
+				Object[] args = new Object[sl.size()];
+				args[0] = s.getPartList();
+				args[1] = s.getUID();
+				shelfArgs.add(args);
+			}
 		}
 		return shelfArgs;
 	}
@@ -180,15 +206,41 @@ public class InitConfig {
 	 */
 
 	ArrayList<Object[]> getRobotArgs() {
-		Robots robots = this.warehouse.getRobots();
-		ArrayList<Robot> rl = robots.getRobotList();
 		ArrayList<Object[]> robotArgs = new ArrayList<Object[]>();
-		for (Robot r : rl) {
-			Object[] args = new Object[rl.size()];
-			args[0] = r.getUID();
-			robotArgs.add(args);
+		if (this.robots > 0) {
+			Robots robots = this.warehouse.getRobots();
+			ArrayList<Robot> rl = robots.getRobotList();
+			for (Robot r : rl) {
+				Object[] args = new Object[rl.size()];
+				args[0] = r.getUID();
+				robotArgs.add(args);
+			}
 		}
 		return robotArgs;
+	}
+
+	/**
+	 * Returns an array of Objects containing the arguments required to
+	 * construct all Picker Agents found in the configuration file. Each element
+	 * in pickArgs ArrayList is composed of an Object[] args.
+	 * 
+	 * @return an ArrayList containing the required arguments for each Picker
+	 *         Agent.The first argument contains the picker uid.
+	 */
+
+	ArrayList<Object[]> getPickerArgs() {
+		ArrayList<Object[]> pickerArgs = new ArrayList<Object[]>();
+
+		if (this.pickers > 0) {
+			Pickers pickers = this.warehouse.getPickers();
+			ArrayList<Picker> rl = pickers.getPickerList();
+			for (Picker r : rl) {
+				Object[] args = new Object[rl.size()];
+				args[0] = r.getUID();
+				pickerArgs.add(args);
+			}
+		}
+		return pickerArgs;
 	}
 
 }
