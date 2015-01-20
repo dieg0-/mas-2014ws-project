@@ -19,11 +19,11 @@ public class Shelves {
 
 	}
 
-	public Shelves(int n) {
+	public Shelves(int n, int max, boolean rand) {
 		DecimalFormat uidFormat = new DecimalFormat("0000");
 		shelfList = new ArrayList<Shelf>();
 		for (int i = 0; i < n; i++) {
-			Shelf s = new Shelf(uidFormat.format(i + 1));
+			Shelf s = new Shelf(uidFormat.format(i + 1), max, rand);
 			shelfList.add(s);
 		}
 	}

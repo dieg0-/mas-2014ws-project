@@ -7,11 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 import warehouse.dummies.Orders;
 
 @XmlRootElement(name = "warehouse")
-@XmlType(propOrder = { "orders", "robots", "shelves" })
+@XmlType(propOrder = { "orders", "robots", "shelves" , "pickers"})
 public class Warehouse {
 	Orders orderList;
 	Robots robotList;
 	Shelves shelfList;
+	Pickers pickerList;
 
 	// @XmlElementWrapper(name = "orders")
 	// @XmlElement(name = "order")
@@ -40,6 +41,15 @@ public class Warehouse {
 
 	public void setShelves(Shelves sl) {
 		this.shelfList = sl;
+	}
+
+	@XmlElement(name = "pickers")
+	public Pickers getPickers() {
+		return pickerList;
+	}
+
+	public void setPickers(Pickers pl) {
+		this.pickerList = pl;
 	}
 
 }
