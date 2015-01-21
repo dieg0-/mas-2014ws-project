@@ -6167,7 +6167,7 @@
             </java.beans.PropertyChangeSupport>
           </listeners>
           <constraint>
-            <height>856</height>
+            <height>886</height>
             <width>5</width>
             <x>817</x>
             <y>20</y>
@@ -6290,7 +6290,7 @@
                               </java.beans.PropertyChangeSupport>
                             </listeners>
                             <constraint>
-                              <height>856</height>
+                              <height>886</height>
                               <width>5</width>
                               <x>297</x>
                               <y>20</y>
@@ -6316,7 +6316,7 @@
                                   <height>30</height>
                                   <width>10</width>
                                   <x>292</x>
-                                  <y>655</y>
+                                  <y>666</y>
                                 </constraint>
                                 <sourceConnections/>
                                 <targetConnections>
@@ -6349,7 +6349,7 @@
                                         <height>50</height>
                                         <width>10</width>
                                         <x>606</x>
-                                        <y>645</y>
+                                        <y>656</y>
                                       </constraint>
                                       <sourceConnections>
                                         <net.java.amateras.uml.sequencediagram.model.SyncMessageModel reference="../../.."/>
@@ -6384,7 +6384,7 @@
                                               <height>60</height>
                                               <width>10</width>
                                               <x>812</x>
-                                              <y>645</y>
+                                              <y>656</y>
                                             </constraint>
                                             <sourceConnections>
                                               <net.java.amateras.uml.sequencediagram.model.SyncMessageModel reference="../../.."/>
@@ -6397,7 +6397,7 @@
                                           </source>
                                           <target class="net.java.amateras.uml.sequencediagram.model.ActivationModel" reference="../../.."/>
                                           <bendpoints/>
-                                          <name>Notify it&apos;s selection</name>
+                                          <name>Request inventory for Order Agent</name>
                                           <direction>false</direction>
                                           <order>11</order>
                                           <oldOrder>11</oldOrder>
@@ -6420,7 +6420,7 @@
                                           </java.beans.PropertyChangeSupport>
                                         </listeners>
                                         <constraint>
-                                          <height>856</height>
+                                          <height>886</height>
                                           <width>5</width>
                                           <x>611</x>
                                           <y>20</y>
@@ -6572,7 +6572,7 @@
                                                             </java.beans.PropertyChangeSupport>
                                                           </listeners>
                                                           <constraint>
-                                                            <height>856</height>
+                                                            <height>886</height>
                                                             <width>5</width>
                                                             <x>719</x>
                                                             <y>20</y>
@@ -6706,7 +6706,7 @@
                                                   <height>30</height>
                                                   <width>10</width>
                                                   <x>611</x>
-                                                  <y>757</y>
+                                                  <y>787</y>
                                                 </constraint>
                                                 <sourceConnections>
                                                   <net.java.amateras.uml.sequencediagram.model.ReturnMessageModel>
@@ -6741,7 +6741,7 @@
                                                         <height>69</height>
                                                         <width>10</width>
                                                         <x>812</x>
-                                                        <y>728</y>
+                                                        <y>758</y>
                                                       </constraint>
                                                       <sourceConnections>
                                                         <net.java.amateras.uml.sequencediagram.model.ReturnMessageModel>
@@ -6774,7 +6774,7 @@
                                                               <height>118</height>
                                                               <width>10</width>
                                                               <x>292</x>
-                                                              <y>728</y>
+                                                              <y>758</y>
                                                             </constraint>
                                                             <sourceConnections>
                                                               <net.java.amateras.uml.sequencediagram.model.SyncMessageModel>
@@ -6830,7 +6830,7 @@
                                                                     <height>30</height>
                                                                     <width>10</width>
                                                                     <x>55</x>
-                                                                    <y>806</y>
+                                                                    <y>836</y>
                                                                   </constraint>
                                                                   <sourceConnections/>
                                                                   <targetConnections>
@@ -6853,7 +6853,7 @@
                                                                       </java.beans.PropertyChangeSupport>
                                                                     </listeners>
                                                                     <constraint>
-                                                                      <height>856</height>
+                                                                      <height>886</height>
                                                                       <width>5</width>
                                                                       <x>60</x>
                                                                       <y>20</y>
@@ -7041,7 +7041,7 @@
                                                                                   <name>Request parts</name>
                                                                                   <direction>true</direction>
                                                                                   <order>5</order>
-                                                                                  <oldOrder>4</oldOrder>
+                                                                                  <oldOrder>5</oldOrder>
                                                                                 </net.java.amateras.uml.sequencediagram.model.SyncMessageModel>
                                                                               </sourceConnections>
                                                                               <targetConnections/>
@@ -7055,7 +7055,7 @@
                                                                             <name>Register as assigned order</name>
                                                                             <direction>false</direction>
                                                                             <order>4</order>
-                                                                            <oldOrder>5</oldOrder>
+                                                                            <oldOrder>4</oldOrder>
                                                                           </net.java.amateras.uml.sequencediagram.model.SyncMessageModel>
                                                                         </targetConnections>
                                                                         <children/>
@@ -7133,7 +7133,7 @@
                                                           <source class="net.java.amateras.uml.sequencediagram.model.ActivationModel" reference="../../.."/>
                                                           <target class="net.java.amateras.uml.sequencediagram.model.ActivationModel" reference="../../../../../.."/>
                                                           <bendpoints/>
-                                                          <name>If the order is still incomplete, Go to Step 11</name>
+                                                          <name>If the order is still incomplete, Go to Step 6</name>
                                                           <direction>false</direction>
                                                           <order>14</order>
                                                           <oldOrder>14</oldOrder>
@@ -7283,7 +7283,7 @@
                         </java.beans.PropertyChangeSupport>
                       </listeners>
                       <constraint>
-                        <height>856</height>
+                        <height>886</height>
                         <width>5</width>
                         <x>168</x>
                         <y>20</y>
@@ -7433,7 +7433,7 @@
                         </java.beans.PropertyChangeSupport>
                       </listeners>
                       <constraint>
-                        <height>856</height>
+                        <height>886</height>
                         <width>5</width>
                         <x>404</x>
                         <y>20</y>
@@ -7530,7 +7530,7 @@
                         <source class="net.java.amateras.uml.sequencediagram.model.ActivationModel" reference="../../.."/>
                         <target class="net.java.amateras.uml.sequencediagram.model.ActivationModel" reference="../../../../../.."/>
                         <bendpoints/>
-                        <name>Confirm when the shelf arrives</name>
+                        <name>Confirm when the shelf arrives to station</name>
                         <direction>true</direction>
                       </net.java.amateras.uml.sequencediagram.model.ReturnMessageModel>
                     </sourceConnections>
@@ -7554,7 +7554,7 @@
                         </java.beans.PropertyChangeSupport>
                       </listeners>
                       <constraint>
-                        <height>856</height>
+                        <height>886</height>
                         <width>5</width>
                         <x>512</x>
                         <y>20</y>
