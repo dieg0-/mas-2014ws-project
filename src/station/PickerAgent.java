@@ -163,7 +163,7 @@ public class PickerAgent extends Agent {
 					if (result.length == 0) {
 						System.out.println("no free agents.\n");
 						//System.out.println("------------------------------------\n");
-						Thread.sleep(15000);
+						Thread.sleep(15033);
 					}
 					else {
 						System.out.println(result.length + " robots found.\n");
@@ -341,7 +341,6 @@ public class PickerAgent extends Agent {
 				try {
 					mappy = (HashMap<String, Integer>)msg.getContentObject();
 				} catch (UnreadableException e2) {
-					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}				
 		
@@ -449,34 +448,28 @@ public class PickerAgent extends Agent {
 						selectMsg.addReceiver(richestShelf);
 						myAgent.send(selectMsg);
 						*/
-						//TODO [Diego] Temporary until we send the Order the Hashmap to compare
+						
 						//ACLMessage notify = new ACLMessage(ACLMessage.INFORM);
 						//notify.setOntology("Check Part List");
 						//notify.addReceiver(msg.getSender());
 						//send(notify);
 						
-						
-						
-						//addBehaviour(new GetRobotAgents(myAgent, currentBestPose, closestShelf, orderAgent));
 						if(richestShelf != null)
 							addBehaviour(new GetRobotAgents(myAgent, currentBestPose, richestShelf, orderAgent));
-	
+						
 						/////////////////////////////////////////////////////////////////////////////////////////////
 					} catch (FIPAException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (UnreadableException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} 
 					
 					
 					busy = true;
 					try {
-						Thread.sleep(10000);
+						Thread.sleep(10037);
 					}catch(Exception e){
 						
 					}
@@ -521,7 +514,7 @@ public class PickerAgent extends Agent {
 							System.out.println(" no available orders.");
 							first = false;
 						}
-						Thread.sleep(5000);
+						Thread.sleep(15013);
 					} 
 					else {
 						doSearch = false;
