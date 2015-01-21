@@ -49,6 +49,7 @@ public class RobotAgent extends Agent {
 	protected Pose position;
 	protected Pose shelf_position;
 	protected DFAgentDescription dfd;
+	@SuppressWarnings("unused")
 	private boolean busy;
 	protected String uid;
 	
@@ -173,17 +174,19 @@ public class RobotAgent extends Agent {
 		}
 		
 		/**
-		 * Once the localization has been sent to the picker agent, register this agent
-		 * back to the description facilitator. Now, further communications with this
-		 * agent can be established.
+		 * Once the localization has been sent to the picker agent, do not register this agent
+		 * back to the description facilitator. Wait for confirmation about the selection choice 
+		 * before further communications with this agent can be established.
 		 */
 		public boolean done() {
+			/**
 			try {
 				DFService.register(myAgent, dfd);
 			} catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName() + " [ERR]: Agent already registered.");
 				//myAgent.doDelete();
 			}
+			**/
 			return true;
 		}
 	}
@@ -251,7 +254,7 @@ public class RobotAgent extends Agent {
 		public void action() {
 			// Change the state to "busy".
 			try {
-				DFService.deregister(myAgent);
+				//DFService.deregister(myAgent);
 				
 				// PRINTOUTS: information of where the picker and the shelf are.
 				System.out.println(myAgent.getLocalName() + ": [fetching].");
@@ -262,9 +265,10 @@ public class RobotAgent extends Agent {
 				// Simulating the fetching process.
 				Thread.sleep(this.timeout*1000);
 			}
+			/*
 			catch (FIPAException fe) {
 				System.err.println(myAgent.getLocalName() + " [ERR]: couldn't unregister.");
-			}
+			}*/
 			catch (Exception e) {
 				System.err.println(myAgent.getLocalName() + " [ERR]: terminated abruptly.");
 			}
@@ -415,8 +419,14 @@ public class RobotAgent extends Agent {
 				//System.out.println("  > Command: " + msg_command);
 				
 				// Inspection of the commanded action.
-				if (msg_command.matches("status")) {
-					System.out.println("  > Busy: " + busy);
+				if (msg_command.matches("register")) {
+					busy = false;
+					try {
+						DFService.register(myAgent, dfd);
+					}
+					catch (Exception e) {
+						System.err.println(myAgent.getLocalName() + " [ERR]: Agent already registered.");
+					}
 					//System.out.println("--------------------------");
 				}
 				else if (msg_command.matches("localization")) {

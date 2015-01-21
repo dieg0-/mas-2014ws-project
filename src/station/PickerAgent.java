@@ -219,6 +219,22 @@ public class PickerAgent extends Agent {
 				//System.out.println("  > Fetch sent to the chosen agent.");
 				//System.out.println("  > Waiting for finalization.");
 				//System.out.println("------------------------------------");
+				
+				//--------------------------------------------------------------------------------
+				// STEP 3.5. Commanding the re-register to the not-worthy robots.
+				ACLMessage register_msj = new ACLMessage(ACLMessage.INFORM);
+				int equal;
+				for (int i = 0; i < result.length; ++i) {
+					equal = result[i].getName().getName().compareTo(this.closestRobot.getName());
+					if (equal != 0) {
+						register_msj.addReceiver(result[i].getName());
+					}
+				}
+				// Fill the message's body to request the positions of the found agents.
+				register_msj.setOntology("register");
+				//register_msj.setConversationId("select-robot");
+				myAgent.send(register_msj);
+				
 				//--------------------------------------------------------------------------------
 				// STEP 4. Commanding the fetch action.
 				ACLMessage command = new ACLMessage(ACLMessage.CFP);
@@ -469,7 +485,7 @@ public class PickerAgent extends Agent {
 					
 					busy = true;
 					try {
-						Thread.sleep(10037);
+						Thread.sleep(10000);
 					}catch(Exception e){
 						
 					}

@@ -258,7 +258,7 @@ public class ShelfAgent extends Agent {
 						reply.setContentObject(myPosition);
 						myAgent.send(reply);
 						try {
-							Thread.sleep(10000);
+							Thread.sleep(3000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
