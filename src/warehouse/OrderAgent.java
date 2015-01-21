@@ -305,18 +305,20 @@ public class OrderAgent extends Agent {
 					MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
 					MessageTemplate.MatchOntology("Completed Order"));
 			ACLMessage completeMsg = myAgent.receive(completeMT);
-			if (assignMsg != null) {
+			if (assignMsg != null && !assigned) {
+				try {
+					DFService.deregister(myAgent);
+					assigned = true;
+				} catch (Exception e) {
+				}
 				ACLMessage reply = new ACLMessage(ACLMessage.CONFIRM);
 				reply.setOntology("assignment");
 				assignedPicker = assignMsg.getSender().getLocalName();
 				System.out.println(getLocalName() + " [confirm]: assigned to "
 						+ assignMsg.getSender().getLocalName() + ".\n");
-				assigned = true;
+
 				addBehaviour(new requestParts(assignMsg.getSender()));
-				try {
-					DFService.deregister(myAgent);
-				} catch (Exception e) {
-				}
+
 			} else if (completeMsg != null) {
 				addBehaviour(new CompletedOrder());
 			} else {
